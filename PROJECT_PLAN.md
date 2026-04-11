@@ -70,8 +70,8 @@ These steps must be done by hand before coding begins.
      g. Back in Supabase > Authentication > Providers > Google
      h. Toggle on, paste Client ID and Client Secret
 10. Go to Authentication > URL Configuration
-    - Set Site URL to `http://localhost:3000` (change to `https://promptfighter.tech` after deploy)
-    - Add `http://localhost:3000/**` and `https://promptfighter.tech/**` to Redirect URLs
+    - Set Site URL to `http://localhost:3000` (change to `https://promptfighter.space` after deploy)
+    - Add `http://localhost:3000/**` and `https://promptfighter.space/**` to Redirect URLs
 
 ### 2.2 Supabase Database Tables
 Run in SQL Editor (https://supabase.com/dashboard > SQL Editor):
@@ -139,11 +139,8 @@ create policy "Players can update own matches"
 2. Create API key, name it "promptfighter"
 3. Save as ANTHROPIC_API_KEY
 
-### 2.5 .tech Domain (MLH Prize)
-1. Go to https://get.tech/mlh
-2. Search for `promptfighter.tech`
-3. Register (free for MLH hackathon participants)
-4. After Vercel deploy, configure DNS (see Section 12)
+### 2.5 Domain
+Register `promptfighter.space` through any domain registrar. After Vercel deploy, configure DNS (see Section 12).
 
 ### 2.6 GitHub Repository
 1. Create new repo: `PromptFighter`
@@ -601,7 +598,7 @@ All images are pre-generated static files. Zero image generation at runtime.
 }
 ```
 
-### Gemini (for MLH prize)
+### Image Generation
 All images generated with Gemini during the hackathon. Document prompts used in README.md.
 
 ---
@@ -682,17 +679,17 @@ All images generated with Gemini during the hackathon. Document prompts used in 
 3. Environment variables set in Section 2.7
 4. Verify at `promptfighter.vercel.app`
 
-### .tech Domain Setup
+### Custom Domain Setup
 1. Vercel Dashboard > Project > Settings > Domains
-2. Add `promptfighter.tech`
+2. Add `promptfighter.space`
 3. Vercel shows required DNS records (A or CNAME)
-4. Go to .tech domain registrar DNS settings
+4. Go to the domain registrar DNS settings
 5. Add the records Vercel specifies
 6. Wait for DNS propagation
 7. Vercel auto-provisions SSL
 8. Update Supabase:
-   - Auth > URL Configuration > Site URL: `https://promptfighter.tech`
-   - Add `https://promptfighter.tech/**` to Redirect URLs
+   - Auth > URL Configuration > Site URL: `https://promptfighter.space`
+   - Add `https://promptfighter.space/**` to Redirect URLs
    - Update Google OAuth redirect URI in Google Cloud Console if needed
 
 ---
@@ -700,7 +697,7 @@ All images generated with Gemini during the hackathon. Document prompts used in 
 ## 13. Submission Checklist
 
 - [ ] Public GitHub repo with all source code
-- [ ] README.md (description, setup, tech stack, team, track, Claude/Gemini/.tech usage, library credits)
+- [ ] README.md (description, setup, tech stack, team, track, Claude/Gemini usage, library credits)
 - [ ] Showcase video (max 2.5 min, minimal editing)
 - [ ] Written description on DevPost
 - [ ] All team members listed on DevPost

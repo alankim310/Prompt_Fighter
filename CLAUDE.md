@@ -4,14 +4,14 @@
 AI-powered prompt battle game for WildHacks 2026 (Track 1: Childhood Games).
 Players write creative prompts as attacks/actions; Claude API judges outcomes via structured outputs.
 Single mode: fixed generic hero, story campaign. Multi mode: 1v1 PvP with character roster.
-English only. Deploy to promptfighter.tech.
+English only. Deploy to promptfighter.space.
 
 ## Tech Stack
 - **Framework**: Next.js 15 (App Router) + TypeScript + Tailwind CSS + shadcn/ui
 - **Backend/DB/Auth/Realtime**: Supabase (PostgreSQL, Auth with Email + Google OAuth, Realtime Broadcast & Presence)
 - **AI Judge**: Claude API (Sonnet 4.6) with structured outputs (output_config.format, json_schema)
 - **Images**: Pre-generated static assets in /public (no runtime image API calls)
-- **Deploy**: Vercel + promptfighter.tech domain
+- **Deploy**: Vercel + promptfighter.space domain
 
 ## Architecture
 
