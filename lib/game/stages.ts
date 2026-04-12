@@ -435,7 +435,7 @@ export const STAGES: Stage[] = [
       "The market takes the hero's voice, face, memory, sword, or one of their vital artifacts.",
     backgroundImage: "s3-stage1.png",
     enemyOrChallenge: "Satisfy a meaning-based toll without losing anything essential",
-    encounterImages: [getSinglePlayCharacterImageUrl("ghost_npcs")],
+    encounterImages: null,
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 4,
     systemPromptContext:
