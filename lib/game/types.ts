@@ -7,6 +7,10 @@ export interface Stage {
   type: StageType;
   title: string;
   description: string;
+  objective: string;
+  solutionDirections: string[];
+  promptIdeas: string[];
+  failureState: string;
   backgroundImage: string;
   enemyOrChallenge: string;
   difficulty: number;
@@ -18,6 +22,10 @@ export interface Substory {
   title: string;
   theme: string;
   description: string;
+  narrativeGoal: string;
+  setting: string;
+  rewardArtifact: string;
+  chapterEndingBeat: string;
   unlockLabel: string;
   accentClassName: string;
 }
