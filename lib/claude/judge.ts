@@ -8,12 +8,10 @@ const MODEL = "claude-sonnet-4-6";
 const singleSchema = {
   type: "object",
   properties: {
-    outcome: { type: "string", enum: ["win", "lose"] },
-    score: { type: "integer" },
+    result: { type: "integer", enum: [0, 1] },
     narrative: { type: "string" },
-    feedback: { type: "string" },
   },
-  required: ["outcome", "score", "narrative", "feedback"],
+  required: ["result", "narrative"],
   additionalProperties: false,
 } as const;
 

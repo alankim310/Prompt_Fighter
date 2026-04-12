@@ -51,10 +51,8 @@ export interface CharacterConfig {
 }
 
 export interface SingleBattleResult {
-  outcome: "win" | "lose";
-  score: number;
+  result: 0 | 1;
   narrative: string;
-  feedback: string;
 }
 
 export interface MultiBattleResult {

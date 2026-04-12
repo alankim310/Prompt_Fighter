@@ -258,13 +258,13 @@ Player clicks Single Mode
   → Player types prompt (no time limit)
   → POST /api/battle { prompt, stageId }
   → Claude API judges with structured output
-  → Returns { outcome, score, narrative, feedback }
-  → If win:
+  → Returns { result, narrative }
+  → If result = 1:
       → Victory narrative shown
       → Stage added to cleared_stages if not already present
       → If this was the furthest uncleared stage, advance substory/stage counters
       → If all substories done, mark completed
-  → If lose: defeat narrative + feedback hint → retry same stage
+  → If result = 0: defeat narrative shown → retry same stage
   → Previous stages are always replayable without affecting progress
 ```
 
@@ -484,7 +484,7 @@ Core concept: each character has traits, positive keywords, and negative keyword
 - System prompt built dynamically per mode (TBD specifics)
 
 ### Single Mode Judge
-Evaluates how creatively/effectively the player's prompt addresses the stage challenge. No character config (hero is generic). Stage context, challenge type, and difficulty determine what's a good prompt. Exact system prompt and scoring TBD.
+Evaluates whether the player's prompt succeeds for the stage. No character config (hero is generic). The judge should weigh `systemPromptContext` most heavily, then holistically consider the stage description, objective, challenge, failure state, solution directions, and the feasibility of the player's action.
 
 ### Multi Mode Judge
 Evaluates both prompts against the round's assigned character config. Characters have traits, positive keywords, negative keywords. Prompts aligning with the character score higher. Claude always picks a winner (no draws). Exact system prompt, weights, thresholds TBD.
@@ -495,7 +495,7 @@ Evaluates both prompts against the round's assigned character config. Characters
 ```
 Body: { prompt: string, stageId: string }
 Auth: Requires authenticated Supabase session
-Returns: { outcome, score, narrative, feedback }
+Returns: { result: 0 | 1, narrative: string }
 ```
 
 **POST /api/multi-battle (Multi Mode)**
@@ -513,12 +513,10 @@ Side effect: Appends round result to matches.rounds in Supabase
 {
   "type": "object",
   "properties": {
-    "outcome": { "type": "string", "enum": ["win", "lose"] },
-    "score": { "type": "integer" },
-    "narrative": { "type": "string" },
-    "feedback": { "type": "string" }
+    "result": { "type": "integer", "enum": [0, 1] },
+    "narrative": { "type": "string" }
   },
-  "required": ["outcome", "score", "narrative", "feedback"],
+  "required": ["result", "narrative"],
   "additionalProperties": false
 }
 ```
