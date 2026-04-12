@@ -62,12 +62,12 @@ export default async function Home() {
       <Image
         src="/logo.png"
         alt="PromptFighter"
-        width={448}
-        height={120}
-        className="max-w-md w-full h-auto"
+        width={800}
+        height={214}
+        className="max-w-2xl w-full h-auto"
         priority
       />
-      <p className="text-zinc-400 text-lg">Choose your mode</p>
+      <p className="text-xl font-semibold tracking-wide text-zinc-200">Choose your mode</p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link
           href="/single/intro"
@@ -81,13 +81,13 @@ export default async function Home() {
           href="/multi"
           className="group flex flex-col items-center gap-3 rounded-2xl border border-cyan-500/30 bg-zinc-950/90 px-12 py-8 backdrop-blur-sm transition-all duration-200 hover:border-cyan-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] hover:scale-105 cursor-pointer"
         >
-          <span className="text-4xl">⚡</span>
+          <span className="text-4xl">🎮</span>
           <span className="text-xl font-bold text-zinc-50">Multi Mode</span>
           <span className="text-sm text-zinc-400">1v1 PvP</span>
         </Link>
       </div>
       <form action={signOut}>
-        <button className="text-sm text-zinc-500 hover:text-zinc-300 transition-all duration-200 cursor-pointer">
+        <button className="text-base text-zinc-300 hover:text-zinc-100 transition-all duration-200 cursor-pointer">
           Sign out
         </button>
       </form>
