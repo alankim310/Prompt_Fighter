@@ -1,26 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
+import {
+  getSingleModeWorldMapUrl,
+  getWillieTheWildcatImageUrl,
+} from "@/lib/game/assets";
 import {
   getHighestUnlockedSubstory,
   getStagesForSubstory,
-  isStageUnlocked,
   isSubstoryUnlocked,
 } from "@/lib/game/stages";
 import type { GameProgress, Stage, Substory } from "@/lib/game/types";
 
-const TYPE_STYLES: Record<Stage["type"], string> = {
-  battle: "bg-rose-500/20 text-rose-200 border-rose-400/40",
-  obstacle: "bg-amber-500/20 text-amber-100 border-amber-300/40",
-  social: "bg-sky-500/20 text-sky-100 border-sky-300/40",
-  puzzle: "bg-violet-500/20 text-violet-100 border-violet-300/40",
-  boss: "bg-fuchsia-500/20 text-fuchsia-100 border-fuchsia-300/40",
+const STORY_NODE_POSITIONS: Record<number, { left: string; top: string }> = {
+  1: { left: "11.8%", top: "53.3%" },
+  2: { left: "35.4%", top: "53.3%" },
+  3: { left: "54.8%", top: "53.3%" },
+  4: { left: "72.0%", top: "53.3%" },
+  5: { left: "89.0%", top: "53.3%" },
 };
-
-function formatStageNumber(stageNumber: number): string {
-  return stageNumber.toString().padStart(2, "0");
-}
 
 export function StageMap({
   stages,
@@ -36,7 +34,10 @@ export function StageMap({
     substories.find((substory) => substory.id === highestUnlockedSubstory)?.id ??
     substories[0]?.id ??
     1;
+
   const [selectedSubstoryId, setSelectedSubstoryId] = useState(initialSubstory);
+  const willieImageUrl = getWillieTheWildcatImageUrl();
+  const worldMapUrl = getSingleModeWorldMapUrl();
 
   const stagesBySubstory = useMemo(() => {
     return substories.map((substory) => ({
@@ -49,7 +50,7 @@ export function StageMap({
     }));
   }, [progress, substories]);
 
-  const selectedSubstoryEntry =
+  const selectedEntry =
     stagesBySubstory.find(({ substory }) => substory.id === selectedSubstoryId) ??
     stagesBySubstory[0];
 
@@ -69,9 +70,9 @@ export function StageMap({
                 Story Overworld
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-300 sm:text-base">
-                Travel the campaign like a classic world map. Cleared stories stay
-                replayable, the next route unlocks in order, and later regions stay
-                sealed until you reach them.
+                Select a chapter directly on the world map. Earlier stories stay
+                replayable, the next route unlocks in order, and Willie marks the
+                chapter you are currently focused on.
               </p>
             </div>
 
@@ -86,7 +87,7 @@ export function StageMap({
                 </span>
               </div>
               <div className="mt-2 text-sm text-zinc-400">
-                Current unlock: Story {highestUnlockedSubstory}
+                Current unlock: Chapter {highestUnlockedSubstory}
               </div>
             </div>
           </div>
@@ -99,35 +100,34 @@ export function StageMap({
                 World Path
               </div>
               <div className="mt-1 text-lg font-bold text-white">
-                Move forward or revisit earlier stories
+                Click the glowing markers on the map
               </div>
             </div>
             <div className="text-xs uppercase tracking-[0.25em] text-zinc-500">
-              Mario-style story select
+              Chapter select
             </div>
           </div>
 
-          <div className="relative overflow-x-auto pb-2">
-            <div className="relative flex min-w-[880px] items-center justify-between gap-6 px-4 py-8">
-              <div className="absolute left-10 right-10 top-1/2 h-2 -translate-y-1/2 rounded-full bg-white/10" />
-              <div
-                className="absolute left-10 top-1/2 h-2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-300 via-yellow-300 to-fuchsia-300 transition-all"
-                style={{
-                  width: `${Math.max(
-                    0,
-                    ((highestUnlockedSubstory - 1) / Math.max(substories.length - 1, 1)) *
-                      100,
-                  )}%`,
-                }}
+          <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20">
+            <div className="relative aspect-[3/2] w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={worldMapUrl}
+                alt="Single mode world map"
+                className="h-full w-full object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/20" />
 
-              {stagesBySubstory.map(({ substory, unlocked, cleared }, index) => {
+              {stagesBySubstory.map(({ substory, unlocked, cleared }) => {
                 const selected = substory.id === selectedSubstoryId;
+                const position = STORY_NODE_POSITIONS[substory.id];
                 const statusLabel = cleared
                   ? "Cleared"
                   : unlocked
-                    ? "Open"
+                    ? "Unlocked"
                     : "Locked";
+
+                if (!position) return null;
 
                 return (
                   <button
@@ -135,193 +135,79 @@ export function StageMap({
                     type="button"
                     onClick={() => unlocked && setSelectedSubstoryId(substory.id)}
                     disabled={!unlocked}
-                    className={`group relative z-10 flex w-44 shrink-0 flex-col items-center text-center transition ${
+                    className={`absolute z-20 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full transition ${
                       unlocked ? "cursor-pointer" : "cursor-not-allowed"
-                    }`}
+                    } ${selected ? "scale-110" : "hover:scale-105"}`}
+                    style={{ left: position.left, top: position.top }}
+                    aria-label={`${substory.title} ${statusLabel}`}
                   >
-                    <div
-                      className={`relative mb-4 h-24 w-24 overflow-hidden rounded-full border text-2xl font-black shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition ${
-                        cleared
-                          ? "border-emerald-300/80 text-emerald-100"
-                          : unlocked
-                            ? "border-yellow-300/80 text-yellow-100"
-                            : "border-white/10 text-zinc-600"
-                      } ${selected ? "scale-110 ring-4 ring-white/15" : "group-hover:scale-105"}`}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={substory.mapImage}
-                        alt={substory.title}
-                        className={`h-full w-full object-cover transition ${
-                          unlocked ? "" : "grayscale"
-                        }`}
-                      />
-                      <div
-                        className={`absolute inset-0 ${
-                          cleared
-                            ? "bg-emerald-500/25"
-                            : unlocked
-                              ? "bg-black/20"
-                              : "bg-black/60"
-                        }`}
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center text-2xl font-black drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)]">
-                        {unlocked ? index + 1 : "?"}
+                    {selected && unlocked && (
+                      <div className="pointer-events-none absolute -top-14 left-1/2 z-30 h-16 w-16 -translate-x-1/2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={willieImageUrl}
+                          alt="Willie the Wildcat"
+                          className="h-full w-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.75)]"
+                        />
                       </div>
-                    </div>
+                    )}
 
-                    <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-                      {statusLabel}
-                    </div>
-                    <div className="mt-2 text-lg font-black text-white">
-                      {substory.title}
-                    </div>
-                    <div className="mt-1 text-xs uppercase tracking-[0.25em] text-zinc-400">
-                      {substory.theme}
-                    </div>
-                    <div className="mt-2 max-w-[13rem] text-xs leading-5 text-zinc-500">
-                      {unlocked ? substory.description : substory.unlockLabel}
-                    </div>
+                    <div
+                      className={`absolute inset-0 rounded-full border-4 shadow-[0_0_30px_rgba(0,0,0,0.4)] ${
+                        cleared
+                          ? "border-emerald-300 bg-emerald-300/25"
+                          : unlocked
+                            ? "border-yellow-300 bg-yellow-300/20"
+                            : "border-zinc-500/70 bg-black/45"
+                      } ${selected ? "ring-4 ring-white/30" : ""}`}
+                    />
+                    <div
+                      className={`absolute inset-2 rounded-full ${
+                        cleared
+                          ? "bg-emerald-200"
+                          : unlocked
+                            ? "bg-yellow-200"
+                            : "bg-zinc-600"
+                      }`}
+                    />
                   </button>
                 );
               })}
             </div>
           </div>
+
+          {selectedEntry && (
+            <div className="mt-5 flex flex-wrap items-start justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-black/25 p-4">
+              <div className="max-w-3xl">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+                  Selected Story
+                </div>
+                <div className="mt-2 text-2xl font-black text-white">
+                  {selectedEntry.substory.title}
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-[0.25em] text-zinc-400">
+                  {selectedEntry.substory.theme}
+                </div>
+                <p className="mt-3 text-sm leading-6 text-zinc-300">
+                  {selectedEntry.substory.description}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+                  Status
+                </div>
+                <div className="mt-2 text-sm font-bold text-white">
+                  {selectedEntry.cleared
+                    ? "Cleared"
+                    : selectedEntry.unlocked
+                      ? "Unlocked"
+                      : "Locked"}
+                </div>
+              </div>
+            </div>
+          )}
         </section>
-
-        {selectedSubstoryEntry && (
-          <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="rounded-[2rem] border border-white/10 bg-black/30 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.3)] backdrop-blur">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">
-                    Story {selectedSubstoryEntry.substory.id}
-                  </div>
-                  <h2 className="mt-2 text-3xl font-black text-white">
-                    {selectedSubstoryEntry.substory.title}
-                  </h2>
-                  <p className="mt-3 max-w-xl text-sm leading-6 text-zinc-300">
-                    {selectedSubstoryEntry.substory.description}
-                  </p>
-                </div>
-                <div
-                  className={`rounded-2xl bg-gradient-to-r px-4 py-2 text-xs font-bold uppercase tracking-[0.3em] text-slate-950 ${selectedSubstoryEntry.substory.accentClassName}`}
-                >
-                  {selectedSubstoryEntry.substory.theme}
-                </div>
-              </div>
-
-              <div className="mt-8 flex items-center gap-4 overflow-x-auto pb-2">
-                {selectedSubstoryEntry.stages.map((stage, index) => {
-                  const unlocked = isStageUnlocked(progress, stage);
-                  const cleared = progress.cleared_stages.includes(stage.id);
-                  const isCurrent =
-                    !cleared &&
-                    progress.substory === stage.substoryId &&
-                    progress.stage === stage.stageNumber &&
-                    !progress.completed;
-
-                  return (
-                    <div key={stage.id} className="flex items-center gap-4">
-                      <div className="flex shrink-0 flex-col items-center gap-3">
-                        <div
-                          className={`flex h-16 w-16 items-center justify-center rounded-full border-2 text-sm font-black transition ${
-                            cleared
-                              ? "border-emerald-300 bg-emerald-400/20 text-emerald-100"
-                              : unlocked
-                                ? "border-yellow-300 bg-yellow-300/15 text-yellow-100"
-                                : "border-white/10 bg-white/5 text-zinc-600"
-                          } ${isCurrent ? "ring-4 ring-fuchsia-400/30" : ""}`}
-                        >
-                          {unlocked ? formatStageNumber(stage.stageNumber) : "??"}
-                        </div>
-                        <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-                          {cleared ? "Cleared" : isCurrent ? "Next" : unlocked ? "Open" : "Locked"}
-                        </div>
-                      </div>
-                      {index < selectedSubstoryEntry.stages.length - 1 && (
-                        <div className="h-1 w-12 shrink-0 rounded-full bg-white/10 sm:w-20" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="rounded-[2rem] border border-white/10 bg-black/35 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.3)] backdrop-blur">
-              <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">
-                Stage Select
-              </div>
-              <div className="mt-2 text-2xl font-black text-white">
-                Choose a stop on this route
-              </div>
-              <p className="mt-3 text-sm leading-6 text-zinc-400">
-                Earlier cleared stages stay available for replay. The next uncleared
-                stage opens in order, and later ones remain locked until you reach
-                them.
-              </p>
-
-              <div className="mt-6 space-y-3">
-                {selectedSubstoryEntry.stages.map((stage) => {
-                  const unlocked = isStageUnlocked(progress, stage);
-                  const cleared = progress.cleared_stages.includes(stage.id);
-
-                  return (
-                    <div
-                      key={stage.id}
-                      className={`rounded-2xl border p-4 transition ${
-                        unlocked
-                          ? "border-white/10 bg-white/[0.03]"
-                          : "border-white/5 bg-white/[0.02] opacity-60"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-                            Stage {formatStageNumber(stage.stageNumber)}
-                          </div>
-                          <div className="mt-1 text-lg font-bold text-white">
-                            {stage.title}
-                          </div>
-                          <div className="mt-2 text-sm text-zinc-400">
-                            {stage.description}
-                          </div>
-                        </div>
-                        <span
-                          className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] ${TYPE_STYLES[stage.type]}`}
-                        >
-                          {stage.type}
-                        </span>
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                        <div className="text-xs text-zinc-500">
-                          Challenge: {stage.enemyOrChallenge}
-                        </div>
-                        {unlocked ? (
-                          <Link
-                            href={`/single/play/${stage.substoryId}/${stage.stageNumber}`}
-                            className={`rounded-full px-4 py-2 text-sm font-bold uppercase tracking-[0.2em] transition ${
-                              cleared
-                                ? "bg-emerald-400/20 text-emerald-100 hover:bg-emerald-400/30"
-                                : "bg-yellow-300/90 text-slate-950 hover:bg-yellow-200"
-                            }`}
-                          >
-                            {cleared ? "Replay" : "Enter"}
-                          </Link>
-                        ) : (
-                          <div className="rounded-full border border-white/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">
-                            Locked
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
       </div>
     </div>
   );

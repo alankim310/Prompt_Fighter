@@ -5,6 +5,7 @@ export const SUPABASE_S3_ENDPOINT =
 export const SINGLE_CHARACTER_BUCKET = "single-characters";
 export const SINGLE_BACKGROUND_BUCKET = "single-backgrounds";
 export const SINGLE_MODE_HERO_OBJECT_PATH = "hero.png";
+export const WILLIE_THE_WILDCAT_KEY = "willie_the_wildcat";
 
 const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
   1: "chapter_1_The_Ashen_Gate.png",
@@ -13,6 +14,25 @@ const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
   4: "chapter_4_The_Sunken_Forge.png",
   5: "chapter_5_Blackwake_Keep.png",
 };
+const SINGLE_MODE_WORLD_MAP_OBJECT_PATH = "map.png";
+
+export const SINGLEPLAY_CHARACTER_OBJECT_PATHS = {
+  blueberry_the_cat: "Blueberry_the_cat.png",
+  debt_collector: "Debt_collector.png",
+  debt_spirit: "Debt_spirit.png",
+  end_bringer: "end-bringer.png",
+  false_carolyn: "false_carolyn.png",
+  forge_guardian: "Forge_guardian.png",
+  ghost_npcs: "Ghost_NPCs.png",
+  living_chain: "living_chain.png",
+  marquis_grin: "marquis_grin.png",
+  princess: "princess.png",
+  sir_dreadhelm: "Sir_Dreadhelm.png",
+  skeleton_guard: "skeleton_guard.png",
+  sleeping_grove_beast: "Sleeping_Grove_Beast.png",
+  soul_stealer: "soul_stealer.png",
+  willie_the_wildcat: "willie_the_wildcat.png",
+} as const;
 
 function normalizeObjectPath(objectPath: string): string {
   return objectPath.replace(/^\/+/, "");
@@ -38,8 +58,20 @@ export function getSingleCharacterImageUrl(objectPath: string): string {
   return getSupabaseStoragePublicUrl(SINGLE_CHARACTER_BUCKET, objectPath);
 }
 
+export function getSinglePlayCharacterImageUrl(
+  characterKey: keyof typeof SINGLEPLAY_CHARACTER_OBJECT_PATHS,
+): string {
+  return getSingleCharacterImageUrl(
+    SINGLEPLAY_CHARACTER_OBJECT_PATHS[characterKey],
+  );
+}
+
 export function getSingleModeHeroImageUrl(): string {
   return getSingleCharacterImageUrl(SINGLE_MODE_HERO_OBJECT_PATH);
+}
+
+export function getWillieTheWildcatImageUrl(): string {
+  return getSinglePlayCharacterImageUrl(WILLIE_THE_WILDCAT_KEY);
 }
 
 export function getSingleModeStageBackgroundUrl(stageId: string): string {
@@ -57,6 +89,13 @@ export function getSingleModeSubstoryBackgroundUrl(substoryId: number): string {
   }
 
   return getSupabaseStoragePublicUrl(SINGLE_BACKGROUND_BUCKET, objectPath);
+}
+
+export function getSingleModeWorldMapUrl(): string {
+  return getSupabaseStoragePublicUrl(
+    SINGLE_BACKGROUND_BUCKET,
+    SINGLE_MODE_WORLD_MAP_OBJECT_PATH,
+  );
 }
 
 export async function fetchAssetFromUrl(
