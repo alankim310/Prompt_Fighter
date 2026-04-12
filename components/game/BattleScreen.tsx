@@ -63,6 +63,7 @@ export function BattleScreen({
   const trimmedPrompt = prompt.trim();
   const nextStage = getNextStageInSubstory(stage);
   const chapterEndsHere = isLastStageInSubstory(stage);
+  const isFinalStoryStage = stage.id === "s5-stage4";
   const encounterImages = stage.encounterImages ?? [];
   const chapterFiveArtifactReminders =
     substory.id === 5 ? CHAPTER_FIVE_ARTIFACT_REMINDERS : [];
@@ -206,6 +207,11 @@ export function BattleScreen({
 
     if (battleResult.result === 0) {
       setBattleResult(null);
+      return;
+    }
+
+    if (isFinalStoryStage) {
+      router.push("/single/ending");
       return;
     }
 
@@ -493,7 +499,9 @@ export function BattleScreen({
               result={battleResult}
               primaryLabel={
                 battleResult.result === 1
-                  ? chapterEndsHere
+                  ? isFinalStoryStage
+                    ? "View Ending"
+                    : chapterEndsHere
                     ? "Return to Map"
                     : "Next Stage"
                   : "Try Again"

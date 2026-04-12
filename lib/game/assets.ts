@@ -24,6 +24,7 @@ export const SINGLE_MODE_INTRO_OBJECT_PATHS = {
   carolyn_was_taken: "preslide3.png",
   your_journey_begins: "preslide4.png",
 } as const;
+export const SINGLE_MODE_ENDING_OBJECT_PATH = "game_end.png";
 
 export const SINGLEPLAY_CHARACTER_OBJECT_PATHS = {
   blueberry_the_cat: "Blueberry_the_cat.png",
@@ -121,6 +122,13 @@ export function getSingleModeIntroImageUrl(
   return getSupabaseStoragePublicUrl(
     SINGLE_BACKGROUND_BUCKET,
     SINGLE_MODE_INTRO_OBJECT_PATHS[introKey],
+  );
+}
+
+export function getSingleModeEndingImageUrl(): string {
+  return getSupabaseStoragePublicUrl(
+    SINGLE_BACKGROUND_BUCKET,
+    SINGLE_MODE_ENDING_OBJECT_PATH,
   );
 }
 
