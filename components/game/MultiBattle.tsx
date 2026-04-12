@@ -180,6 +180,15 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       setLastRecord(record);
       totalRoundsPlayedRef.current = record.roundNumber;
 
+      // Mark round as resolved so P2 fallback timer cannot fire tryResolveRound
+      resolvingRef.current = true;
+
+      // Clear P2 fallback timer — round is already resolved
+      if (p2FallbackTimerRef.current) {
+        clearTimeout(p2FallbackTimerRef.current);
+        p2FallbackTimerRef.current = null;
+      }
+
       if (record.winner === "void") {
         setVoidReason(record.voidReason ?? "Round voided.");
         setPhase("void");
@@ -215,37 +224,36 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         return;
       }
 
+      // Compute win counts synchronously via refs to avoid side effects in setState updaters
+      const newP1Wins = record.winner === "player1" ? p1WinsRef.current + 1 : p1WinsRef.current;
+      const newP2Wins = record.winner === "player2" ? p2WinsRef.current + 1 : p2WinsRef.current;
+      p1WinsRef.current = newP1Wins;
+      p2WinsRef.current = newP2Wins;
+
       setPhase("result");
-      setP1Wins((prev) => {
-        const next = record.winner === "player1" ? prev + 1 : prev;
-        p1WinsRef.current = next;
-        setP2Wins((prev2) => {
-          const next2 = record.winner === "player2" ? prev2 + 1 : prev2;
-          p2WinsRef.current = next2;
-          const reachedWinThreshold = next >= 2 || next2 >= 2;
-          const reachedCap = totalRoundsPlayedRef.current >= MAX_ROUNDS;
-          if (reachedWinThreshold || reachedCap) {
-            const p1 = player1IdRef.current;
-            const p2 = player2IdRef.current;
-            const winnerId = next > next2 ? p1 : next2 > next ? p2 : null;
-            window.setTimeout(() => {
-              void finalizeMatch(winnerId);
-            }, PHASE_RESULT_HOLD_MS);
-          } else {
-            window.setTimeout(() => {
-              if (matchOverRef.current) {
-                setPhase("complete");
-                return;
-              }
-              startLocalRound(roundNumberRef.current + 1);
-            }, PHASE_RESULT_HOLD_MS);
+      setP1Wins(newP1Wins);
+      setP2Wins(newP2Wins);
+
+      const reachedWinThreshold = newP1Wins >= 2 || newP2Wins >= 2;
+      const reachedCap = totalRoundsPlayedRef.current >= MAX_ROUNDS;
+      if (reachedWinThreshold || reachedCap) {
+        const p1 = player1IdRef.current;
+        const p2 = player2IdRef.current;
+        const winnerId = newP1Wins > newP2Wins ? p1 : newP2Wins > newP1Wins ? p2 : null;
+        window.setTimeout(() => {
+          void finalizeMatch(winnerId);
+        }, PHASE_RESULT_HOLD_MS);
+      } else {
+        window.setTimeout(() => {
+          if (matchOverRef.current) {
+            setPhase("complete");
+            return;
           }
-          return next2;
-        });
-        return next;
-      });
+          startLocalRound(roundNumberRef.current + 1);
+        }, PHASE_RESULT_HOLD_MS);
+      }
     },
-    [startLocalRound, finalizeMatch],
+    [startLocalRound, finalizeMatch, matchId, router],
   );
 
   const persistSyntheticRound = useCallback(
