@@ -22,6 +22,7 @@ export interface Substory {
   title: string;
   theme: string;
   description: string;
+  mapImage: string;
   narrativeGoal: string;
   setting: string;
   rewardArtifact: string;

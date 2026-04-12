@@ -140,15 +140,34 @@ export function StageMap({
                     }`}
                   >
                     <div
-                      className={`mb-4 flex h-24 w-24 items-center justify-center rounded-full border text-2xl font-black shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition ${
+                      className={`relative mb-4 h-24 w-24 overflow-hidden rounded-full border text-2xl font-black shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition ${
                         cleared
-                          ? "border-emerald-300/80 bg-emerald-400/20 text-emerald-100"
+                          ? "border-emerald-300/80 text-emerald-100"
                           : unlocked
-                            ? "border-yellow-300/80 bg-yellow-300/20 text-yellow-100"
-                            : "border-white/10 bg-white/5 text-zinc-600"
+                            ? "border-yellow-300/80 text-yellow-100"
+                            : "border-white/10 text-zinc-600"
                       } ${selected ? "scale-110 ring-4 ring-white/15" : "group-hover:scale-105"}`}
                     >
-                      {unlocked ? index + 1 : "?"}
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={substory.mapImage}
+                        alt={substory.title}
+                        className={`h-full w-full object-cover transition ${
+                          unlocked ? "" : "grayscale"
+                        }`}
+                      />
+                      <div
+                        className={`absolute inset-0 ${
+                          cleared
+                            ? "bg-emerald-500/25"
+                            : unlocked
+                              ? "bg-black/20"
+                              : "bg-black/60"
+                        }`}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center text-2xl font-black drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)]">
+                        {unlocked ? index + 1 : "?"}
+                      </div>
                     </div>
 
                     <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">

@@ -1,4 +1,7 @@
-import { getSingleModeStageBackgroundUrl } from "@/lib/game/assets";
+import {
+  getSingleModeStageBackgroundUrl,
+  getSingleModeSubstoryBackgroundUrl,
+} from "@/lib/game/assets";
 import type { GameProgress, Stage, Substory } from "@/lib/game/types";
 
 export const SUBSTORIES: Substory[] = [
@@ -8,6 +11,7 @@ export const SUBSTORIES: Substory[] = [
     theme: "Ruined Border Town",
     description:
       "Enter the ruined outer border of Veyrune and recover the Ember Sigil, the key artifact needed to open the gate of Blackwake Keep.",
+    mapImage: getSingleModeSubstoryBackgroundUrl(1),
     narrativeGoal:
       "Recover the Ember Sigil and force a way into the inner kingdom.",
     setting:
@@ -24,6 +28,7 @@ export const SUBSTORIES: Substory[] = [
     theme: "Cursed Forest",
     description:
       "Cross the cursed forest and obtain the Moonlit Compass, the artifact that reveals hidden paths toward the mountain.",
+    mapImage: getSingleModeSubstoryBackgroundUrl(2),
     narrativeGoal:
       "Survive the hostile forest and claim the Moonlit Compass.",
     setting:
@@ -40,6 +45,7 @@ export const SUBSTORIES: Substory[] = [
     theme: "Cursed Underground City",
     description:
       "Infiltrate the cursed underground city beneath Veyrune and recover the Name-Flame Lantern, an artifact that preserves memory and identity.",
+    mapImage: getSingleModeSubstoryBackgroundUrl(3),
     narrativeGoal:
       "Beat the market at its own laws and escape with the Name-Flame Lantern.",
     setting:
@@ -56,6 +62,7 @@ export const SUBSTORIES: Substory[] = [
     theme: "Underground Industrial Temple",
     description:
       "Descend into the Sunken Forge and claim the anti-dragon power needed to weaken the End-Bringer before the final confrontation.",
+    mapImage: getSingleModeSubstoryBackgroundUrl(4),
     narrativeGoal:
       "Awaken the forge and temper the hero's sword in Dragon-Piercing Fire.",
     setting:
@@ -72,6 +79,7 @@ export const SUBSTORIES: Substory[] = [
     theme: "Volcanic Fortress",
     description:
       "Enter the End-Bringer's fortress, preserve Carolyn's memory, free her, and defeat the dragon at the center of Veyrune's ruin.",
+    mapImage: getSingleModeSubstoryBackgroundUrl(5),
     narrativeGoal:
       "Use every earned artifact to rescue Princess Carolyn and bring down the End-Bringer.",
     setting:
