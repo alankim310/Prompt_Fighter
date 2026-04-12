@@ -8,12 +8,12 @@ export const SINGLE_ARTIFACT_BUCKET = "single-artifacts";
 export const SINGLE_MODE_HERO_OBJECT_PATH = "hero.png";
 export const WILLIE_THE_WILDCAT_KEY = "willie_the_wildcat";
 
-const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
+export const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
   1: "chapter_1_The_Ashen_Gate.png",
   2: "chapter_2_The_Thornwild_Labyrinth.png",
   3: "chapter_3_The_Hollow_Market.png",
   4: "chapter_4_The_Sunken_Forge.png",
-  4.5: "chapter_4_The_Sunken_Forge_(Dark).png",
+  6: "chapter_4_The_Sunken_Forge_(Dark).png",
   5: "chapter_5_Blackwake_Keep.png",
 };
 const SINGLE_MODE_WORLD_MAP_OBJECT_PATH = "map.png";
@@ -100,10 +100,10 @@ export function getWillieTheWildcatImageUrl(): string {
   return getSinglePlayCharacterImageUrl(WILLIE_THE_WILDCAT_KEY);
 }
 
-export function getSingleModeStageBackgroundUrl(stageId: string): string {
+export function getSingleModeStageBackgroundUrl(chapterId: number): string {
   return getSupabaseStoragePublicUrl(
     SINGLE_BACKGROUND_BUCKET,
-    `${stageId}.png`,
+    `${normalizeObjectPath(chapterId)}.png`,
   );
 }
 

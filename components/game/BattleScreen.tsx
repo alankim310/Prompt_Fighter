@@ -188,8 +188,8 @@ export function BattleScreen({
           <div className="relative aspect-[16/9] w-full overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={substory.mapImage}
-              alt={substory.title}
+              src={stage.backgroundImage}
+              alt={stage.title}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/65" />

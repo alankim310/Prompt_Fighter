@@ -1,7 +1,6 @@
 import {
   getSinglePlayArtifactImageUrl,
   getSinglePlayCharacterImageUrl,
-  getSingleModeStageBackgroundUrl,
   getSingleModeSubstoryBackgroundUrl,
 } from "@/lib/game/assets";
 import type {
@@ -17,6 +16,7 @@ const CHAPTER_ARTIFACT_IMAGES: Record<number, string | null> = {
   3: getSinglePlayArtifactImageUrl("name_flame_lantern"),
   4: getSinglePlayArtifactImageUrl("sword_tempered_in_dragon_piercing_fire"),
   5: null,
+  6: null,
 };
 
 export const CHAPTER_FIVE_ARTIFACT_REMINDERS: ArtifactReminder[] = [
@@ -157,7 +157,7 @@ export const STAGES: Stage[] = [
       "Transform the environment",
     ],
     failureState: "The bridge collapses beneath the hero, restarting the chapter.",
-    backgroundImage: "s1-stage1.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(1),
     enemyOrChallenge: "Cross the haunted Weeping Bridge",
     encounterImages: [getSinglePlayCharacterImageUrl("fleeing_npcs")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
@@ -190,7 +190,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The chains bind the hero and sound spectral bells, causing chapter failure.",
-    backgroundImage: "s1-stage2.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(1),
     enemyOrChallenge: "Unlock the reliquary without triggering its living chains",
     encounterImages: [getSinglePlayCharacterImageUrl("living_chain")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
@@ -226,7 +226,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The tower seals shut and floods with cursed smoke, resetting the chapter.",
-    backgroundImage: "s1-stage3.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(1),
     enemyOrChallenge: "Restore the watchtower while surviving ash-cursed skeletal guards",
     encounterImages: [
       getSinglePlayCharacterImageUrl("skeleton_guard"),
@@ -259,7 +259,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "A vague or fearful command gives Dreadhelm the opening to overwhelm the hero, restarting the chapter.",
-    backgroundImage: "s1-stage4.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(1),
     enemyOrChallenge: "An oath-bound knight who punishes hesitation",
     encounterImages: [getSinglePlayCharacterImageUrl("sir_dreadhelm")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
@@ -294,7 +294,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "Blueberry flees, the hero follows the wrong trail, and the forest loops them back to the chapter start.",
-    backgroundImage: "s2-stage1.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(2),
     enemyOrChallenge: "Earn Blueberry's trust to escape the looping forest",
     encounterImages: [getSinglePlayCharacterImageUrl("blueberry_the_cat")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
@@ -330,7 +330,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The beast awakens and crushes the grove, restarting the chapter.",
-    backgroundImage: "s2-stage2.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(2),
     enemyOrChallenge: "Slip past a giant sleeping beast without triggering a fight",
     encounterImages: [getSinglePlayCharacterImageUrl("sleeping_grove_beast")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
@@ -365,7 +365,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "If the hero trusts the illusion, they abandon the mission and the chapter restarts.",
-    backgroundImage: "s2-stage3.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(2),
     enemyOrChallenge: "Expose an emotionally manipulative illusion hiding the Moonlit Compass",
     encounterImages: [getSinglePlayCharacterImageUrl("false_carolyn")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
@@ -398,7 +398,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "Too much sound lets the Soul Stealer pinpoint the hero and kill them on contact.",
-    backgroundImage: "s2-stage4.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(2),
     enemyOrChallenge: "A blind assassin who hunts by sound and kills on touch",
     encounterImages: [getSinglePlayCharacterImageUrl("soul_stealer")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
@@ -433,7 +433,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The market takes the hero's voice, face, memory, sword, or one of their vital artifacts.",
-    backgroundImage: "s3-stage1.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(3),
     enemyOrChallenge: "Satisfy a meaning-based toll without losing anything essential",
     encounterImages: null,
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
@@ -468,7 +468,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The lantern is sold to another buyer and vanishes deeper into the market.",
-    backgroundImage: "s3-stage2.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(3),
     enemyOrChallenge: "Secure the Name-Flame Lantern inside a memory-fueled auction",
     encounterImages: [
       getSinglePlayCharacterImageUrl("ghost_npcs"),
@@ -504,7 +504,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "A useless amendment leaves the hero caught, the lantern confiscated, and debt spirits consuming them.",
-    backgroundImage: "s3-stage3.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(3),
     enemyOrChallenge: "Rewrite market law before the debt collector catches you",
     encounterImages: [
       getSinglePlayCharacterImageUrl("debt_collector"),
@@ -540,7 +540,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "If the hero fights him straight, Marquis Grin mirrors every move back at equal force and wins.",
-    backgroundImage: "s3-stage4.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(3),
     enemyOrChallenge: "A perfect imitator in an arena full of exploitable hazards",
     encounterImages: [getSinglePlayCharacterImageUrl("marquis_grin")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
@@ -574,10 +574,10 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The entrance collapses further and molten runoff surges, forcing a restart of the chapter.",
-    backgroundImage: "s4-stage1.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(6),
     enemyOrChallenge: "Break into the Sunken Forge through its failed industrial entrance",
     encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
-    artifactImage: CHAPTER_ARTIFACT_IMAGES[4.5],
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 5,
     systemPromptContext:
       "Reward industrial improvisation, repair, force, and environmental problem-solving under heat pressure.",
@@ -608,10 +608,10 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The Forge-Heart flares out of control, vents burst, and the chamber becomes unlivable.",
-    backgroundImage: "s4-stage2.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(6),
     enemyOrChallenge: "Restore the dead furnace core that powers the forge",
     encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
-    artifactImage: CHAPTER_ARTIFACT_IMAGES[4.5],
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 6,
     systemPromptContext:
       "Reward believable restoration using available industrial materials: fuel, heat, airflow, pressure, and redirection.",
@@ -641,7 +641,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The sword warps, cracks, or absorbs unstable fire, forcing the chapter to restart.",
-    backgroundImage: "s4-stage3.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(4),
     enemyOrChallenge: "Reforge the sword into an anti-dragon weapon without destroying it",
     encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
@@ -673,7 +673,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "If the guardian remains fully powered by the forge, it overwhelms the hero and the chapter restarts.",
-    backgroundImage: "s4-stage4.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(4),
     enemyOrChallenge: "A forge-powered iron colossus sustained by the room itself",
     encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
@@ -706,7 +706,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "The gate opens, but the hero forgets Carolyn and the mission before fully entering.",
-    backgroundImage: "s5-stage1.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(5),
     enemyOrChallenge: "Open the keep and survive a curse that erases purpose",
     encounterImages: [getSinglePlayCharacterImageUrl("end_bringer")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
@@ -738,7 +738,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "Carolyn is freed physically but remains lost in memory, leaving both of you vulnerable and restarting the chapter.",
-    backgroundImage: "s5-stage2.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(5),
     enemyOrChallenge: "Restore Carolyn's identity, not just her freedom",
     encounterImages: [getSinglePlayCharacterImageUrl("princess")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
@@ -773,7 +773,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "If the hero or Carolyn is overwhelmed by the emberstorm, the chapter restarts in ash.",
-    backgroundImage: "s5-stage3.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(5),
     enemyOrChallenge: "Survive the dragon's overwhelming fire without trying to force offense",
     encounterImages: [
       getSinglePlayCharacterImageUrl("end_bringer"),
@@ -808,7 +808,7 @@ export const STAGES: Stage[] = [
     ],
     failureState:
       "If the hero misses the opening, the End-Bringer recovers and the final chance is lost.",
-    backgroundImage: "s5-stage4.png",
+    backgroundImage: getSingleModeSubstoryBackgroundUrl(5),
     enemyOrChallenge: "A final opening against the dragon after surviving the storm",
     encounterImages: [
       getSinglePlayCharacterImageUrl("end_bringer"),
@@ -869,7 +869,7 @@ export function getSubstoryById(substoryId: number): Substory | undefined {
 }
 
 export function getStageBackgroundUrl(stage: Stage): string {
-  return getSingleModeStageBackgroundUrl(stage.id);
+  return stage.backgroundImage;
 }
 
 export function getHighestUnlockedSubstory(progress: GameProgress): number {
