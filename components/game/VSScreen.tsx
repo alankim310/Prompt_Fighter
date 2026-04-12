@@ -6,8 +6,10 @@ import { useEffect } from "react";
 interface VSScreenProps {
   player1Name: string;
   player2Name: string;
-  characterId: string;
-  characterName: string;
+  player1CharacterId: string;
+  player1CharacterName: string;
+  player2CharacterId: string;
+  player2CharacterName: string;
   onComplete?: () => void;
   durationMs?: number;
 }
@@ -15,8 +17,10 @@ interface VSScreenProps {
 export function VSScreen({
   player1Name,
   player2Name,
-  characterId,
-  characterName,
+  player1CharacterId,
+  player1CharacterName,
+  player2CharacterId,
+  player2CharacterName,
   onComplete,
   durationMs = 2000,
 }: VSScreenProps) {
@@ -35,8 +39,8 @@ export function VSScreen({
         <div className="flex flex-col items-center gap-3 animate-[vsSlideInLeft_0.5s_ease-out]">
           <div className="relative h-64 w-64 md:h-80 md:w-80">
             <Image
-              src={`/characters/${characterId}.png`}
-              alt={characterName}
+              src={`/characters/${player1CharacterId}.png`}
+              alt={player1CharacterName}
               fill
               sizes="320px"
               className="object-contain drop-shadow-[0_0_40px_rgba(217,70,239,0.6)]"
@@ -44,7 +48,7 @@ export function VSScreen({
             />
           </div>
           <div className="text-xs uppercase tracking-[0.3em] text-fuchsia-400">
-            Player 1
+            Player 1 — {player1CharacterName}
           </div>
           <div className="text-2xl font-black text-white md:text-3xl">
             {player1Name}
@@ -57,16 +61,13 @@ export function VSScreen({
               VS
             </span>
           </div>
-          <div className="mt-2 text-sm uppercase tracking-[0.3em] text-white/70">
-            {characterName}
-          </div>
         </div>
 
         <div className="flex flex-col items-center gap-3 animate-[vsSlideInRight_0.5s_ease-out]">
           <div className="relative h-64 w-64 md:h-80 md:w-80">
             <Image
-              src={`/characters/${characterId}.png`}
-              alt={characterName}
+              src={`/characters/${player2CharacterId}.png`}
+              alt={player2CharacterName}
               fill
               sizes="320px"
               className="object-contain drop-shadow-[0_0_40px_rgba(34,211,238,0.6)]"
@@ -75,7 +76,7 @@ export function VSScreen({
             />
           </div>
           <div className="text-xs uppercase tracking-[0.3em] text-cyan-400">
-            Player 2
+            Player 2 — {player2CharacterName}
           </div>
           <div className="text-2xl font-black text-white md:text-3xl">
             {player2Name}

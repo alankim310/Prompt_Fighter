@@ -17,21 +17,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const { prompt1, prompt2, characterId, matchId, roundNumber } =
+  const { prompt1, prompt2, character1Id, character2Id, matchId, roundNumber } =
     (await request.json()) as {
       prompt1: string;
       prompt2: string;
-      characterId: string;
+      character1Id: string;
+      character2Id: string;
       matchId: string;
       roundNumber: number;
     };
 
-  if (!prompt1 || !prompt2 || !characterId || !matchId || !roundNumber) {
+  if (
+    !prompt1 ||
+    !prompt2 ||
+    !character1Id ||
+    !character2Id ||
+    !matchId ||
+    !roundNumber
+  ) {
     return NextResponse.json({ error: "missing fields" }, { status: 400 });
   }
 
-  const character = getCharacter(characterId);
-  if (!character) {
+  const character1 = getCharacter(character1Id);
+  const character2 = getCharacter(character2Id);
+  if (!character1 || !character2) {
     return NextResponse.json({ error: "unknown character" }, { status: 400 });
   }
 
@@ -49,7 +58,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  const system = buildMultiSystemPrompt(character);
+  const system = buildMultiSystemPrompt(character1, character2);
   const userContent = buildMultiUserContent({ prompt1, prompt2 });
   const result = await judgeMultiBattle({ system, userContent });
 
@@ -57,7 +66,8 @@ export async function POST(request: Request) {
     (match.rounds as MultiRoundRecord[] | null) ?? [];
   const newRound: MultiRoundRecord = {
     roundNumber,
-    characterId,
+    character1Id,
+    character2Id,
     ...result,
   };
   const rounds = [...existing, newRound];

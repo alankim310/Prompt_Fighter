@@ -5,6 +5,9 @@ import { useEffect, useRef, useState } from "react";
 
 type RouletteCharacter = { id: string; name: string };
 
+const LOADING_MS = 2200;
+const REVEAL_HOLD_MS = 900;
+
 export function CharacterRoulette({
   characters,
   selectedId,
@@ -14,8 +17,7 @@ export function CharacterRoulette({
   selectedId: string;
   onComplete: () => void;
 }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [landed, setLanded] = useState(false);
+  const [revealed, setRevealed] = useState(false);
   const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
@@ -23,107 +25,87 @@ export function CharacterRoulette({
   }, [onComplete]);
 
   useEffect(() => {
-    if (characters.length === 0) return;
-
-    const targetIndex = characters.findIndex((c) => c.id === selectedId);
-    if (targetIndex === -1) return;
-
-    const totalDuration = 3000;
-    const startDelay = 60;
-    const endDelay = 360;
-    const fullCycles = 3;
-    const totalSteps =
-      fullCycles * characters.length +
-      ((targetIndex - 0 + characters.length) % characters.length) +
-      characters.length;
-
-    let step = 0;
-    let cancelled = false;
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-    const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-
-    const tick = () => {
-      if (cancelled) return;
-      step += 1;
-      setActiveIndex((prev) => (prev + 1) % characters.length);
-
-      if (step >= totalSteps) {
-        setActiveIndex(targetIndex);
-        setLanded(true);
-        timeoutId = setTimeout(() => {
-          if (!cancelled) onCompleteRef.current();
-        }, 600);
-        return;
-      }
-
-      const progress = step / totalSteps;
-      const eased = easeOut(progress);
-      const delay = startDelay + (endDelay - startDelay) * eased;
-      const remainingBudget = totalDuration - (startDelay * step);
-      const nextDelay = remainingBudget > 0 ? delay : endDelay;
-      timeoutId = setTimeout(tick, nextDelay);
-    };
-
-    timeoutId = setTimeout(tick, startDelay);
-
+    setRevealed(false);
+    const revealTimeout = setTimeout(() => setRevealed(true), LOADING_MS);
+    const completeTimeout = setTimeout(
+      () => onCompleteRef.current(),
+      LOADING_MS + REVEAL_HOLD_MS,
+    );
     return () => {
-      cancelled = true;
-      if (timeoutId) clearTimeout(timeoutId);
+      clearTimeout(revealTimeout);
+      clearTimeout(completeTimeout);
     };
-  }, [characters, selectedId]);
+  }, [selectedId]);
 
-  if (characters.length === 0) return null;
+  const selected = characters.find((c) => c.id === selectedId);
+  if (!selected) return null;
 
   return (
-    <div className="relative w-full overflow-hidden py-8">
-      <div className="pointer-events-none absolute inset-y-0 left-1/2 w-32 -translate-x-1/2 rounded-xl border-2 border-yellow-400/80 shadow-[0_0_40px_rgba(250,204,21,0.6)]" />
-      <div className="flex items-center justify-center gap-4">
-        {characters.map((character, index) => {
-          const offset = index - activeIndex;
-          const isActive = index === activeIndex;
-          return (
+    <div className="flex min-h-[360px] flex-col items-center justify-center gap-8">
+      {!revealed ? (
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative h-32 w-32">
+            <div className="absolute inset-0 rounded-full border-4 border-zinc-800 border-t-yellow-400 animate-spin" />
             <div
-              key={character.id}
-              className="flex shrink-0 flex-col items-center transition-all duration-150 ease-out"
-              style={{
-                transform: `translateX(${offset * 140}px) scale(${
-                  isActive ? (landed ? 1.35 : 1.1) : 0.75
-                })`,
-                opacity: Math.max(0.2, 1 - Math.abs(offset) * 0.35),
-                filter: isActive && landed ? "drop-shadow(0 0 24px #facc15)" : "none",
-                zIndex: isActive ? 10 : 0,
-              }}
-            >
-              <div
-                className={`relative h-28 w-28 overflow-hidden rounded-xl border-2 ${
-                  isActive
-                    ? landed
-                      ? "border-yellow-400 bg-yellow-400/10"
-                      : "border-white bg-white/10"
-                    : "border-white/20 bg-white/5"
-                }`}
-              >
-                <Image
-                  src={`/characters/${character.id}.png`}
-                  alt={character.name}
-                  fill
-                  sizes="112px"
-                  className="object-contain"
-                  priority={isActive}
-                />
-              </div>
-              <p
-                className={`mt-2 text-center text-xs font-semibold uppercase tracking-wider ${
-                  isActive && landed ? "text-yellow-300" : "text-white/80"
-                }`}
-              >
-                {character.name}
-              </p>
+              className="absolute inset-2 rounded-full border-2 border-zinc-900 border-b-fuchsia-500 animate-spin"
+              style={{ animationDirection: "reverse", animationDuration: "1.2s" }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-16 w-16 rounded-full bg-yellow-400/10 blur-xl" />
             </div>
-          );
-        })}
-      </div>
+            <div className="absolute inset-0 flex items-center justify-center text-3xl">
+              ⚔️
+            </div>
+          </div>
+          <div className="text-sm uppercase tracking-[0.4em] text-zinc-400 animate-pulse">
+            Rolling your fighter
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-4 reveal-pop">
+          <div className="text-xs uppercase tracking-[0.4em] text-yellow-400/80">
+            Your Fighter
+          </div>
+          <div
+            className="relative h-56 w-56 overflow-hidden rounded-2xl border-2 border-yellow-400 bg-gradient-to-b from-yellow-400/15 to-fuchsia-500/10"
+            style={{ filter: "drop-shadow(0 0 40px rgba(250,204,21,0.7))" }}
+          >
+            <Image
+              src={`/characters/${selected.id}.png`}
+              alt={selected.name}
+              fill
+              sizes="224px"
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="text-3xl font-black uppercase tracking-wider text-yellow-300">
+            {selected.name}
+          </div>
+        </div>
+      )}
+      <style jsx>{`
+        .reveal-pop {
+          animation: revealPop 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+        }
+        @keyframes revealPop {
+          0% {
+            transform: scale(0.2) rotate(-8deg);
+            opacity: 0;
+            filter: blur(8px);
+          }
+          55% {
+            transform: scale(1.18) rotate(2deg);
+            opacity: 1;
+            filter: blur(0);
+          }
+          100% {
+            transform: scale(1) rotate(0);
+            opacity: 1;
+            filter: blur(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }

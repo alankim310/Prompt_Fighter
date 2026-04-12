@@ -42,5 +42,6 @@ export interface MultiBattleResult {
 
 export interface MultiRoundRecord extends MultiBattleResult {
   roundNumber: number;
-  characterId: string;
+  character1Id: string;
+  character2Id: string;
 }

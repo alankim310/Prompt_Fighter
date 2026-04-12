@@ -61,7 +61,7 @@ export function MatchResult({
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-xs uppercase tracking-widest text-zinc-400">
-                    {round.characterId}
+                    {round.character1Id} vs {round.character2Id}
                   </div>
                   <div className="truncate text-sm text-zinc-300">
                     {round.narrative}
