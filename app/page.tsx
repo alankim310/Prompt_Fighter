@@ -62,9 +62,9 @@ export default async function Home() {
       <Image
         src="/logo.png"
         alt="PromptFighter"
-        width={1200}
-        height={321}
-        className="max-w-5xl w-full h-auto"
+        width={840}
+        height={225}
+        className="max-w-3xl w-full h-auto"
         priority
       />
       <p className="text-xl font-semibold tracking-wide text-zinc-200">Choose your mode</p>
