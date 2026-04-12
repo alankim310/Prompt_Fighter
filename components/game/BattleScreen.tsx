@@ -236,7 +236,7 @@ export function BattleScreen({
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/65" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/88 via-transparent to-black/30" />
 
-        <div className="pointer-events-none absolute bottom-[18%] left-[7%] z-10 h-[56%] w-[20%]">
+        <div className="pointer-events-none absolute bottom-[8%] left-[7%] z-10 h-[56%] w-[20%]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={willieImageUrl}

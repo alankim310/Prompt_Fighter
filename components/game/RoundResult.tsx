@@ -36,9 +36,9 @@ export function RoundResult({
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/90" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center gap-8 p-6">
-        {/* Result title + score — sits above the narrative box */}
-        <div className="flex flex-col items-center gap-3">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center p-6">
+        {/* Single card containing everything */}
+        <div className="flex w-full max-w-lg flex-col items-center gap-5 rounded-3xl bg-zinc-950/80 px-8 py-10 backdrop-blur-sm">
           <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
             Round {roundNumber} Result
           </div>
@@ -67,13 +67,12 @@ export function RoundResult({
               {oppWins}
             </span>
           </div>
-        </div>
 
-        {/* Narrative box */}
-        <div className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/90 p-6 backdrop-blur-sm">
-          <p className="text-center text-sm leading-relaxed text-zinc-300">
-            {record.narrative}
-          </p>
+          <div className="mt-2 w-full border-t border-zinc-800 pt-5">
+            <p className="text-center text-sm leading-relaxed text-zinc-300">
+              {record.narrative}
+            </p>
+          </div>
         </div>
       </div>
     </div>
