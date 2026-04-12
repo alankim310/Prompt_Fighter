@@ -67,9 +67,12 @@ export function SingleModeIntro({
 
       <div className="relative z-10 flex min-h-screen flex-col px-4 py-4 sm:px-6 sm:py-6">
         <div className="flex items-start justify-between gap-4">
-          <div className="rounded-full border border-white/10 bg-black/45 px-4 py-2 text-sm font-semibold text-zinc-100">
-            Intro {currentIndex + 1} / {slides.length}
-          </div>
+          <Link
+            href="/"
+            className="rounded-full border border-white/10 bg-black/45 px-4 py-2 text-sm font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
+          >
+            Home
+          </Link>
 
           <Link
             href="/single"

@@ -6,10 +6,16 @@ import { getWillieTheWildcatImageUrl } from "@/lib/game/assets";
 import {
   CHAPTER_FIVE_ARTIFACT_REMINDERS,
   getNextStageInSubstory,
+  getStagesForSubstory,
   isLastStageInSubstory,
   TOTAL_SUBSTORIES,
 } from "@/lib/game/stages";
-import type { SingleBattleResult, Stage, Substory } from "@/lib/game/types";
+import type {
+  GameProgress,
+  SingleBattleResult,
+  Stage,
+  Substory,
+} from "@/lib/game/types";
 import { StageResult } from "@/components/game/StageResult";
 import { createClient } from "@/lib/supabase/client";
 
@@ -37,13 +43,16 @@ function parseSingleBattleResult(payload: unknown): SingleBattleResult | null {
 export function BattleScreen({
   stage,
   substory,
+  progress,
 }: {
   stage: Stage;
   substory: Substory;
+  progress: GameProgress;
 }) {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
   const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [stageMenuOpen, setStageMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [battleResult, setBattleResult] = useState<SingleBattleResult | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -54,6 +63,12 @@ export function BattleScreen({
   const encounterImages = stage.encounterImages ?? [];
   const chapterFiveArtifactReminders =
     substory.id === 5 ? CHAPTER_FIVE_ARTIFACT_REMINDERS : [];
+  const previousClearedStages = getStagesForSubstory(substory.id).filter(
+    (chapterStage) =>
+      chapterStage.stageNumber < stage.stageNumber &&
+      progress.cleared_stages.includes(chapterStage.id),
+  );
+  const hasPreviousClearedStages = previousClearedStages.length > 0;
 
   async function updateProgressAfterClear() {
     const supabase = createClient();
@@ -181,6 +196,11 @@ export function BattleScreen({
     }
   }
 
+  function handlePreviousStageSelect(stageNumber: number) {
+    setStageMenuOpen(false);
+    router.push(`/single/play/${substory.id}/${stageNumber}`);
+  }
+
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
@@ -246,29 +266,57 @@ export function BattleScreen({
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setDescriptionOpen(true)}
-                className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
-              >
-                View description
-              </button>
-            </div>
+              <div className="flex w-full max-w-sm flex-col items-stretch gap-3 sm:w-auto sm:items-end">
+                <div className="flex flex-wrap justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setDescriptionOpen(true)}
+                    className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
+                  >
+                    View description
+                  </button>
 
-            <div className="absolute bottom-0 left-0 z-20 max-w-2xl p-5 sm:p-6">
-              <div className="flex flex-wrap items-end gap-4">
-                <div className="rounded-2xl border border-white/10 bg-black/45 px-4 py-3 backdrop-blur">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-                    Chapter
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!hasPreviousClearedStages) return;
+                        setStageMenuOpen((open) => !open);
+                      }}
+                      disabled={!hasPreviousClearedStages}
+                      className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+                    >
+                      Previous Stages
+                    </button>
+
+                    {stageMenuOpen && hasPreviousClearedStages ? (
+                      <div className="absolute right-0 top-full z-30 mt-3 w-64 rounded-3xl border border-white/10 bg-[#120d16]/95 p-2 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur">
+                        {previousClearedStages.map((previousStage) => (
+                          <button
+                            key={previousStage.id}
+                            type="button"
+                            onClick={() =>
+                              handlePreviousStageSelect(previousStage.stageNumber)
+                            }
+                            className="flex w-full items-start justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-white/8"
+                          >
+                            <span>
+                              <span className="block text-xs uppercase tracking-[0.25em] text-zinc-500">
+                                Stage {previousStage.stageNumber}
+                              </span>
+                              <span className="mt-1 block text-sm font-semibold text-white">
+                                {previousStage.title}
+                              </span>
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
-                  <div className="mt-1 text-lg font-bold text-white">
-                    {substory.title}
-                  </div>
-                  <div className="mt-1 text-sm text-zinc-300">{substory.theme}</div>
                 </div>
 
                 {stage.artifactImage && (
-                  <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 bg-black/45 px-4 py-3 backdrop-blur">
+                  <div className="flex items-center gap-3 self-end rounded-2xl border border-amber-300/20 bg-black/45 px-4 py-3 backdrop-blur">
                     <div className="h-14 w-14 shrink-0 rounded-xl border border-amber-300/20 bg-amber-300/10 p-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
