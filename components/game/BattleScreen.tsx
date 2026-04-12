@@ -1,12 +1,13 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getWillieTheWildcatImageUrl } from "@/lib/game/assets";
 import {
+  getAllStages,
   CHAPTER_FIVE_ARTIFACT_REMINDERS,
   getNextStageInSubstory,
-  getStagesForSubstory,
   isLastStageInSubstory,
   TOTAL_SUBSTORIES,
 } from "@/lib/game/stages";
@@ -63,12 +64,32 @@ export function BattleScreen({
   const encounterImages = stage.encounterImages ?? [];
   const chapterFiveArtifactReminders =
     substory.id === 5 ? CHAPTER_FIVE_ARTIFACT_REMINDERS : [];
-  const previousClearedStages = getStagesForSubstory(substory.id).filter(
-    (chapterStage) =>
-      chapterStage.stageNumber < stage.stageNumber &&
-      progress.cleared_stages.includes(chapterStage.id),
+  const clearedStageIds = new Set(progress.cleared_stages);
+  const completedStages = getAllStages().filter((gameStage) =>
+    clearedStageIds.has(gameStage.id),
   );
-  const hasPreviousClearedStages = previousClearedStages.length > 0;
+  const completedStagesByChapter = completedStages.reduce<
+    Array<{ substoryId: number; stages: Stage[] }>
+  >((chapters, completedStage) => {
+    const chapter = chapters.find(
+      (entry) => entry.substoryId === completedStage.substoryId,
+    );
+
+    if (chapter) {
+      chapter.stages.push(completedStage);
+      chapter.stages.sort((a, b) => a.stageNumber - b.stageNumber);
+      return chapters;
+    }
+
+    return [
+      ...chapters,
+      {
+        substoryId: completedStage.substoryId,
+        stages: [completedStage],
+      },
+    ].sort((a, b) => a.substoryId - b.substoryId);
+  }, []);
+  const hasCompletedStages = completedStages.length > 0;
 
   async function updateProgressAfterClear() {
     const supabase = createClient();
@@ -196,9 +217,9 @@ export function BattleScreen({
     }
   }
 
-  function handlePreviousStageSelect(stageNumber: number) {
+  function handleCompletedStageSelect(substoryId: number, stageNumber: number) {
     setStageMenuOpen(false);
-    router.push(`/single/play/${substory.id}/${stageNumber}`);
+    router.push(`/single/play/${substoryId}/${stageNumber}`);
   }
 
   return (
@@ -280,35 +301,47 @@ export function BattleScreen({
                     <button
                       type="button"
                       onClick={() => {
-                        if (!hasPreviousClearedStages) return;
+                        if (!hasCompletedStages) return;
                         setStageMenuOpen((open) => !open);
                       }}
-                      disabled={!hasPreviousClearedStages}
-                      className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+                      disabled={!hasCompletedStages}
+                      aria-label="Open completed stages menu"
+                      className="inline-flex h-[52px] w-[52px] items-center justify-center rounded-full border border-white/10 bg-black/45 text-zinc-100 backdrop-blur transition hover:bg-black/60 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
                     >
-                      Previous Stages
+                      <Menu className="h-5 w-5" />
                     </button>
 
-                    {stageMenuOpen && hasPreviousClearedStages ? (
-                      <div className="absolute right-0 top-full z-30 mt-3 w-64 rounded-3xl border border-white/10 bg-[#120d16]/95 p-2 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur">
-                        {previousClearedStages.map((previousStage) => (
-                          <button
-                            key={previousStage.id}
-                            type="button"
-                            onClick={() =>
-                              handlePreviousStageSelect(previousStage.stageNumber)
-                            }
-                            className="flex w-full items-start justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-white/8"
-                          >
-                            <span>
-                              <span className="block text-xs uppercase tracking-[0.25em] text-zinc-500">
-                                Stage {previousStage.stageNumber}
-                              </span>
-                              <span className="mt-1 block text-sm font-semibold text-white">
-                                {previousStage.title}
-                              </span>
-                            </span>
-                          </button>
+                    {stageMenuOpen && hasCompletedStages ? (
+                      <div className="absolute right-0 top-full z-30 mt-3 max-h-[26rem] w-80 overflow-y-auto rounded-3xl border border-white/10 bg-[#120d16]/95 p-2 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur">
+                        {completedStagesByChapter.map((chapter) => (
+                          <div key={`chapter-${chapter.substoryId}`} className="mb-2 last:mb-0">
+                            <div className="px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+                              Chapter {chapter.substoryId}
+                            </div>
+
+                            {chapter.stages.map((completedStage) => (
+                              <button
+                                key={completedStage.id}
+                                type="button"
+                                onClick={() =>
+                                  handleCompletedStageSelect(
+                                    completedStage.substoryId,
+                                    completedStage.stageNumber,
+                                  )
+                                }
+                                className="flex w-full items-start justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-white/8"
+                              >
+                                <span>
+                                  <span className="block text-xs uppercase tracking-[0.25em] text-zinc-500">
+                                    Stage {completedStage.stageNumber}
+                                  </span>
+                                  <span className="mt-1 block text-sm font-semibold text-white">
+                                    {completedStage.title}
+                                  </span>
+                                </span>
+                              </button>
+                            ))}
+                          </div>
                         ))}
                       </div>
                     ) : null}
