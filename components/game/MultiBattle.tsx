@@ -85,6 +85,8 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const opponentPresentRef = useRef(false);
   const pendingRoundStartRef = useRef<number | null>(null);
   const waitingOpponentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const p1WinsRef = useRef(0);
+  const p2WinsRef = useRef(0);
 
   const rosterForRoulette = useMemo(
     () => CHARACTERS.map((c) => ({ id: c.id, name: c.displayName })),
@@ -144,12 +146,13 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
 
   const finalizeMatch = useCallback(
     async (winnerId: string | null, reason?: string) => {
-      if (matchOverRef.current) return;
-      matchOverRef.current = true;
+      // Always transition UI to complete (even if already finalized by opponent)
       setFinalWinnerId(winnerId);
       setPhase("complete");
-      // Both players update DB to ensure it's marked completed
-      // even if the other player disconnected
+
+      // Only update DB + broadcast once
+      if (matchOverRef.current) return;
+      matchOverRef.current = true;
       const supabase = createClient();
       await supabase
         .from("matches")
@@ -184,15 +187,24 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         setVoidReason(record.voidReason ?? "Round voided.");
         setPhase("void");
         window.setTimeout(() => {
-          if (matchOverRef.current) return;
+          // If match was finalized during void display, just transition to complete
+          if (matchOverRef.current) {
+            setPhase("complete");
+            return;
+          }
           if (
             totalRoundsPlayedRef.current >= MAX_ROUNDS ||
             consecutiveVoidsRef.current >= MAX_CONSECUTIVE_VOIDS
           ) {
             const p1 = player1IdRef.current;
             const p2 = player2IdRef.current;
+            // Use refs to avoid stale closure values
             const winnerId =
-              p1Wins > p2Wins ? p1 : p2Wins > p1Wins ? p2 : null;
+              p1WinsRef.current > p2WinsRef.current
+                ? p1
+                : p2WinsRef.current > p1WinsRef.current
+                  ? p2
+                  : null;
             void finalizeMatch(
               winnerId,
               consecutiveVoidsRef.current >= MAX_CONSECUTIVE_VOIDS
@@ -210,8 +222,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       setPhase("result");
       setP1Wins((prev) => {
         const next = record.winner === "player1" ? prev + 1 : prev;
+        p1WinsRef.current = next;
         setP2Wins((prev2) => {
           const next2 = record.winner === "player2" ? prev2 + 1 : prev2;
+          p2WinsRef.current = next2;
           const reachedWinThreshold = next >= 2 || next2 >= 2;
           const reachedCap = totalRoundsPlayedRef.current >= MAX_ROUNDS;
           if (reachedWinThreshold || reachedCap) {
@@ -223,7 +237,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
             }, PHASE_RESULT_HOLD_MS);
           } else {
             window.setTimeout(() => {
-              if (matchOverRef.current) return;
+              if (matchOverRef.current) {
+                setPhase("complete");
+                return;
+              }
               startLocalRound(roundNumberRef.current + 1);
             }, PHASE_RESULT_HOLD_MS);
           }
@@ -232,7 +249,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         return next;
       });
     },
-    [startLocalRound, finalizeMatch, p1Wins, p2Wins],
+    [startLocalRound, finalizeMatch],
   );
 
   const persistSyntheticRound = useCallback(
@@ -385,6 +402,14 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
     }
     if (isPlayer1Ref.current) {
       void tryResolveRound();
+    } else if (oppPromptRef.current || oppTimedOutRef.current) {
+      // Player2 fallback: opponent already ready, start fallback timer
+      if (p2FallbackTimerRef.current) clearTimeout(p2FallbackTimerRef.current);
+      p2FallbackTimerRef.current = setTimeout(() => {
+        if (!resolvingRef.current && !matchOverRef.current) {
+          void tryResolveRound(true);
+        }
+      }, 8000);
     }
   }, [userId, tryResolveRound]);
 
@@ -430,6 +455,8 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       ).length;
       setP1Wins(p1WinsExisting);
       setP2Wins(p2WinsExisting);
+      p1WinsRef.current = p1WinsExisting;
+      p2WinsRef.current = p2WinsExisting;
       setRounds(existingRounds);
       totalRoundsPlayedRef.current = existingRounds.length;
 
@@ -546,7 +573,11 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         const { winnerId } = payload as { winnerId: string | null };
         matchOverRef.current = true;
         setFinalWinnerId(winnerId);
-        setPhase("complete");
+        // Don't cut result/void display short — the local 7s timer will
+        // call finalizeMatch which transitions to "complete" after the hold.
+        setPhase((current) =>
+          current === "result" || current === "void" ? current : "complete",
+        );
       });
 
       channel.on("presence", { event: "join" }, ({ newPresences }) => {
@@ -662,6 +693,14 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       });
       if (isPlayer1Ref.current) {
         void tryResolveRound();
+      } else if (oppPromptRef.current || oppTimedOutRef.current) {
+        // Player2: opponent already submitted/timed out, start fallback
+        if (p2FallbackTimerRef.current) clearTimeout(p2FallbackTimerRef.current);
+        p2FallbackTimerRef.current = setTimeout(() => {
+          if (!resolvingRef.current && !matchOverRef.current) {
+            void tryResolveRound(true);
+          }
+        }, 8000);
       }
     },
     [userId, tryResolveRound],
@@ -683,8 +722,9 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const handleVsComplete = useCallback(() => {
     setPhase((p) => {
       if (p === "vs") {
-        // Timer starts NOW for this player - set the actual start time
-        setRoundTimerStart(Date.now());
+        // Use the synced timer start (averaged between both players)
+        // Falls back to Date.now() if no sync happened
+        setRoundTimerStart(roundTimerStartRef.current || Date.now());
         return "prompt";
       }
       return p;
