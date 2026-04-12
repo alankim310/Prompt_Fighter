@@ -1,9 +1,9 @@
 import {
+  getSinglePlayCharacterImageUrl,
   getSingleModeStageBackgroundUrl,
   getSingleModeSubstoryBackgroundUrl,
 } from "@/lib/game/assets";
 import type { GameProgress, Stage, Substory } from "@/lib/game/types";
-import path from "path/win32";
 
 export const SUBSTORIES: Substory[] = [
   {
@@ -101,7 +101,7 @@ export const STAGES: Stage[] = [
     type: "obstacle",
     title: "The Weeping Bridge",
     description:
-      "The cracked stone bridge into town is haunted by echoes of fleeing villagers and reacts violently to fear and hesitation.",
+      "The stone bridge leading into town is cracked and haunted by echoes of fleeing villagers. The bridge reacts to fear and hesitation.",
     objective: "Cross the bridge safely.",
     solutionDirections: [
       "Calm or reassure the bridge",
@@ -121,6 +121,7 @@ export const STAGES: Stage[] = [
     failureState: "The bridge collapses beneath the hero, restarting the chapter.",
     backgroundImage: "s1-stage1.png",
     enemyOrChallenge: "Cross the haunted Weeping Bridge",
+    encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
     difficulty: 2,
     systemPromptContext:
       "Reward decisive, creative traversal that handles fear, instability, and haunting without hesitation.",
@@ -152,6 +153,7 @@ export const STAGES: Stage[] = [
       "The chains bind the hero and sound spectral bells, causing chapter failure.",
     backgroundImage: "s1-stage2.png",
     enemyOrChallenge: "Unlock the reliquary without triggering its living chains",
+    encounterImage: getSinglePlayCharacterImageUrl("living_chain"),
     difficulty: 3,
     systemPromptContext:
       "Reward careful problem-solving and punish brute force that ignores the reliquary's defensive logic.",
@@ -186,6 +188,7 @@ export const STAGES: Stage[] = [
       "The tower seals shut and floods with cursed smoke, resetting the chapter.",
     backgroundImage: "s1-stage3.png",
     enemyOrChallenge: "Restore the watchtower while surviving ash-cursed skeletal guards",
+    encounterImage: getSinglePlayCharacterImageUrl("skeleton_guard"),
     difficulty: 4,
     systemPromptContext:
       "Reward smart use of light, command, deception, or restoration against ash-cursed defenders and a failing mechanism.",
@@ -215,6 +218,7 @@ export const STAGES: Stage[] = [
       "A vague or fearful command gives Dreadhelm the opening to overwhelm the hero, restarting the chapter.",
     backgroundImage: "s1-stage4.png",
     enemyOrChallenge: "An oath-bound knight who punishes hesitation",
+    encounterImage: getSinglePlayCharacterImageUrl("sir_dreadhelm"),
     difficulty: 5,
     systemPromptContext:
       "Reward bold, direct, committed action. Punish vagueness, contradiction, fear, and indecision.",
@@ -248,6 +252,7 @@ export const STAGES: Stage[] = [
       "Blueberry flees, the hero follows the wrong trail, and the forest loops them back to the chapter start.",
     backgroundImage: "s2-stage1.png",
     enemyOrChallenge: "Earn Blueberry's trust to escape the looping forest",
+    encounterImage: getSinglePlayCharacterImageUrl("blueberry_the_cat"),
     difficulty: 3,
     systemPromptContext:
       "Reward hospitality, gentleness, clever tracking, and trust-building over brute navigation.",
@@ -282,6 +287,7 @@ export const STAGES: Stage[] = [
       "The beast awakens and crushes the grove, restarting the chapter.",
     backgroundImage: "s2-stage2.png",
     enemyOrChallenge: "Slip past a giant sleeping beast without triggering a fight",
+    encounterImage: getSinglePlayCharacterImageUrl("sleeping_grove_beast"),
     difficulty: 4,
     systemPromptContext:
       "Reward stealth, silence, environmental adaptation, and solutions that avoid direct combat.",
@@ -315,6 +321,7 @@ export const STAGES: Stage[] = [
       "If the hero trusts the illusion, they abandon the mission and the chapter restarts.",
     backgroundImage: "s2-stage3.png",
     enemyOrChallenge: "Expose an emotionally manipulative illusion hiding the Moonlit Compass",
+    encounterImage: getSinglePlayCharacterImageUrl("false_carolyn"),
     difficulty: 5,
     systemPromptContext:
       "Reward truth-testing, contradiction exposure, logic, and emotional discipline over blind trust.",
@@ -346,6 +353,7 @@ export const STAGES: Stage[] = [
       "Too much sound lets the Soul Stealer pinpoint the hero and kill them on contact.",
     backgroundImage: "s2-stage4.png",
     enemyOrChallenge: "A blind assassin who hunts by sound and kills on touch",
+    encounterImage: getSinglePlayCharacterImageUrl("soul_stealer"),
     difficulty: 6,
     systemPromptContext:
       "Reward silence, stealth, misdirection, and precise lethal timing. Punish noisy or flashy actions.",
@@ -379,6 +387,7 @@ export const STAGES: Stage[] = [
       "The market takes the hero's voice, face, memory, sword, or one of their vital artifacts.",
     backgroundImage: "s3-stage1.png",
     enemyOrChallenge: "Satisfy a meaning-based toll without losing anything essential",
+    encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
     difficulty: 4,
     systemPromptContext:
       "Reward loopholes, symbolic trade, persuasion, and emotional framing over literal sacrifice.",
@@ -412,6 +421,7 @@ export const STAGES: Stage[] = [
       "The lantern is sold to another buyer and vanishes deeper into the market.",
     backgroundImage: "s3-stage2.png",
     enemyOrChallenge: "Secure the Name-Flame Lantern inside a memory-fueled auction",
+    encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
     difficulty: 5,
     systemPromptContext:
       "Reward legal disruption, deception, spectacle, ownership challenges, and chaos used with intent.",
@@ -443,6 +453,7 @@ export const STAGES: Stage[] = [
       "A useless amendment leaves the hero caught, the lantern confiscated, and debt spirits consuming them.",
     backgroundImage: "s3-stage3.png",
     enemyOrChallenge: "Rewrite market law before the debt collector catches you",
+    encounterImage: getSinglePlayCharacterImageUrl("debt_collector"),
     difficulty: 6,
     systemPromptContext:
       "Reward precise legal language, loopholes, and fast rule-bending that changes pursuit into protection.",
@@ -474,6 +485,7 @@ export const STAGES: Stage[] = [
       "If the hero fights him straight, Marquis Grin mirrors every move back at equal force and wins.",
     backgroundImage: "s3-stage4.png",
     enemyOrChallenge: "A perfect imitator in an arena full of exploitable hazards",
+    encounterImage: getSinglePlayCharacterImageUrl("marquis_grin"),
     difficulty: 7,
     systemPromptContext:
       "Reward feints, traps, misdirection, and any action where exact imitation becomes self-destructive for the boss.",
@@ -506,6 +518,7 @@ export const STAGES: Stage[] = [
       "The entrance collapses further and molten runoff surges, forcing a restart of the chapter.",
     backgroundImage: "s4-stage1.png",
     enemyOrChallenge: "Break into the Sunken Forge through its failed industrial entrance",
+    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
     difficulty: 5,
     systemPromptContext:
       "Reward industrial improvisation, repair, force, and environmental problem-solving under heat pressure.",
@@ -538,6 +551,7 @@ export const STAGES: Stage[] = [
       "The Forge-Heart flares out of control, vents burst, and the chamber becomes unlivable.",
     backgroundImage: "s4-stage2.png",
     enemyOrChallenge: "Restore the dead furnace core that powers the forge",
+    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
     difficulty: 6,
     systemPromptContext:
       "Reward believable restoration using available industrial materials: fuel, heat, airflow, pressure, and redirection.",
@@ -569,6 +583,7 @@ export const STAGES: Stage[] = [
       "The sword warps, cracks, or absorbs unstable fire, forcing the chapter to restart.",
     backgroundImage: "s4-stage3.png",
     enemyOrChallenge: "Reforge the sword into an anti-dragon weapon without destroying it",
+    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
     difficulty: 7,
     systemPromptContext:
       "Reward sequencing, stabilization, heat control, and ritual forging logic that respects the blade's survival.",
@@ -599,6 +614,7 @@ export const STAGES: Stage[] = [
       "If the guardian remains fully powered by the forge, it overwhelms the hero and the chapter restarts.",
     backgroundImage: "s4-stage4.png",
     enemyOrChallenge: "A forge-powered iron colossus sustained by the room itself",
+    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
     difficulty: 8,
     systemPromptContext:
       "Reward systems disruption, environmental weaponization, and timing the final strike after the guardian is weakened.",
@@ -630,6 +646,7 @@ export const STAGES: Stage[] = [
       "The gate opens, but the hero forgets Carolyn and the mission before fully entering.",
     backgroundImage: "s5-stage1.png",
     enemyOrChallenge: "Open the keep and survive a curse that erases purpose",
+    encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
     difficulty: 7,
     systemPromptContext:
       "Reward artifact synergy, memory preservation, and clear intentionality against magical unmaking.",
@@ -660,6 +677,7 @@ export const STAGES: Stage[] = [
       "Carolyn is freed physically but remains lost in memory, leaving both of you vulnerable and restarting the chapter.",
     backgroundImage: "s5-stage2.png",
     enemyOrChallenge: "Restore Carolyn's identity, not just her freedom",
+    encounterImage: getSinglePlayCharacterImageUrl("princess"),
     difficulty: 8,
     systemPromptContext:
       "Reward emotionally grounded restoration, identity, naming, and artifact use over ordinary reassurance alone.",
@@ -693,6 +711,7 @@ export const STAGES: Stage[] = [
       "If the hero or Carolyn is overwhelmed by the emberstorm, the chapter restarts in ash.",
     backgroundImage: "s5-stage3.png",
     enemyOrChallenge: "Survive the dragon's overwhelming fire without trying to force offense",
+    encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
     difficulty: 9,
     systemPromptContext:
       "Reward defense, protection, redirection, and survival instincts. Punish premature aggression.",
@@ -723,6 +742,7 @@ export const STAGES: Stage[] = [
       "If the hero misses the opening, the End-Bringer recovers and the final chance is lost.",
     backgroundImage: "s5-stage4.png",
     enemyOrChallenge: "A final opening against the dragon after surviving the storm",
+    encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
     difficulty: 10,
     systemPromptContext:
       "Reward decisive final offense with the tempered sword, positional awareness, and use of all the journey's earned momentum.",

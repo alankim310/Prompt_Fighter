@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   getSingleModeWorldMapUrl,
@@ -27,6 +29,7 @@ export function StageMap({
   substories: Substory[];
   progress: GameProgress;
 }) {
+  const router = useRouter();
   const highestUnlockedSubstory = getHighestUnlockedSubstory(progress);
   const initialSubstory =
     substories.find((substory) => substory.id === highestUnlockedSubstory)?.id ??
@@ -40,12 +43,25 @@ export function StageMap({
   const stagesBySubstory = useMemo(() => {
     return substories.map((substory) => ({
       substory,
+      stages: getStagesForSubstory(substory.id),
       unlocked: isSubstoryUnlocked(progress, substory.id),
       cleared: getStagesForSubstory(substory.id).every((stage) =>
         progress.cleared_stages.includes(stage.id),
       ),
     }));
   }, [progress, substories]);
+
+  function getChapterStageHref(substoryId: number): string {
+    const chapterStages = getStagesForSubstory(substoryId);
+    const nextStage =
+      chapterStages.find(
+        (stage) =>
+          isSubstoryUnlocked(progress, substoryId) &&
+          !progress.cleared_stages.includes(stage.id),
+      ) ?? chapterStages[0];
+
+    return `/single/play/${substoryId}/${nextStage.stageNumber}`;
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-black">
@@ -58,6 +74,15 @@ export function StageMap({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,214,94,0.14),_transparent_30%),linear-gradient(180deg,_rgba(11,7,15,0.08)_0%,_rgba(7,5,11,0.18)_100%)]" />
 
       <div className="relative min-h-screen w-full">
+        <div className="absolute left-4 top-4 z-40 sm:left-6 sm:top-6">
+          <Link
+            href="/"
+            className="rounded-full border border-white/10 bg-black/45 px-4 py-2 text-sm font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
+          >
+            Back to Home
+          </Link>
+        </div>
+
         {stagesBySubstory.map(({ substory, unlocked, cleared }) => {
           const selected = substory.id === selectedSubstoryId;
           const position = STORY_NODE_POSITIONS[substory.id];
@@ -68,7 +93,11 @@ export function StageMap({
             <button
               key={substory.id}
               type="button"
-              onClick={() => unlocked && setSelectedSubstoryId(substory.id)}
+              onClick={() => {
+                if (!unlocked) return;
+                setSelectedSubstoryId(substory.id);
+                router.push(getChapterStageHref(substory.id));
+              }}
               disabled={!unlocked}
               className={`absolute z-20 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full transition ${
                 unlocked ? "cursor-pointer" : "cursor-not-allowed"
