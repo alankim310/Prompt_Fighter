@@ -67,7 +67,6 @@ export default async function Home() {
         className="max-w-3xl w-full h-auto"
         priority
       />
-      <p className="text-xl font-semibold tracking-wide text-zinc-200">Choose your mode</p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link
           href="/single/intro"
@@ -87,7 +86,7 @@ export default async function Home() {
         </Link>
       </div>
       <form action={signOut}>
-        <button className="text-base text-zinc-300 hover:text-zinc-100 transition-all duration-200 cursor-pointer">
+        <button className="text-base text-amber-400/80 hover:text-amber-300 transition-all duration-200 cursor-pointer">
           Sign out
         </button>
       </form>

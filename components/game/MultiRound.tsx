@@ -89,8 +89,11 @@ export function MultiRound({
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
       </div>
 
-      {/* Characters */}
+      {/* My character (left) with name tag */}
       <div className="pointer-events-none absolute bottom-16 left-4 flex flex-col items-center md:left-12">
+        <div className="mb-2 rounded-lg border border-amber-500/30 bg-black/70 px-3 py-1 text-xs font-bold uppercase tracking-widest text-amber-300 backdrop-blur-sm">
+          {myCharacter.displayName}
+        </div>
         <div className="relative h-64 w-64 md:h-96 md:w-96">
           <Image
             src={`/characters/${myCharacter.id}.png`}
@@ -102,7 +105,12 @@ export function MultiRound({
           />
         </div>
       </div>
+
+      {/* Opponent character (right) with name tag */}
       <div className="pointer-events-none absolute bottom-16 right-4 flex flex-col items-center md:right-12">
+        <div className="mb-2 rounded-lg border border-cyan-500/30 bg-black/70 px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-sm">
+          {opponentCharacter?.displayName ?? "???"}
+        </div>
         <div className="relative h-64 w-64 md:h-96 md:w-96">
           {opponentCharacter ? (
             <Image
@@ -133,14 +141,9 @@ export function MultiRound({
         {/* Header: Score — Timer — Score */}
         <header className="rounded-2xl border-b border-zinc-800 bg-zinc-950/90 px-5 py-3 backdrop-blur-sm">
           <div className="flex items-center justify-between">
-            {/* Left: my score + name */}
-            <div className="flex items-center gap-3">
-              <div className="font-mono text-4xl font-black text-amber-400">
-                {myWins}
-              </div>
-              <div className="text-xs uppercase tracking-widest text-amber-300">
-                {myCharacter.displayName}
-              </div>
+            {/* Left: my score */}
+            <div className="font-mono text-4xl font-black text-amber-400">
+              {myWins}
             </div>
 
             {/* Center: timer */}
@@ -156,14 +159,9 @@ export function MultiRound({
               </div>
             </div>
 
-            {/* Right: opponent score + name */}
-            <div className="flex items-center gap-3">
-              <div className="text-right text-xs uppercase tracking-widest text-cyan-300">
-                {opponentCharacter?.displayName ?? "???"}
-              </div>
-              <div className="font-mono text-4xl font-black text-cyan-400">
-                {oppWins}
-              </div>
+            {/* Right: opponent score */}
+            <div className="font-mono text-4xl font-black text-cyan-400">
+              {oppWins}
             </div>
           </div>
           <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-zinc-900">
