@@ -13,6 +13,7 @@ const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
   2: "chapter_2_The_Thornwild_Labyrinth.png",
   3: "chapter_3_The_Hollow_Market.png",
   4: "chapter_4_The_Sunken_Forge.png",
+  4.5: "chapter_4_The_Sunken_Forge_(Dark).png",
   5: "chapter_5_Blackwake_Keep.png",
 };
 const SINGLE_MODE_WORLD_MAP_OBJECT_PATH = "map.png";
