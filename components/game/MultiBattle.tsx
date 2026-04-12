@@ -35,6 +35,8 @@ const PROMPT_TIMEOUT_MS = 30_000;
 const DISCONNECT_GRACE_MS = 10_000;
 const MAX_ROUNDS = 6;
 const MAX_CONSECUTIVE_VOIDS = 3;
+const ROULETTE_DURATION_MS = 3000;
+const VS_DURATION_MS = 2500;
 
 function pickRandomCharacterId(): string {
   return CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)].id;
@@ -58,6 +60,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const [voidReason, setVoidReason] = useState<string>("");
   const [finalWinnerId, setFinalWinnerId] = useState<string | null>(null);
   const [rounds, setRounds] = useState<MultiRoundRecord[]>([]);
+  const [roundTimerStart, setRoundTimerStart] = useState(0);
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myPromptRef = useRef<string | null>(null);
@@ -76,6 +79,8 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const consecutiveVoidsRef = useRef(0);
   const player1IdRef = useRef<string>("");
   const player2IdRef = useRef<string>("");
+  const roundTimerStartRef = useRef<number>(0);
+  const p2FallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const rosterForRoulette = useMemo(
     () => CHARACTERS.map((c) => ({ id: c.id, name: c.displayName })),
@@ -83,14 +88,14 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   );
 
   const broadcastMyPick = useCallback(
-    (characterId: string, rn: number) => {
+    (characterId: string, rn: number, timerStart: number) => {
       const channel = channelRef.current;
       if (!channel) return;
       const send = () => {
         void channel.send({
           type: "broadcast",
           event: "character_pick",
-          payload: { userId, characterId, roundNumber: rn },
+          payload: { userId, characterId, roundNumber: rn, timerStart },
         });
       };
       send();
@@ -107,6 +112,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       myTimedOutRef.current = false;
       oppTimedOutRef.current = false;
       resolvingRef.current = false;
+      if (p2FallbackTimerRef.current) {
+        clearTimeout(p2FallbackTimerRef.current);
+        p2FallbackTimerRef.current = null;
+      }
       setLastRecord(null);
       setVoidReason("");
 
@@ -116,11 +125,15 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       opponentCharacterRef.current = null;
       setOpponentCharacterId(null);
 
+      // Estimate when prompt phase will start (after roulette + vs animations)
+      const timerStart = Date.now() + ROULETTE_DURATION_MS + VS_DURATION_MS;
+      roundTimerStartRef.current = timerStart;
+
       setRoundNumber(nextRoundNumber);
       roundNumberRef.current = nextRoundNumber;
       setPhase("roulette");
 
-      broadcastMyPick(pick, nextRoundNumber);
+      broadcastMyPick(pick, nextRoundNumber, timerStart);
     },
     [broadcastMyPick],
   );
@@ -152,9 +165,15 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
 
   const applyRoundRecord = useCallback(
     (record: MultiRoundRecord) => {
+      // Deduplicate: skip if we already have this round
+      setRounds((prev) => {
+        if (prev.some((r) => r.roundNumber === record.roundNumber)) return prev;
+        return [...prev, record];
+      });
+      // Also guard refs against double-apply
+      if (totalRoundsPlayedRef.current >= record.roundNumber) return;
       setLastRecord(record);
-      setRounds((prev) => [...prev, record]);
-      totalRoundsPlayedRef.current += 1;
+      totalRoundsPlayedRef.current = record.roundNumber;
 
       if (record.winner === "void") {
         consecutiveVoidsRef.current += 1;
@@ -242,8 +261,8 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
     });
   }, []);
 
-  const tryResolveRound = useCallback(async () => {
-    if (!isPlayer1Ref.current) return;
+  const tryResolveRound = useCallback(async (forceAsPlayer2 = false) => {
+    if (!isPlayer1Ref.current && !forceAsPlayer2) return;
     if (resolvingRef.current) return;
 
     const iHavePrompt = myPromptRef.current !== null;
@@ -427,16 +446,24 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
           userId: fromId,
           characterId,
           roundNumber: rn,
+          timerStart,
         } = payload as {
           userId: string;
           characterId: string;
           roundNumber: number;
+          timerStart?: number;
         };
         if (fromId === userId) return;
         if (rn !== roundNumberRef.current) return;
         if (opponentCharacterRef.current === characterId) return;
         opponentCharacterRef.current = characterId;
         setOpponentCharacterId(characterId);
+        // Sync timer: use the average of both players' estimated start times
+        if (timerStart && roundTimerStartRef.current) {
+          roundTimerStartRef.current = Math.floor(
+            (roundTimerStartRef.current + timerStart) / 2,
+          );
+        }
         if (myCharacterRef.current) {
           void channel.send({
             type: "broadcast",
@@ -445,6 +472,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
               userId,
               characterId: myCharacterRef.current,
               roundNumber: roundNumberRef.current,
+              timerStart: roundTimerStartRef.current,
             },
           });
         }
@@ -466,7 +494,19 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
           opponentCharacterRef.current = characterId;
           setOpponentCharacterId(characterId);
         }
-        void tryResolveRound();
+        if (isPlayer1Ref.current) {
+          void tryResolveRound();
+        } else {
+          // Player2 fallback: if Player1 doesn't resolve in 8s, Player2 takes over
+          if (p2FallbackTimerRef.current) clearTimeout(p2FallbackTimerRef.current);
+          if (myPromptRef.current || myTimedOutRef.current) {
+            p2FallbackTimerRef.current = setTimeout(() => {
+              if (!resolvingRef.current && !matchOverRef.current) {
+                void tryResolveRound(true);
+              }
+            }, 8000);
+          }
+        }
       });
 
       channel.on("broadcast", { event: "prompt_timeout" }, ({ payload }) => {
@@ -477,7 +517,17 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         if (fromId === userId) return;
         if (rn !== roundNumberRef.current) return;
         oppTimedOutRef.current = true;
-        void tryResolveRound();
+        if (isPlayer1Ref.current) {
+          void tryResolveRound();
+        } else if (myPromptRef.current || myTimedOutRef.current) {
+          // Player2 fallback
+          if (p2FallbackTimerRef.current) clearTimeout(p2FallbackTimerRef.current);
+          p2FallbackTimerRef.current = setTimeout(() => {
+            if (!resolvingRef.current && !matchOverRef.current) {
+              void tryResolveRound(true);
+            }
+          }, 8000);
+        }
       });
 
       channel.on("broadcast", { event: "round_record" }, ({ payload }) => {
@@ -534,6 +584,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         clearTimeout(disconnectTimerRef.current);
         disconnectTimerRef.current = null;
       }
+      if (p2FallbackTimerRef.current) {
+        clearTimeout(p2FallbackTimerRef.current);
+        p2FallbackTimerRef.current = null;
+      }
       const channel = channelRef.current;
       if (channel) {
         const supabase = createClient();
@@ -583,7 +637,14 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   }, []);
 
   const handleVsComplete = useCallback(() => {
-    setPhase((p) => (p === "vs" ? "prompt" : p));
+    setPhase((p) => {
+      if (p === "vs") {
+        // Timer starts NOW for this player - set the actual start time
+        setRoundTimerStart(Date.now());
+        return "prompt";
+      }
+      return p;
+    });
   }, []);
 
   if (error) {
@@ -741,6 +802,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       oppWins={oppWins}
       submitted={phase === "waiting" || phase === "judging"}
       timerMs={PROMPT_TIMEOUT_MS}
+      timerStartedAt={roundTimerStart}
       onSubmit={submitPrompt}
       onTimeout={handlePromptTimeout}
     />

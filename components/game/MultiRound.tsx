@@ -18,6 +18,7 @@ interface MultiRoundProps {
   oppWins: number;
   submitted: boolean;
   timerMs: number;
+  timerStartedAt?: number;
   onSubmit: (prompt: string) => void;
   onTimeout: () => void;
 }
@@ -31,6 +32,7 @@ export function MultiRound({
   oppWins,
   submitted,
   timerMs,
+  timerStartedAt,
   onSubmit,
   onTimeout,
 }: MultiRoundProps) {
@@ -55,7 +57,8 @@ export function MultiRound({
   }, [roundNumber, timerMs]);
 
   useEffect(() => {
-    const start = Date.now();
+    // Use shared timerStartedAt so both players count from the same reference
+    const start = timerStartedAt && timerStartedAt > 0 ? timerStartedAt : Date.now();
     const interval = window.setInterval(() => {
       const elapsed = Date.now() - start;
       const remaining = Math.max(0, Math.ceil((timerMs - elapsed) / 1000));
@@ -69,7 +72,7 @@ export function MultiRound({
       }
     }, 200);
     return () => window.clearInterval(interval);
-  }, [timerMs, roundNumber]);
+  }, [timerMs, roundNumber, timerStartedAt]);
 
   const handleSubmit = () => {
     const trimmed = prompt.trim();

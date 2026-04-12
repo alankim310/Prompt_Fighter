@@ -57,12 +57,14 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
     const supabase = createClient();
     let cancelled = false;
 
-    // Cleanup any of my abandoned in_progress matches before queueing.
+    // Clean up stale matches older than 10 minutes (not recent ones the user might rejoin)
     (async () => {
+      const tenMinAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
       await supabase
         .from("matches")
         .update({ status: "abandoned" })
         .eq("status", "in_progress")
+        .lt("created_at", tenMinAgo)
         .or(`player1_id.eq.${userId},player2_id.eq.${userId}`);
     })();
 
@@ -84,11 +86,22 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
       const userIds = Object.keys(state).filter((k) => k && k.length > 0);
       if (userIds.length < 2) return;
 
+      // Pair users in sorted order: [0,1], [2,3], [4,5]...
+      // This way 3+ players get paired in parallel
       const sorted = [...userIds].sort();
-      const player1 = sorted[0];
-      const player2 = sorted[1];
+      const myIndex = sorted.indexOf(userId);
+      if (myIndex === -1) return;
 
-      if (userId !== player1 && userId !== player2) return;
+      // Each pair: indices (0,1), (2,3), (4,5)...
+      // Odd player at end waits for next joiner
+      const pairIndex = Math.floor(myIndex / 2);
+      const player1Index = pairIndex * 2;
+      const player2Index = pairIndex * 2 + 1;
+      if (player2Index >= sorted.length) return; // No partner yet
+
+      const player1 = sorted[player1Index];
+      const player2 = sorted[player2Index];
+
       if (userId !== player1) {
         setStatus("Opponent found! Creating match");
         return;
