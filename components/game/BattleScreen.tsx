@@ -52,7 +52,7 @@ export function BattleScreen({
 }) {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
-  const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [descriptionOpen, setDescriptionOpen] = useState(true);
   const [stageMenuOpen, setStageMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [battleResult, setBattleResult] = useState<SingleBattleResult | null>(null);
@@ -413,8 +413,10 @@ export function BattleScreen({
           <textarea
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
+            maxLength={500}
             placeholder={`Write how Willie handles "${stage.enemyOrChallenge}"...`}
-            className="mt-3 h-44 w-full resize-none rounded-2xl border border-white/10 bg-zinc-950/85 p-4 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-600 focus:border-fuchsia-400/70"
+            rows={2}
+            className="mt-3 h-[5.5rem] w-full resize-none rounded-2xl border border-white/10 bg-zinc-950/85 p-4 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-600 focus:border-fuchsia-400/70"
           />
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -428,7 +430,9 @@ export function BattleScreen({
             </div>
 
             <div className="flex items-center justify-end gap-3">
-              <div className="text-xs text-zinc-600">{prompt.length} characters</div>
+              <div className="text-sm font-medium text-zinc-300">
+                {prompt.length}/500 characters
+              </div>
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -447,19 +451,6 @@ export function BattleScreen({
           ) : null}
         </section>
 
-        {battleResult ? (
-          <StageResult
-            result={battleResult}
-            primaryLabel={
-              battleResult.result === 1
-                ? chapterEndsHere
-                  ? "Return to Map"
-                  : "Next Stage"
-                : "Try Again"
-            }
-            onPrimaryAction={handleResultPrimaryAction}
-          />
-        ) : null}
       </div>
 
       {descriptionOpen && (
@@ -489,6 +480,24 @@ export function BattleScreen({
           </div>
         </div>
       )}
+
+      {battleResult && !descriptionOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-3xl">
+            <StageResult
+              result={battleResult}
+              primaryLabel={
+                battleResult.result === 1
+                  ? chapterEndsHere
+                    ? "Return to Map"
+                    : "Next Stage"
+                  : "Try Again"
+              }
+              onPrimaryAction={handleResultPrimaryAction}
+            />
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
