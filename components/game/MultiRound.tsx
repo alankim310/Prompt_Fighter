@@ -88,6 +88,7 @@ export function MultiRound({
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
       </div>
 
+      {/* Characters — no name labels */}
       <div className="pointer-events-none absolute bottom-16 left-4 flex flex-col items-center md:left-12">
         <div className="relative h-64 w-64 md:h-96 md:w-96">
           <Image
@@ -98,9 +99,6 @@ export function MultiRound({
             className="object-contain drop-shadow-[0_0_40px_rgba(217,70,239,0.6)]"
             priority
           />
-        </div>
-        <div className="mt-1 text-[10px] uppercase tracking-[0.25em] text-fuchsia-300">
-          You — {myCharacter.displayName}
         </div>
       </div>
       <div className="pointer-events-none absolute bottom-16 right-4 flex flex-col items-center md:right-12">
@@ -121,48 +119,49 @@ export function MultiRound({
             </div>
           )}
         </div>
-        <div className="mt-1 text-[10px] uppercase tracking-[0.25em] text-cyan-300">
-          {opponentCharacter
-            ? `Opponent — ${opponentCharacter.displayName}`
-            : "Opponent — ???"}
-        </div>
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col gap-6 p-6">
+        {/* Round indicator */}
+        <div className="text-center">
+          <div className="inline-block rounded-full border border-fuchsia-500/40 bg-fuchsia-500/10 px-5 py-1.5 text-sm font-bold uppercase tracking-[0.3em] text-fuchsia-300">
+            Round {roundNumber} / {totalRounds}
+          </div>
+        </div>
+
+        {/* Header: Score — Timer — Score */}
         <header className="rounded-lg border border-white/10 bg-black/60 px-5 py-3 backdrop-blur">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.25em] text-fuchsia-400">
-                Round {roundNumber} / {totalRounds}
+          <div className="flex items-center justify-between">
+            {/* Left: my score + name */}
+            <div className="flex items-center gap-3">
+              <div className="font-mono text-4xl font-black text-fuchsia-400">
+                {myWins}
               </div>
-              <div className="text-xl font-black">{myCharacter.displayName}</div>
+              <div className="text-xs uppercase tracking-widest text-fuchsia-300">
+                {myCharacter.displayName}
+              </div>
             </div>
+
+            {/* Center: timer */}
             <div className="flex flex-col items-center">
-              <div
-                className={`text-[10px] uppercase tracking-[0.25em] ${
-                  timerDanger ? "text-red-400" : "text-zinc-400"
-                }`}
-              >
-                Time
-              </div>
               <div
                 className={`font-mono text-3xl font-black tabular-nums ${
                   timerDanger
-                    ? "text-red-400 animate-pulse drop-shadow-[0_0_16px_rgba(248,113,113,0.7)]"
+                    ? "animate-pulse text-red-400 drop-shadow-[0_0_16px_rgba(248,113,113,0.7)]"
                     : "text-white"
                 }`}
               >
                 {secondsLeft}s
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-400">
-                Score
+
+            {/* Right: opponent score + name */}
+            <div className="flex items-center gap-3">
+              <div className="text-right text-xs uppercase tracking-widest text-cyan-300">
+                {opponentCharacter?.displayName ?? "???"}
               </div>
-              <div className="font-mono text-lg font-bold">
-                <span className="text-fuchsia-400">{myWins}</span>
-                <span className="mx-2 text-zinc-600">—</span>
-                <span className="text-cyan-400">{oppWins}</span>
+              <div className="font-mono text-4xl font-black text-cyan-400">
+                {oppWins}
               </div>
             </div>
           </div>
@@ -178,21 +177,9 @@ export function MultiRound({
           </div>
         </header>
 
-        {myCharacter.traits && myCharacter.traits.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {myCharacter.traits.map((trait) => (
-              <span
-                key={trait}
-                className="rounded-full border border-fuchsia-400/40 bg-fuchsia-500/10 px-3 py-1 text-xs uppercase tracking-wider text-fuchsia-200"
-              >
-                {trait}
-              </span>
-            ))}
-          </div>
-        )}
-
         <div className="flex-1" />
 
+        {/* Prompt input */}
         <div className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur">
           {submitted ? (
             <div className="flex flex-col items-center gap-3 py-8">

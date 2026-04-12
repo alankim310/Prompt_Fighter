@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { MultiRoundRecord } from "@/lib/game/types";
 
@@ -17,6 +18,7 @@ export function MatchResult({
   onPlayAgain,
 }: MatchResultProps) {
   const router = useRouter();
+  const [expandedRound, setExpandedRound] = useState<number | null>(null);
 
   const handlePlayAgain = () => {
     if (onPlayAgain) {
@@ -24,6 +26,10 @@ export function MatchResult({
     } else {
       router.push("/multi");
     }
+  };
+
+  const toggle = (roundNumber: number) => {
+    setExpandedRound((prev) => (prev === roundNumber ? null : roundNumber));
   };
 
   return (
@@ -60,12 +66,18 @@ export function MatchResult({
               : iWonRound
                 ? "bg-green-500/20 text-green-300"
                 : "bg-red-500/20 text-red-300";
+            const isExpanded = expandedRound === round.roundNumber;
+
             return (
               <div
                 key={round.roundNumber}
-                className="rounded-lg border border-zinc-800 bg-zinc-900 p-4"
+                className="rounded-lg border border-zinc-800 bg-zinc-900 transition-colors hover:border-zinc-700"
               >
-                <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => toggle(round.roundNumber)}
+                  className="flex w-full items-center gap-4 p-4 text-left"
+                >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-sm font-bold">
                     {round.roundNumber}
                   </div>
@@ -82,29 +94,54 @@ export function MatchResult({
                   >
                     {badgeLabel}
                   </div>
-                </div>
-                {!isVoid && (myPrompt || oppPrompt) && (
-                  <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
-                    <div className="rounded border border-zinc-700 bg-zinc-950 p-2">
-                      <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
-                        You
+                  <svg
+                    className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
+                    {!isVoid && (
+                      <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+                        <div className="rounded border border-zinc-700 bg-zinc-950 p-3">
+                          <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
+                            Your Prompt
+                          </div>
+                          <div className="mt-1 text-sm leading-relaxed text-zinc-300">
+                            {myPrompt || (
+                              <span className="italic text-zinc-500">(none)</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="rounded border border-zinc-700 bg-zinc-950 p-3">
+                          <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
+                            Opponent Prompt
+                          </div>
+                          <div className="mt-1 text-sm leading-relaxed text-zinc-300">
+                            {oppPrompt || (
+                              <span className="italic text-zinc-500">(none)</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="mt-1 text-xs leading-relaxed text-zinc-300">
-                        {myPrompt || (
-                          <span className="italic text-zinc-500">(none)</span>
-                        )}
+                    )}
+                    <div className="rounded border border-zinc-800 bg-zinc-950 p-3">
+                      <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-500">
+                        Narrative
                       </div>
+                      <p className="mt-1 text-sm leading-relaxed text-zinc-300">
+                        {round.narrative}
+                      </p>
                     </div>
-                    <div className="rounded border border-zinc-700 bg-zinc-950 p-2">
-                      <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
-                        Opponent
-                      </div>
-                      <div className="mt-1 text-xs leading-relaxed text-zinc-300">
-                        {oppPrompt || (
-                          <span className="italic text-zinc-500">(none)</span>
-                        )}
-                      </div>
-                    </div>
+                    <p className="mt-2 text-xs italic leading-relaxed text-zinc-500">
+                      {round.reasoning}
+                    </p>
                   </div>
                 )}
               </div>
