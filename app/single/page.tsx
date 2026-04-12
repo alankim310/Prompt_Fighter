@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { StageMap } from "@/components/game/StageMap";
-import { getAllStages, getSubstories } from "@/lib/game/stages";
+import { getSubstories } from "@/lib/game/stages";
 import type { GameProgress } from "@/lib/game/types";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,11 +48,7 @@ export default async function SinglePage() {
 
   return (
     <main className="min-h-screen bg-[#120914] text-white">
-      <StageMap
-        stages={getAllStages()}
-        substories={getSubstories()}
-        progress={normalizedProgress}
-      />
+      <StageMap substories={getSubstories()} progress={normalizedProgress} />
     </main>
   );
 }
