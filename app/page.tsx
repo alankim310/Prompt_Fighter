@@ -28,7 +28,7 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-8 gap-8">
-      <h1 className="text-5xl font-bold tracking-tight">PromptFighter</h1>
+      <h1 className="text-5xl font-bold tracking-tight">Welcome to PromptFighter</h1>
       <p className="text-zinc-400">Choose your mode</p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link

@@ -192,6 +192,9 @@ mkdir -p public/characters public/backgrounds
 touch public/characters/.gitkeep public/backgrounds/.gitkeep
 ```
 
+Single mode art is no longer stored in `/public`.
+Use Supabase Storage for the single mode hero and stage backgrounds, and keep `/public` for multi mode assets only.
+
 ### 3.6 Create Custom Skills
 See CLAUDE.md for skill directory structure and contents.
 
@@ -223,7 +226,7 @@ ANTHROPIC_API_KEY=<from Anthropic console>
 │      └── /api/multi-battle  ──► Claude API          │
 │                                                     │
 │  Static Assets (/public)                            │
-│  ├── /characters/hero.png (single mode hero)        │
+│  ├── Supabase Storage hero/stage assets             │
 │  ├── /characters/{id}.png (multi mode roster)       │
 │  └── /backgrounds/ (stage bgs + arena bg)           │
 └──────────────┬──────────────────────────────────────┘
@@ -248,8 +251,8 @@ Player clicks Single Mode
   → Player sees substory/stage map (fixed hero, no selection)
   → Cleared stages shown as completed on the map
   → Player enters a stage (new or replay)
-  → Screen shows: background image (boss/obstacle on right)
-                 + hero image (left, CSS overlay)
+  → Screen shows: stage background from Supabase Storage (boss/obstacle on right)
+                 + hero image from Supabase Storage (left, CSS overlay)
                  + story context text
                  + prompt input field
   → Player types prompt (no time limit)
@@ -349,6 +352,17 @@ Note: No top-level `character` column on matches. Each round has its own random 
 
 Full SQL in Section 2.2.
 
+Also create these **public Supabase Storage buckets** for single mode visuals:
+- `single-characters`
+- `single-backgrounds`
+
+Known S3 endpoint:
+- `https://tamjskfeocohiboeuuwu.storage.supabase.co/storage/v1/s3`
+
+Recommended object paths:
+- `single-characters/hero.png`
+- `single-backgrounds/{stageId}.png`
+
 ---
 
 ## 6. Feature Spec: Authentication
@@ -375,7 +389,7 @@ Full SQL in Section 2.2.
 
 ### Character
 Fixed generic hero. No character selection. No config, no traits. Just a brave adventurer.
-One static image: `/public/characters/hero.png`.
+One static image in Supabase Storage, in bucket `single-characters` at object path `hero.png`.
 
 ### Game Structure
 - 1 main story: Hero rescues the princess
@@ -402,7 +416,7 @@ interface Stage {
   type: "battle" | "obstacle" | "social" | "puzzle" | "boss";
   title: string;
   description: string;          // Story context shown to player
-  backgroundImage: string;      // Path in /public/backgrounds/
+  backgroundImage: string;      // Storage object path, e.g. "backgrounds/s1-stage1.png"
   enemyOrChallenge: string;
   difficulty: number;           // TBD
   systemPromptContext: string;  // TBD
@@ -540,9 +554,10 @@ Side effect: Appends round result to matches.rounds in Supabase
 All images are pre-generated static files. Zero image generation at runtime.
 
 ### Single Mode Hero
-- One image: `/public/characters/hero.png`
+- One image in Supabase Storage, in bucket `single-characters` at object path `hero.png`
 - Transparent PNG, no background
 - Displayed on the LEFT side of every single mode stage
+- Frontend resolves the public URL with a helper using `NEXT_PUBLIC_SUPABASE_URL`
 
 ### Multi Mode Character Images
 - Location: `/public/characters/{characterId}.png`
@@ -550,7 +565,7 @@ All images are pre-generated static files. Zero image generation at runtime.
 - In multi battle screen: same character image on both LEFT and RIGHT sides
 
 ### Background Images
-- Single mode stages: `/public/backgrounds/{stageId}.png` (boss/obstacle on right, left empty)
+- Single mode stages: Supabase Storage object paths like `{stageId}.png` in bucket `single-backgrounds` (boss/obstacle on right, left empty)
 - Multi mode arena: `/public/backgrounds/arena.png` (generic arena/duel background, both sides open for character overlay)
 
 ### CSS Overlay (Single Mode)
@@ -639,6 +654,7 @@ All images generated with Gemini during the hackathon. Document prompts used in 
     /prompts-single.ts                         # Single mode system prompt builder (TBD)
     /prompts-multi.ts                          # Multi mode system prompt builder (TBD)
   /game
+    /assets.ts                                 # Supabase Storage URL helpers for single mode assets
     /stages.ts                                 # Stage definitions (TBD)
     /types.ts                                  # Shared TypeScript types
 /components
@@ -655,11 +671,14 @@ All images generated with Gemini during the hackathon. Document prompts used in 
     /MatchResult.tsx                            # Multi mode
 /public
   /characters
-    /hero.png                                  # Single mode fixed hero
     /{characterId}.png                         # Multi mode roster
   /backgrounds
-    /{stageId}.png                             # Single mode stage backgrounds
     /arena.png                                 # Multi mode arena background
+Supabase Storage
+  bucket: single-characters
+    /hero.png                                  # Single mode fixed hero
+  bucket: single-backgrounds
+    /{stageId}.png                             # Single mode stage backgrounds
 ```
 
 ### Design Direction
@@ -750,7 +769,7 @@ interface Stage {
   type: "battle" | "obstacle" | "social" | "puzzle" | "boss";
   title: string;
   description: string;
-  backgroundImage: string;
+  backgroundImage: string;      // Storage object path, e.g. "backgrounds/s1-stage1.png"
   enemyOrChallenge: string;
   difficulty: number;
   systemPromptContext: string;

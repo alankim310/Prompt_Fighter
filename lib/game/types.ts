@@ -13,6 +13,22 @@ export interface Stage {
   systemPromptContext: string;
 }
 
+export interface Substory {
+  id: number;
+  title: string;
+  theme: string;
+  description: string;
+  unlockLabel: string;
+  accentClassName: string;
+}
+
+export interface GameProgress {
+  substory: number;
+  stage: number;
+  cleared_stages: string[];
+  completed: boolean;
+}
+
 export interface CharacterConfig {
   id: string;
   name: string;
