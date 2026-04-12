@@ -230,7 +230,6 @@ export const STAGES: Stage[] = [
     enemyOrChallenge: "Restore the watchtower while surviving ash-cursed skeletal guards",
     encounterImages: [
       getSinglePlayCharacterImageUrl("skeleton_guard"),
-      getSinglePlayCharacterImageUrl("ghost_npcs"),
     ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 4,
