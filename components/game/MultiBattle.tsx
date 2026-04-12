@@ -29,7 +29,7 @@ interface MultiBattleProps {
   userId: string;
 }
 
-const PHASE_RESULT_HOLD_MS = 3500;
+const PHASE_RESULT_HOLD_MS = 7000;
 const PHASE_VOID_HOLD_MS = 3000;
 const PROMPT_TIMEOUT_MS = 30_000;
 const DISCONNECT_GRACE_MS = 10_000;

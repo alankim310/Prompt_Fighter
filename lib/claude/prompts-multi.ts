@@ -28,9 +28,11 @@ Judge each prompt on:
 
 Do NOT penalize unusual word choices or unexpected approaches. Judge intent and fit, not vocabulary.
 
+IMPORTANT: Never use em dashes in any output. Use commas or periods instead.
+
 Output:
-- winner: "player1" or "player2" (NEVER a draw — if tied, pick the more creative prompt)
-- narrative: a vivid 2-3 sentence play-by-play of the clash between the two characters, in-character
+- winner: "player1" or "player2" (NEVER a draw. If tied, pick the more creative prompt)
+- narrative: a short, vivid 1-2 sentence play-by-play of the clash. Keep it punchy and concise.
 - reasoning: 1-2 sentences explaining why the winner won
 
 You MUST always pick a winner. Draws are forbidden.`;

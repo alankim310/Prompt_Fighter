@@ -50,7 +50,6 @@ export function MultiRound({
   }, [roundNumber, timerMs]);
 
   useEffect(() => {
-    if (submitted) return;
     const start = Date.now();
     const interval = window.setInterval(() => {
       const elapsed = Date.now() - start;
@@ -59,7 +58,9 @@ export function MultiRound({
       if (remaining <= 0 && !firedTimeoutRef.current) {
         firedTimeoutRef.current = true;
         window.clearInterval(interval);
-        onTimeoutRef.current();
+        if (!submitted) {
+          onTimeoutRef.current();
+        }
       }
     }, 200);
     return () => window.clearInterval(interval);

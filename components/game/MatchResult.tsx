@@ -139,9 +139,6 @@ export function MatchResult({
                         {round.narrative}
                       </p>
                     </div>
-                    <p className="mt-2 text-xs italic leading-relaxed text-zinc-500">
-                      {round.reasoning}
-                    </p>
                   </div>
                 )}
               </div>
