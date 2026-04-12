@@ -37,11 +37,16 @@ export function MultiRound({
   const [prompt, setPrompt] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(Math.floor(timerMs / 1000));
   const firedTimeoutRef = useRef(false);
+  const submittedRef = useRef(submitted);
   const onTimeoutRef = useRef(onTimeout);
 
   useEffect(() => {
     onTimeoutRef.current = onTimeout;
   }, [onTimeout]);
+
+  useEffect(() => {
+    submittedRef.current = submitted;
+  }, [submitted]);
 
   useEffect(() => {
     setPrompt("");
@@ -58,13 +63,13 @@ export function MultiRound({
       if (remaining <= 0 && !firedTimeoutRef.current) {
         firedTimeoutRef.current = true;
         window.clearInterval(interval);
-        if (!submitted) {
+        if (!submittedRef.current) {
           onTimeoutRef.current();
         }
       }
     }, 200);
     return () => window.clearInterval(interval);
-  }, [submitted, timerMs, roundNumber]);
+  }, [timerMs, roundNumber]);
 
   const handleSubmit = () => {
     const trimmed = prompt.trim();

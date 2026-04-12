@@ -86,7 +86,7 @@ export default async function Home() {
         </Link>
       </div>
       <form action={signOut}>
-        <button className="text-base text-amber-400/80 hover:text-amber-300 transition-all duration-200 cursor-pointer">
+        <button className="text-base text-zinc-400 hover:text-zinc-200 transition-all duration-200 cursor-pointer">
           Sign out
         </button>
       </form>

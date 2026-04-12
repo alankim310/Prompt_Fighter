@@ -229,10 +229,6 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
         <p className="mt-2 text-sm text-zinc-400">
           Waiting for another challenger to join the queue
         </p>
-        <p className="mt-4 font-mono text-xs uppercase tracking-[0.3em] text-zinc-500">
-          Timeout in {Math.floor(secondsLeft / 60)}:
-          {String(secondsLeft % 60).padStart(2, "0")}
-        </p>
       </div>
       <button
         onClick={() => router.push("/")}

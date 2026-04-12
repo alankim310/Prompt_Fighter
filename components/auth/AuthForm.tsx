@@ -76,7 +76,7 @@ export function AuthForm() {
       </form>
       <button
         onClick={handleGoogle}
-        className="px-4 py-3 rounded-xl bg-white text-black font-semibold hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+        className="px-4 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 font-semibold text-white hover:shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-500/30"
       >
         Continue with Google
       </button>

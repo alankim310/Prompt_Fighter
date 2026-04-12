@@ -43,7 +43,7 @@ export function MatchResult({
           className={`text-7xl font-black md:text-8xl ${
             iWon
               ? "bg-gradient-to-r from-amber-400 via-orange-400 to-amber-300 bg-clip-text text-transparent"
-              : "text-zinc-500"
+              : "bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent"
           }`}
           style={
             iWon
@@ -160,7 +160,7 @@ export function MatchResult({
           </button>
           <button
             onClick={() => router.push("/")}
-            className="flex-1 rounded-xl border border-zinc-700 bg-black px-6 py-3 font-bold uppercase tracking-wider text-zinc-300 hover:border-zinc-500 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+            className="flex-1 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 font-bold uppercase tracking-wider text-white hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-500/30"
           >
             Home
           </button>
