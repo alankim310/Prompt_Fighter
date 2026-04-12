@@ -48,37 +48,68 @@ export function MatchResult({
             Round Summary
           </div>
           {rounds.map((round) => {
+            const isVoid = round.winner === "void";
             const iWonRound =
               (iAmPlayer1 && round.winner === "player1") ||
               (!iAmPlayer1 && round.winner === "player2");
+            const myPrompt = iAmPlayer1 ? round.prompt1 : round.prompt2;
+            const oppPrompt = iAmPlayer1 ? round.prompt2 : round.prompt1;
+            const badgeLabel = isVoid ? "Void" : iWonRound ? "Win" : "Loss";
+            const badgeClass = isVoid
+              ? "bg-amber-500/20 text-amber-300"
+              : iWonRound
+                ? "bg-fuchsia-500/20 text-fuchsia-300"
+                : "bg-zinc-800 text-zinc-500";
             return (
               <div
                 key={round.roundNumber}
-                className="flex items-center gap-4 rounded-lg border border-white/10 bg-zinc-950/80 p-4"
+                className="rounded-lg border border-white/10 bg-zinc-950/80 p-4"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 font-mono text-sm font-bold">
-                  {round.roundNumber}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-xs uppercase tracking-widest text-zinc-400">
-                    {round.character1Id} vs {round.character2Id}
+                <div className="flex items-center gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 font-mono text-sm font-bold">
+                    {round.roundNumber}
                   </div>
-                  <div className="truncate text-sm text-zinc-300">
-                    {round.narrative}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs uppercase tracking-widest text-zinc-400">
+                      {round.character1Id} vs {round.character2Id}
+                    </div>
+                    <div className="truncate text-sm text-zinc-300">
+                      {round.narrative}
+                    </div>
+                  </div>
+                  <div
+                    className={`shrink-0 rounded px-3 py-1 text-xs font-bold uppercase ${badgeClass}`}
+                  >
+                    {badgeLabel}
+                  </div>
+                  <div className="shrink-0 font-mono text-sm text-zinc-400">
+                    {round.player1_score}-{round.player2_score}
                   </div>
                 </div>
-                <div
-                  className={`shrink-0 rounded px-3 py-1 text-xs font-bold uppercase ${
-                    iWonRound
-                      ? "bg-fuchsia-500/20 text-fuchsia-300"
-                      : "bg-zinc-800 text-zinc-500"
-                  }`}
-                >
-                  {iWonRound ? "Win" : "Loss"}
-                </div>
-                <div className="shrink-0 font-mono text-sm text-zinc-400">
-                  {round.player1_score}-{round.player2_score}
-                </div>
+                {!isVoid && (myPrompt || oppPrompt) && (
+                  <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+                    <div className="rounded border border-fuchsia-500/20 bg-fuchsia-950/20 p-2">
+                      <div className="text-[9px] uppercase tracking-[0.25em] text-fuchsia-400">
+                        You
+                      </div>
+                      <div className="mt-1 text-xs leading-relaxed text-zinc-300">
+                        {myPrompt || (
+                          <span className="italic text-zinc-500">(none)</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="rounded border border-cyan-500/20 bg-cyan-950/20 p-2">
+                      <div className="text-[9px] uppercase tracking-[0.25em] text-cyan-400">
+                        Opponent
+                      </div>
+                      <div className="mt-1 text-xs leading-relaxed text-zinc-300">
+                        {oppPrompt || (
+                          <span className="italic text-zinc-500">(none)</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}

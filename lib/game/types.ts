@@ -65,8 +65,20 @@ export interface MultiBattleResult {
   reasoning: string;
 }
 
-export interface MultiRoundRecord extends MultiBattleResult {
+export type MultiRoundWinner = "player1" | "player2" | "void";
+
+export interface MultiRoundRecord {
   roundNumber: number;
   character1Id: string;
   character2Id: string;
+  prompt1: string;
+  prompt2: string;
+  winner: MultiRoundWinner;
+  player1_score: number;
+  player2_score: number;
+  narrative: string;
+  reasoning: string;
+  voidReason?: string;
 }
+
+export type MultiMatchStatus = "in_progress" | "completed" | "abandoned";

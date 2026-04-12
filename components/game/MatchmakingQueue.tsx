@@ -14,19 +14,57 @@ interface MatchmakingQueueProps {
 
 type QueuePresence = { userId: string };
 
+const MATCHMAKING_TIMEOUT_MS = 180_000;
+
 export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
   const router = useRouter();
   const [status, setStatus] = useState("Finding opponent...");
   const [dots, setDots] = useState(0);
+  const [timedOut, setTimedOut] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(MATCHMAKING_TIMEOUT_MS / 1000);
   const matchedRef = useRef(false);
+  const [sessionKey, setSessionKey] = useState(0);
 
   useEffect(() => {
     const id = setInterval(() => setDots((d) => (d + 1) % 4), 400);
     return () => clearInterval(id);
   }, []);
 
+  // Countdown ticker
   useEffect(() => {
+    if (timedOut) return;
+    setSecondsLeft(MATCHMAKING_TIMEOUT_MS / 1000);
+    const start = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(
+        0,
+        Math.ceil((MATCHMAKING_TIMEOUT_MS - elapsed) / 1000),
+      );
+      setSecondsLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        if (!matchedRef.current) setTimedOut(true);
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [timedOut, sessionKey]);
+
+  useEffect(() => {
+    if (timedOut) return;
+
     const supabase = createClient();
+    let cancelled = false;
+
+    // Cleanup any of my abandoned in_progress matches before queueing.
+    (async () => {
+      await supabase
+        .from("matches")
+        .update({ status: "abandoned" })
+        .eq("status", "in_progress")
+        .or(`player1_id.eq.${userId},player2_id.eq.${userId}`);
+    })();
+
     const channel: RealtimeChannel = supabase.channel("matchmaking-queue", {
       config: { presence: { key: userId } },
     });
@@ -39,8 +77,9 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
     };
 
     const tryPair = async () => {
-      if (matchedRef.current) return;
-      const state = channel.presenceState() as RealtimePresenceState<QueuePresence>;
+      if (matchedRef.current || cancelled) return;
+      const state =
+        channel.presenceState() as RealtimePresenceState<QueuePresence>;
       const userIds = Object.keys(state).filter((k) => k && k.length > 0);
       if (userIds.length < 2) return;
 
@@ -106,14 +145,51 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
     });
 
     return () => {
+      cancelled = true;
       supabase.removeChannel(channel);
     };
-  }, [userId, router]);
+  }, [userId, router, timedOut, sessionKey]);
+
+  if (timedOut) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
+        <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
+          No Opponent Found
+        </div>
+        <div className="bg-gradient-to-b from-yellow-300 to-fuchsia-500 bg-clip-text text-5xl font-black text-transparent md:text-6xl">
+          TRY AGAIN LATER
+        </div>
+        <p className="max-w-md text-center text-sm text-zinc-400">
+          We couldn&apos;t find a challenger in 3 minutes. The arena is quiet
+          right now.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              matchedRef.current = false;
+              setTimedOut(false);
+              setStatus("Finding opponent...");
+              setSessionKey((k) => k + 1);
+            }}
+            className="rounded-lg bg-fuchsia-600 px-6 py-2 font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500"
+          >
+            Retry
+          </button>
+          <button
+            onClick={() => router.push("/")}
+            className="rounded-lg border border-zinc-700 px-6 py-2 font-bold uppercase tracking-wider text-zinc-300 hover:bg-zinc-900"
+          >
+            Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-8 p-8">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-black p-8 text-white">
       <div className="relative">
-        <div className="w-32 h-32 rounded-full border-4 border-zinc-800 border-t-fuchsia-500 animate-spin" />
+        <div className="h-32 w-32 animate-spin rounded-full border-4 border-zinc-800 border-t-fuchsia-500" />
         <div className="absolute inset-0 flex items-center justify-center text-4xl">
           ⚔️
         </div>
@@ -125,13 +201,17 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
             {".".repeat(dots)}
           </span>
         </h1>
-        <p className="text-zinc-400 mt-2 text-sm">
+        <p className="mt-2 text-sm text-zinc-400">
           Waiting for another challenger to join the queue
+        </p>
+        <p className="mt-4 font-mono text-xs uppercase tracking-[0.3em] text-zinc-500">
+          Timeout in {Math.floor(secondsLeft / 60)}:
+          {String(secondsLeft % 60).padStart(2, "0")}
         </p>
       </div>
       <button
         onClick={() => router.push("/")}
-        className="px-6 py-2 rounded-md border border-zinc-700 text-zinc-300 hover:bg-zinc-900 transition"
+        className="rounded-md border border-zinc-700 px-6 py-2 text-zinc-300 transition hover:bg-zinc-900"
       >
         Cancel
       </button>

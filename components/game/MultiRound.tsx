@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface MultiRoundCharacter {
   id: string;
@@ -17,7 +17,9 @@ interface MultiRoundProps {
   myWins: number;
   oppWins: number;
   submitted: boolean;
+  timerMs: number;
   onSubmit: (prompt: string) => void;
+  onTimeout: () => void;
 }
 
 export function MultiRound({
@@ -28,15 +30,49 @@ export function MultiRound({
   myWins,
   oppWins,
   submitted,
+  timerMs,
   onSubmit,
+  onTimeout,
 }: MultiRoundProps) {
   const [prompt, setPrompt] = useState("");
+  const [secondsLeft, setSecondsLeft] = useState(Math.floor(timerMs / 1000));
+  const firedTimeoutRef = useRef(false);
+  const onTimeoutRef = useRef(onTimeout);
+
+  useEffect(() => {
+    onTimeoutRef.current = onTimeout;
+  }, [onTimeout]);
+
+  useEffect(() => {
+    setPrompt("");
+    setSecondsLeft(Math.floor(timerMs / 1000));
+    firedTimeoutRef.current = false;
+  }, [roundNumber, timerMs]);
+
+  useEffect(() => {
+    if (submitted) return;
+    const start = Date.now();
+    const interval = window.setInterval(() => {
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, Math.ceil((timerMs - elapsed) / 1000));
+      setSecondsLeft(remaining);
+      if (remaining <= 0 && !firedTimeoutRef.current) {
+        firedTimeoutRef.current = true;
+        window.clearInterval(interval);
+        onTimeoutRef.current();
+      }
+    }, 200);
+    return () => window.clearInterval(interval);
+  }, [submitted, timerMs, roundNumber]);
 
   const handleSubmit = () => {
     const trimmed = prompt.trim();
     if (!trimmed || submitted) return;
     onSubmit(trimmed);
   };
+
+  const timerDanger = secondsLeft <= 10;
+  const timerPct = Math.max(0, Math.min(100, (secondsLeft / (timerMs / 1000)) * 100));
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white">
@@ -93,22 +129,52 @@ export function MultiRound({
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-3xl flex-col gap-6 p-6">
-        <header className="flex items-center justify-between rounded-lg border border-white/10 bg-black/60 px-5 py-3 backdrop-blur">
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.25em] text-fuchsia-400">
-              Round {roundNumber} / {totalRounds}
+        <header className="rounded-lg border border-white/10 bg-black/60 px-5 py-3 backdrop-blur">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.25em] text-fuchsia-400">
+                Round {roundNumber} / {totalRounds}
+              </div>
+              <div className="text-xl font-black">{myCharacter.displayName}</div>
             </div>
-            <div className="text-xl font-black">{myCharacter.displayName}</div>
+            <div className="flex flex-col items-center">
+              <div
+                className={`text-[10px] uppercase tracking-[0.25em] ${
+                  timerDanger ? "text-red-400" : "text-zinc-400"
+                }`}
+              >
+                Time
+              </div>
+              <div
+                className={`font-mono text-3xl font-black tabular-nums ${
+                  timerDanger
+                    ? "text-red-400 animate-pulse drop-shadow-[0_0_16px_rgba(248,113,113,0.7)]"
+                    : "text-white"
+                }`}
+              >
+                {secondsLeft}s
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-400">
+                Score
+              </div>
+              <div className="font-mono text-lg font-bold">
+                <span className="text-fuchsia-400">{myWins}</span>
+                <span className="mx-2 text-zinc-600">—</span>
+                <span className="text-cyan-400">{oppWins}</span>
+              </div>
+            </div>
           </div>
-          <div className="text-right">
-            <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-400">
-              Score
-            </div>
-            <div className="font-mono text-lg font-bold">
-              <span className="text-fuchsia-400">{myWins}</span>
-              <span className="mx-2 text-zinc-600">—</span>
-              <span className="text-cyan-400">{oppWins}</span>
-            </div>
+          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-zinc-900">
+            <div
+              className={`h-full transition-[width] duration-200 ease-linear ${
+                timerDanger
+                  ? "bg-red-500 shadow-[0_0_16px_rgba(239,68,68,0.7)]"
+                  : "bg-fuchsia-500"
+              }`}
+              style={{ width: `${timerPct}%` }}
+            />
           </div>
         </header>
 

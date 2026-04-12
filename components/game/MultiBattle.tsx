@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import type { MultiBattleResult, MultiRoundRecord } from "@/lib/game/types";
+import type { MultiRoundRecord } from "@/lib/game/types";
 import { CHARACTERS, getCharacter } from "@/lib/claude/characters";
 import { CharacterRoulette } from "./CharacterRoulette";
 import { VSScreen } from "./VSScreen";
@@ -20,6 +20,8 @@ type Phase =
   | "waiting"
   | "judging"
   | "result"
+  | "void"
+  | "disconnected"
   | "complete";
 
 interface MultiBattleProps {
@@ -28,6 +30,10 @@ interface MultiBattleProps {
 }
 
 const PHASE_RESULT_HOLD_MS = 3500;
+const PHASE_VOID_HOLD_MS = 3000;
+const PROMPT_TIMEOUT_MS = 30_000;
+const DISCONNECT_GRACE_MS = 10_000;
+const MAX_ROUNDS = 6;
 
 function pickRandomCharacterId(): string {
   return CHARACTERS[Math.floor(Math.random() * CHARACTERS.length)].id;
@@ -47,19 +53,25 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const [opponentCharacterId, setOpponentCharacterId] = useState<string | null>(
     null,
   );
-  const [lastResult, setLastResult] = useState<MultiBattleResult | null>(null);
+  const [lastRecord, setLastRecord] = useState<MultiRoundRecord | null>(null);
+  const [voidReason, setVoidReason] = useState<string>("");
   const [finalWinnerId, setFinalWinnerId] = useState<string | null>(null);
   const [rounds, setRounds] = useState<MultiRoundRecord[]>([]);
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const myPromptRef = useRef<string | null>(null);
   const oppPromptRef = useRef<string | null>(null);
-  const judgingRef = useRef(false);
+  const myTimedOutRef = useRef(false);
+  const oppTimedOutRef = useRef(false);
+  const resolvingRef = useRef(false);
   const isPlayer1Ref = useRef(false);
   const myCharacterRef = useRef<string | null>(null);
   const opponentCharacterRef = useRef<string | null>(null);
   const roundNumberRef = useRef(1);
   const subscribedRef = useRef(false);
+  const disconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const matchOverRef = useRef(false);
+  const totalRoundsPlayedRef = useRef(0);
 
   const rosterForRoulette = useMemo(
     () => CHARACTERS.map((c) => ({ id: c.id, name: c.displayName })),
@@ -88,8 +100,11 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
     (nextRoundNumber: number) => {
       myPromptRef.current = null;
       oppPromptRef.current = null;
-      judgingRef.current = false;
-      setLastResult(null);
+      myTimedOutRef.current = false;
+      oppTimedOutRef.current = false;
+      resolvingRef.current = false;
+      setLastRecord(null);
+      setVoidReason("");
 
       const pick = pickRandomCharacterId();
       myCharacterRef.current = pick;
@@ -107,21 +122,23 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   );
 
   const finalizeMatch = useCallback(
-    async (winnerId: string) => {
+    async (winnerId: string | null, reason?: string) => {
+      if (matchOverRef.current) return;
+      matchOverRef.current = true;
       setFinalWinnerId(winnerId);
       setPhase("complete");
       if (isPlayer1Ref.current) {
         const supabase = createClient();
         await supabase
           .from("matches")
-          .update({ status: "complete", winner_id: winnerId })
+          .update({ status: "completed", winner_id: winnerId })
           .eq("id", matchId);
         const channel = channelRef.current;
         if (channel) {
           await channel.send({
             type: "broadcast",
             event: "match_complete",
-            payload: { winnerId },
+            payload: { winnerId, reason: reason ?? null },
           });
         }
       }
@@ -129,29 +146,48 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
     [matchId],
   );
 
-  const applyRoundResult = useCallback(
+  const applyRoundRecord = useCallback(
     (record: MultiRoundRecord) => {
-      setLastResult({
-        winner: record.winner,
-        player1_score: record.player1_score,
-        player2_score: record.player2_score,
-        narrative: record.narrative,
-        reasoning: record.reasoning,
-      });
-      setPhase("result");
+      setLastRecord(record);
       setRounds((prev) => [...prev, record]);
+      totalRoundsPlayedRef.current += 1;
+
+      if (record.winner === "void") {
+        setVoidReason(record.voidReason ?? "Round voided.");
+        setPhase("void");
+        window.setTimeout(() => {
+          if (matchOverRef.current) return;
+          if (totalRoundsPlayedRef.current >= MAX_ROUNDS) {
+            const winnerId =
+              p1Wins > p2Wins
+                ? player1Id
+                : p2Wins > p1Wins
+                  ? player2Id
+                  : null;
+            void finalizeMatch(winnerId, "max-rounds");
+            return;
+          }
+          startLocalRound(roundNumberRef.current + 1);
+        }, PHASE_VOID_HOLD_MS);
+        return;
+      }
+
+      setPhase("result");
       setP1Wins((prev) => {
         const next = record.winner === "player1" ? prev + 1 : prev;
         setP2Wins((prev2) => {
           const next2 = record.winner === "player2" ? prev2 + 1 : prev2;
-          const matchOver = next >= 2 || next2 >= 2;
-          if (matchOver) {
-            const winnerId = next > next2 ? player1Id : player2Id;
+          const reachedWinThreshold = next >= 2 || next2 >= 2;
+          const reachedCap = totalRoundsPlayedRef.current >= MAX_ROUNDS;
+          if (reachedWinThreshold || reachedCap) {
+            const winnerId =
+              next > next2 ? player1Id : next2 > next ? player2Id : null;
             window.setTimeout(() => {
               void finalizeMatch(winnerId);
             }, PHASE_RESULT_HOLD_MS);
           } else {
             window.setTimeout(() => {
+              if (matchOverRef.current) return;
               startLocalRound(roundNumberRef.current + 1);
             }, PHASE_RESULT_HOLD_MS);
           }
@@ -160,53 +196,164 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         return next;
       });
     },
-    [player1Id, player2Id, startLocalRound, finalizeMatch],
+    [player1Id, player2Id, startLocalRound, finalizeMatch, p1Wins, p2Wins],
   );
 
-  const tryJudge = useCallback(async () => {
-    if (!isPlayer1Ref.current) return;
-    if (judgingRef.current) return;
-    if (myPromptRef.current === null || oppPromptRef.current === null) return;
-    if (!myCharacterRef.current || !opponentCharacterRef.current) return;
-    judgingRef.current = true;
-    setPhase("judging");
+  const persistSyntheticRound = useCallback(
+    async (record: MultiRoundRecord) => {
+      if (!isPlayer1Ref.current) return;
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("matches")
+        .select("rounds")
+        .eq("id", matchId)
+        .single();
+      const existing = ((data?.rounds as MultiRoundRecord[] | null) ?? []).filter(
+        (r) => r.roundNumber !== record.roundNumber,
+      );
+      await supabase
+        .from("matches")
+        .update({ rounds: [...existing, record] })
+        .eq("id", matchId);
+    },
+    [matchId],
+  );
+
+  const broadcastRecord = useCallback(async (record: MultiRoundRecord) => {
     const channel = channelRef.current;
     if (!channel) return;
+    await channel.send({
+      type: "broadcast",
+      event: "round_record",
+      payload: { record },
+    });
+  }, []);
 
+  const tryResolveRound = useCallback(async () => {
+    if (!isPlayer1Ref.current) return;
+    if (resolvingRef.current) return;
+
+    const iHavePrompt = myPromptRef.current !== null;
+    const iTimedOut = myTimedOutRef.current;
+    const oppHasPrompt = oppPromptRef.current !== null;
+    const oppTimedOut = oppTimedOutRef.current;
+
+    const iReady = iHavePrompt || iTimedOut;
+    const oppReady = oppHasPrompt || oppTimedOut;
+    if (!iReady || !oppReady) return;
+
+    if (!myCharacterRef.current || !opponentCharacterRef.current) return;
+
+    resolvingRef.current = true;
+    const rn = roundNumberRef.current;
+    const character1Id = myCharacterRef.current;
+    const character2Id = opponentCharacterRef.current;
+    const prompt1 = myPromptRef.current ?? "";
+    const prompt2 = oppPromptRef.current ?? "";
+
+    // Case A: both timed out → void
+    if (iTimedOut && oppTimedOut) {
+      const record: MultiRoundRecord = {
+        roundNumber: rn,
+        character1Id,
+        character2Id,
+        prompt1,
+        prompt2,
+        winner: "void",
+        player1_score: 0,
+        player2_score: 0,
+        narrative: "Both fighters hesitated. The round is voided.",
+        reasoning: "Both players ran out of time.",
+        voidReason: "Both players timed out",
+      };
+      await broadcastRecord(record);
+      applyRoundRecord(record);
+      return;
+    }
+
+    // Case B: one timed out → synthetic auto-loss
+    if (iTimedOut || oppTimedOut) {
+      const p1Lost = iTimedOut;
+      const winner = p1Lost ? "player2" : "player1";
+      const record: MultiRoundRecord = {
+        roundNumber: rn,
+        character1Id,
+        character2Id,
+        prompt1,
+        prompt2,
+        winner,
+        player1_score: p1Lost ? 0 : 60,
+        player2_score: p1Lost ? 60 : 0,
+        narrative: p1Lost
+          ? "Player 1 froze in place as time ran out. Player 2 lands a free strike."
+          : "Player 2 froze in place as time ran out. Player 1 lands a free strike.",
+        reasoning: "Auto-loss: one player ran out of time.",
+      };
+      setPhase("judging");
+      await persistSyntheticRound(record);
+      await broadcastRecord(record);
+      applyRoundRecord(record);
+      return;
+    }
+
+    // Case C: both submitted → call judge API
+    setPhase("judging");
     try {
-      const character1Id = myCharacterRef.current;
-      const character2Id = opponentCharacterRef.current;
       const res = await fetch("/api/multi-battle", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          prompt1: myPromptRef.current,
-          prompt2: oppPromptRef.current,
+          prompt1,
+          prompt2,
           character1Id,
           character2Id,
           matchId,
-          roundNumber: roundNumberRef.current,
+          roundNumber: rn,
         }),
       });
       if (!res.ok) throw new Error(`judge failed: ${res.status}`);
-      const result = (await res.json()) as MultiBattleResult;
+      const { record } = (await res.json()) as { record: MultiRoundRecord };
+      await broadcastRecord(record);
+      applyRoundRecord(record);
+    } catch (e) {
+      // Void the round on judge failure
+      const reason =
+        e instanceof Error ? e.message : "judge unavailable";
       const record: MultiRoundRecord = {
-        ...result,
-        roundNumber: roundNumberRef.current,
+        roundNumber: rn,
         character1Id,
         character2Id,
+        prompt1,
+        prompt2,
+        winner: "void",
+        player1_score: 0,
+        player2_score: 0,
+        narrative: "The judge's scroll goes blank. This round does not count.",
+        reasoning: `Judge error: ${reason}`,
+        voidReason: "Judge API failure",
       };
+      await broadcastRecord(record);
+      applyRoundRecord(record);
+    }
+  }, [matchId, applyRoundRecord, broadcastRecord, persistSyntheticRound]);
+
+  const handlePromptTimeout = useCallback(async () => {
+    if (myTimedOutRef.current) return;
+    if (myPromptRef.current !== null) return;
+    myTimedOutRef.current = true;
+    setPhase("waiting");
+    const channel = channelRef.current;
+    if (channel) {
       await channel.send({
         type: "broadcast",
-        event: "round_result",
-        payload: { record },
+        event: "prompt_timeout",
+        payload: { userId, roundNumber: roundNumberRef.current },
       });
-      applyRoundResult(record);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "judge error");
-      judgingRef.current = false;
     }
-  }, [matchId, applyRoundResult]);
+    if (isPlayer1Ref.current) {
+      void tryResolveRound();
+    }
+  }, [userId, tryResolveRound]);
 
   useEffect(() => {
     let cancelled = false;
@@ -249,15 +396,20 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       setP1Wins(p1WinsExisting);
       setP2Wins(p2WinsExisting);
       setRounds(existingRounds);
+      totalRoundsPlayedRef.current = existingRounds.length;
 
-      if (match.status === "complete") {
+      if (match.status === "completed" || match.status === "abandoned") {
+        matchOverRef.current = true;
         setFinalWinnerId((match.winner_id as string | null) ?? null);
         setPhase("complete");
         return;
       }
 
       const channel = supabase.channel(`match:${matchId}`, {
-        config: { broadcast: { self: false } },
+        config: {
+          broadcast: { self: false },
+          presence: { key: userId },
+        },
       });
       channelRef.current = channel;
 
@@ -276,8 +428,6 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         if (opponentCharacterRef.current === characterId) return;
         opponentCharacterRef.current = characterId;
         setOpponentCharacterId(characterId);
-        // Echo our own pick so the opponent is guaranteed to receive it
-        // even if their subscription started after our initial broadcast.
         if (myCharacterRef.current) {
           void channel.send({
             type: "broadcast",
@@ -307,23 +457,63 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
           opponentCharacterRef.current = characterId;
           setOpponentCharacterId(characterId);
         }
-        void tryJudge();
+        void tryResolveRound();
       });
 
-      channel.on("broadcast", { event: "round_result" }, ({ payload }) => {
+      channel.on("broadcast", { event: "prompt_timeout" }, ({ payload }) => {
+        const { userId: fromId, roundNumber: rn } = payload as {
+          userId: string;
+          roundNumber: number;
+        };
+        if (fromId === userId) return;
+        if (rn !== roundNumberRef.current) return;
+        oppTimedOutRef.current = true;
+        void tryResolveRound();
+      });
+
+      channel.on("broadcast", { event: "round_record" }, ({ payload }) => {
         const { record } = payload as { record: MultiRoundRecord };
-        applyRoundResult(record);
+        applyRoundRecord(record);
       });
 
       channel.on("broadcast", { event: "match_complete" }, ({ payload }) => {
-        const { winnerId } = payload as { winnerId: string };
+        const { winnerId } = payload as { winnerId: string | null };
+        matchOverRef.current = true;
         setFinalWinnerId(winnerId);
         setPhase("complete");
       });
 
-      channel.subscribe((status) => {
+      channel.on("presence", { event: "join" }, ({ newPresences }) => {
+        for (const p of newPresences as Array<{ userId?: string }>) {
+          if (p.userId && p.userId !== userId) {
+            if (disconnectTimerRef.current) {
+              clearTimeout(disconnectTimerRef.current);
+              disconnectTimerRef.current = null;
+            }
+          }
+        }
+      });
+
+      channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
+        for (const p of leftPresences as Array<{ userId?: string }>) {
+          if (p.userId && p.userId !== userId) {
+            if (matchOverRef.current) return;
+            if (disconnectTimerRef.current) {
+              clearTimeout(disconnectTimerRef.current);
+            }
+            disconnectTimerRef.current = setTimeout(() => {
+              if (matchOverRef.current) return;
+              setPhase("disconnected");
+              void finalizeMatch(userId, "opponent-disconnect");
+            }, DISCONNECT_GRACE_MS);
+          }
+        }
+      });
+
+      channel.subscribe(async (status) => {
         if (status !== "SUBSCRIBED" || subscribedRef.current) return;
         subscribedRef.current = true;
+        await channel.track({ userId });
         const nextRoundNumber = existingRounds.length + 1;
         startLocalRound(nextRoundNumber);
       });
@@ -331,6 +521,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
 
     return () => {
       cancelled = true;
+      if (disconnectTimerRef.current) {
+        clearTimeout(disconnectTimerRef.current);
+        disconnectTimerRef.current = null;
+      }
       const channel = channelRef.current;
       if (channel) {
         const supabase = createClient();
@@ -347,6 +541,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       if (!channel) return;
       const trimmed = prompt.trim();
       if (!trimmed) return;
+      if (myTimedOutRef.current) return;
       myPromptRef.current = trimmed;
       setPhase("waiting");
       await channel.send({
@@ -359,10 +554,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         },
       });
       if (isPlayer1Ref.current) {
-        void tryJudge();
+        void tryResolveRound();
       }
     },
-    [userId, tryJudge],
+    [userId, tryResolveRound],
   );
 
   const myCharacter = useMemo(
@@ -400,6 +595,29 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const myWins = isPlayer1 ? p1Wins : p2Wins;
   const oppWins = isPlayer1 ? p2Wins : p1Wins;
 
+  if (phase === "disconnected") {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
+        <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
+          Opponent Disconnected
+        </div>
+        <div className="bg-gradient-to-b from-yellow-300 to-fuchsia-500 bg-clip-text text-6xl font-black text-transparent">
+          YOU WIN
+        </div>
+        <p className="max-w-md text-center text-sm text-zinc-400">
+          Your opponent left the arena and did not return. Victory is yours by
+          default.
+        </p>
+        <button
+          onClick={() => router.push("/multi")}
+          className="rounded-lg bg-fuchsia-600 px-6 py-2 font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500"
+        >
+          Back to Matchmaking
+        </button>
+      </main>
+    );
+  }
+
   if (phase === "complete") {
     return (
       <MatchResult
@@ -423,14 +641,39 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
     );
   }
 
-  const player1Char = isPlayer1 ? myCharacter : (opponentCharacter ?? myCharacter);
-  const player2Char = isPlayer1 ? (opponentCharacter ?? myCharacter) : myCharacter;
+  const player1Char = isPlayer1
+    ? myCharacter
+    : (opponentCharacter ?? myCharacter);
+  const player2Char = isPlayer1
+    ? (opponentCharacter ?? myCharacter)
+    : myCharacter;
+
+  if (phase === "void" && lastRecord) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
+        <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
+          Round {lastRecord.roundNumber}
+        </div>
+        <div className="text-6xl font-black text-amber-400 drop-shadow-[0_0_30px_rgba(251,191,36,0.5)]">
+          VOIDED
+        </div>
+        <p className="max-w-md text-center text-sm text-zinc-400">
+          {voidReason || lastRecord.voidReason || "Round voided."}
+        </p>
+        <div className="rounded-lg border border-white/10 bg-black/60 px-6 py-3 font-mono text-2xl font-black">
+          <span className="text-fuchsia-400">{myWins}</span>
+          <span className="mx-2 text-zinc-600">—</span>
+          <span className="text-cyan-400">{oppWins}</span>
+        </div>
+      </main>
+    );
+  }
 
   if (phase === "roulette") {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center bg-black text-white">
         <div className="mb-6 text-xs uppercase tracking-[0.3em] text-zinc-500">
-          Round {roundNumber} / 3 — Rolling your fighter
+          Round {roundNumber} — Rolling your fighter
         </div>
         <CharacterRoulette
           characters={rosterForRoulette}
@@ -455,11 +698,11 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
     );
   }
 
-  if (phase === "result" && lastResult) {
+  if (phase === "result" && lastRecord && lastRecord.winner !== "void") {
     return (
       <RoundResult
         roundNumber={roundNumber}
-        result={lastResult}
+        record={lastRecord}
         iAmPlayer1={isPlayer1}
         myWins={myWins}
         oppWins={oppWins}
@@ -487,7 +730,9 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       myWins={myWins}
       oppWins={oppWins}
       submitted={phase === "waiting" || phase === "judging"}
+      timerMs={PROMPT_TIMEOUT_MS}
       onSubmit={submitPrompt}
+      onTimeout={handlePromptTimeout}
     />
   );
 }

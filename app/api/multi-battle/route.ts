@@ -68,6 +68,8 @@ export async function POST(request: Request) {
     roundNumber,
     character1Id,
     character2Id,
+    prompt1,
+    prompt2,
     ...result,
   };
   const rounds = [...existing, newRound];
@@ -102,5 +104,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: updateError.message }, { status: 500 });
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json({ record: newRound });
 }
