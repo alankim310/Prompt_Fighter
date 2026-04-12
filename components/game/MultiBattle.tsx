@@ -260,8 +260,6 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         prompt1,
         prompt2,
         winner: "void",
-        player1_score: 0,
-        player2_score: 0,
         narrative: "Both fighters hesitated. The round is voided.",
         reasoning: "Both players ran out of time.",
         voidReason: "Both players timed out",
@@ -282,8 +280,6 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         prompt1,
         prompt2,
         winner,
-        player1_score: p1Lost ? 0 : 60,
-        player2_score: p1Lost ? 60 : 0,
         narrative: p1Lost
           ? "Player 1 froze in place as time ran out. Player 2 lands a free strike."
           : "Player 2 froze in place as time ran out. Player 1 lands a free strike.",
@@ -326,8 +322,6 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         prompt1,
         prompt2,
         winner: "void",
-        player1_score: 0,
-        player2_score: 0,
         narrative: "The judge's scroll goes blank. This round does not count.",
         reasoning: `Judge error: ${reason}`,
         voidReason: "Judge API failure",

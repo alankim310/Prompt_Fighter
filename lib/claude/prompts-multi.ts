@@ -28,11 +28,10 @@ Judge each prompt on:
 
 Do NOT penalize unusual word choices or unexpected approaches. Judge intent and fit, not vocabulary.
 
-Score each player from 0-100. Then output:
+Output:
 - winner: "player1" or "player2" (NEVER a draw — if tied, pick the more creative prompt)
-- player1_score, player2_score: integers 0-100
 - narrative: a vivid 2-3 sentence play-by-play of the clash between the two characters, in-character
-- reasoning: a short explanation of why the winner won (1-2 sentences)
+- reasoning: one sentence explaining why the winner won
 
 You MUST always pick a winner. Draws are forbidden.`;
 }

@@ -36,7 +36,7 @@ export function MatchResult({
         <div
           className={`text-7xl font-black md:text-8xl ${
             iWon
-              ? "bg-gradient-to-b from-yellow-300 via-fuchsia-400 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(217,70,239,0.5)]"
+              ? "bg-gradient-to-b from-yellow-300 via-amber-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(250,204,21,0.5)]"
               : "text-zinc-600"
           }`}
         >
@@ -58,15 +58,15 @@ export function MatchResult({
             const badgeClass = isVoid
               ? "bg-amber-500/20 text-amber-300"
               : iWonRound
-                ? "bg-fuchsia-500/20 text-fuchsia-300"
-                : "bg-zinc-800 text-zinc-500";
+                ? "bg-green-500/20 text-green-300"
+                : "bg-red-500/20 text-red-300";
             return (
               <div
                 key={round.roundNumber}
-                className="rounded-lg border border-white/10 bg-zinc-950/80 p-4"
+                className="rounded-lg border border-zinc-800 bg-zinc-900 p-4"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 font-mono text-sm font-bold">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-sm font-bold">
                     {round.roundNumber}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -82,14 +82,11 @@ export function MatchResult({
                   >
                     {badgeLabel}
                   </div>
-                  <div className="shrink-0 font-mono text-sm text-zinc-400">
-                    {round.player1_score}-{round.player2_score}
-                  </div>
                 </div>
                 {!isVoid && (myPrompt || oppPrompt) && (
                   <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
-                    <div className="rounded border border-fuchsia-500/20 bg-fuchsia-950/20 p-2">
-                      <div className="text-[9px] uppercase tracking-[0.25em] text-fuchsia-400">
+                    <div className="rounded border border-zinc-700 bg-zinc-950 p-2">
+                      <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
                         You
                       </div>
                       <div className="mt-1 text-xs leading-relaxed text-zinc-300">
@@ -98,8 +95,8 @@ export function MatchResult({
                         )}
                       </div>
                     </div>
-                    <div className="rounded border border-cyan-500/20 bg-cyan-950/20 p-2">
-                      <div className="text-[9px] uppercase tracking-[0.25em] text-cyan-400">
+                    <div className="rounded border border-zinc-700 bg-zinc-950 p-2">
+                      <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
                         Opponent
                       </div>
                       <div className="mt-1 text-xs leading-relaxed text-zinc-300">
@@ -124,7 +121,7 @@ export function MatchResult({
           </button>
           <button
             onClick={() => router.push("/")}
-            className="flex-1 rounded-lg border border-white/20 bg-black/40 px-6 py-3 font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-900"
+            className="flex-1 rounded-lg border border-zinc-700 bg-black px-6 py-3 font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-900"
           >
             Home
           </button>

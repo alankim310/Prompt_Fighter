@@ -55,8 +55,6 @@ export interface SingleBattleResult {
 
 export interface MultiBattleResult {
   winner: "player1" | "player2";
-  player1_score: number;
-  player2_score: number;
   narrative: string;
   reasoning: string;
 }
@@ -70,8 +68,6 @@ export interface MultiRoundRecord {
   prompt1: string;
   prompt2: string;
   winner: MultiRoundWinner;
-  player1_score: number;
-  player2_score: number;
   narrative: string;
   reasoning: string;
   voidReason?: string;

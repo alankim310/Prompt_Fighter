@@ -19,15 +19,11 @@ const multiSchema = {
   type: "object",
   properties: {
     winner: { type: "string", enum: ["player1", "player2"] },
-    player1_score: { type: "integer" },
-    player2_score: { type: "integer" },
     narrative: { type: "string" },
     reasoning: { type: "string" },
   },
   required: [
     "winner",
-    "player1_score",
-    "player2_score",
     "narrative",
     "reasoning",
   ],
