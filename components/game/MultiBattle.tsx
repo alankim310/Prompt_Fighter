@@ -34,8 +34,7 @@ const PHASE_RESULT_HOLD_MS = 7000;
 const PHASE_VOID_HOLD_MS = 3000;
 const PROMPT_TIMEOUT_MS = 30_000;
 const DISCONNECT_GRACE_MS = 10_000;
-const MAX_ROUNDS = 6;
-const MAX_CONSECUTIVE_VOIDS = 3;
+const MAX_ROUNDS = 3;
 const ROULETTE_DURATION_MS = 3000;
 const VS_DURATION_MS = 2500;
 
@@ -77,7 +76,6 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const disconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const matchOverRef = useRef(false);
   const totalRoundsPlayedRef = useRef(0);
-  const consecutiveVoidsRef = useRef(0);
   const player1IdRef = useRef<string>("");
   const player2IdRef = useRef<string>("");
   const roundTimerStartRef = useRef<number>(0);
@@ -183,41 +181,39 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       totalRoundsPlayedRef.current = record.roundNumber;
 
       if (record.winner === "void") {
-        consecutiveVoidsRef.current += 1;
         setVoidReason(record.voidReason ?? "Round voided.");
         setPhase("void");
         window.setTimeout(() => {
-          // If match was finalized during void display, just transition to complete
           if (matchOverRef.current) {
             setPhase("complete");
             return;
           }
-          if (
-            totalRoundsPlayedRef.current >= MAX_ROUNDS ||
-            consecutiveVoidsRef.current >= MAX_CONSECUTIVE_VOIDS
-          ) {
+          if (totalRoundsPlayedRef.current >= MAX_ROUNDS) {
+            const p1w = p1WinsRef.current;
+            const p2w = p2WinsRef.current;
+            if (p1w === 0 && p2w === 0) {
+              // All voids — no result, go home
+              if (!matchOverRef.current) {
+                matchOverRef.current = true;
+                const supabase = createClient();
+                void supabase
+                  .from("matches")
+                  .update({ status: "completed", winner_id: null })
+                  .eq("id", matchId);
+              }
+              router.push("/");
+              return;
+            }
             const p1 = player1IdRef.current;
             const p2 = player2IdRef.current;
-            // Use refs to avoid stale closure values
-            const winnerId =
-              p1WinsRef.current > p2WinsRef.current
-                ? p1
-                : p2WinsRef.current > p1WinsRef.current
-                  ? p2
-                  : null;
-            void finalizeMatch(
-              winnerId,
-              consecutiveVoidsRef.current >= MAX_CONSECUTIVE_VOIDS
-                ? "consecutive-voids"
-                : "max-rounds",
-            );
+            const winnerId = p1w > p2w ? p1 : p2w > p1w ? p2 : null;
+            void finalizeMatch(winnerId, "max-rounds");
             return;
           }
           startLocalRound(roundNumberRef.current + 1);
         }, PHASE_VOID_HOLD_MS);
         return;
       }
-      consecutiveVoidsRef.current = 0;
 
       setPhase("result");
       setP1Wins((prev) => {
@@ -773,6 +769,11 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   }
 
   if (phase === "complete") {
+    // All voids or tie with no winner — go home
+    if (!finalWinnerId) {
+      router.push("/");
+      return null;
+    }
     return (
       <MatchResult
         iWon={finalWinnerId === userId}
