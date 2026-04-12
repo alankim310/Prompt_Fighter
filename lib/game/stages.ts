@@ -3,6 +3,7 @@ import {
   getSingleModeSubstoryBackgroundUrl,
 } from "@/lib/game/assets";
 import type { GameProgress, Stage, Substory } from "@/lib/game/types";
+import path from "path/win32";
 
 export const SUBSTORIES: Substory[] = [
   {
@@ -131,7 +132,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Locked Reliquary",
     description:
-      "Inside the ruined chapel sits a chest-like reliquary holding the Gatekeeper's Key, sealed by living chains that punish reckless force.",
+      "Inside the ruined chapel is a chest-like reliquary containing the Gatekeeper’s Key, sealed by living chains that violently retaliate against careless force. A player can still try to overpower, break, or attack the reliquary, but reckless brute force risks triggering the chains’ defense and failing the mission.",
     objective: "Open the reliquary and retrieve the key.",
     solutionDirections: [
       "Persuade the chains",
@@ -162,7 +163,7 @@ export const STAGES: Stage[] = [
     type: "battle",
     title: "The Broken Watchtower",
     description:
-      "The watchtower that controls the Ashen Gate is frozen by ash magic and patrolled by skeletal guards who survive only in darkness.",
+      "The gate mechanism is controlled from a watchtower whose gears are frozen by ash magic. The old soldiers patrolling the tower are not mere shadows, but skeletal guards cursed to survive only in darkness. They roam the halls as long as the tower remains dim, and they attack anyone they deem an invader. If exposed to strong light, they are instantly destroyed. The player can either wipe them out by bringing light into the tower or fight them directly in the dark.",
     objective: "Reactivate the tower and open the Ashen Gate.",
     solutionDirections: [
       "Flood the tower with light",
@@ -196,7 +197,7 @@ export const STAGES: Stage[] = [
     type: "boss",
     title: "Sir Dreadhelm, the Last Warden",
     description:
-      "The kingdom's once-greatest defender now stands scorched and oath-bound, judging whether the hero's resolve is worthy to pass.",
+      "Once the kingdom’s greatest defender, Sir Dreadhelm now serves the End-Bringer as a scorched, oath-bound knight. Sir Dreadhelm is an oath-bound knight who judges the player’s resolve. He is weakest against bold, direct, committed actions and strongest against hesitation, contradiction, or half-formed commands. If the player gives a vague, fearful, or indecisive prompt, Dreadhelm exploits the opening and overwhelms them. To beat him, the player must act with clear intent—either by challenging him head-on, declaring an unshakable vow, or using a prompt so decisive that it leaves no room for doubt.",
     objective: "Defeat Sir Dreadhelm and claim the Ember Sigil.",
     solutionDirections: [
       "Challenge him head-on",
@@ -225,7 +226,7 @@ export const STAGES: Stage[] = [
     type: "social",
     title: "The Path That Refuses Maps",
     description:
-      "Every visible trail loops back to the start. The only creature that truly knows the path is Blueberry, a shy blue cat who will only guide someone it trusts.",
+      "Every visible route leads back to where the player started because the forest rewrites ordinary movement. However, there is one creature that always knows the true path: a small blue cat named Blueberry. Blueberry lives in the labyrinth and can guide the player forward, but only if the player can get Blueberry to trust them, follow them, or reveal the route. Blueberry is extremely shy and reluctant to help unless the player shows clear signs of hospitality, gentleness, or care.",
     objective: "Get Blueberry to reveal or lead you along the true way forward.",
     solutionDirections: [
       "Befriend Blueberry",
@@ -258,7 +259,7 @@ export const STAGES: Stage[] = [
     type: "obstacle",
     title: "The Sleeping Grove Beast",
     description:
-      "A gigantic sleeping beast blocks the only real pass. Waking it leads to an unwinnable disaster, so the challenge is stealth and environmental control.",
+      "A gigantic beast lies asleep across the only real pass. Its body blocks the path from cliff to cliff. Waking it triggers an unwinnable fight, so the player is not supposed to challenge it directly unless their prompt is specifically built around avoiding a full awakening. The beast reacts to noise, vibration, and sudden changes in scent.",
     objective: "Pass the beast without waking it.",
     solutionDirections: [
       "Deepen its sleep",
@@ -292,7 +293,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Mirror Pond",
     description:
-      "A pond at the labyrinth's center shows a false Princess Carolyn who begs the hero to turn back, using emotional manipulation to hide the Moonlit Compass.",
+      "At the center of the labyrinth is a pond that shows the player a false version of Princess Carolyn begging them to turn back. The illusion is dangerous because it studies the player’s emotions and says exactly what they most want to hear. The real Moonlit Compass is hidden under the pond, but the pond only releases it when the player proves they can distinguish truth from emotional manipulation. The user must test truth, expose contradiction, or reveal what only the real Carolyn would know.",
     objective: "Identify the false Carolyn and claim the Moonlit Compass.",
     solutionDirections: [
       "Ask for a shared memory",
@@ -325,7 +326,7 @@ export const STAGES: Stage[] = [
     type: "boss",
     title: "The Soul Stealer",
     description:
-      "A blind killer who senses only sound and kills anything he touches. The only reliable win condition is silent approach and a final sword strike to the heart.",
+      "The Soul Stealer is a blind killer who once challenged the End-Bringer long ago and lost his vision in the process. Now he wanders the forest without sight, sensing intruders entirely through sound. The Soul Stealer does not need to see the player to kill them. Anything he touches dies instantly, which is why the player must avoid being detected at all costs. Because he is blind, he cannot find the player unless they make noise. The only weapon available in this fight is a sword. To win, the player must stay completely quiet, move with extreme care, approach without being heard, and drive the sword into his heart. If the player makes too much sound, the Soul Stealer pinpoints their location, reaches them, and kills them on contact.",
     objective: "Stay undetected, close the distance, and stab the Soul Stealer's heart.",
     solutionDirections: [
       "Move in complete silence",
@@ -356,7 +357,7 @@ export const STAGES: Stage[] = [
     type: "social",
     title: "Entry Toll",
     description:
-      "The Hollow Market demands something meaningful as entry payment, but the hero must avoid sacrificing their core identity, artifacts, voice, or memories.",
+      "The market only admits those who pay with something meaningful. A coin or ordinary weapon is worthlesshere. By the time the player reaches this point in the story, they already carry several things that matterdeeply: their voice, their memories of Princess Carolyn, their sense of identity, their sword, and the twokey artifacts from earlier chapters, the Ember Sigil and the Moonlit Compass. These are essential to thejourney, so the player should avoid risking them.The gate does not actually know whether an item is important. It judges value by how personally significantan item sounds. This means the player can trick or persuade the gate instead of sacrificing something trulyvaluable. On the ground near the entrance, there are also small gravels scattered across the floor. Thesestones are normally worthless, but the player may be able to use a prompt to convince the gate that one ofthem carries deep personal meaning. The real challenge is to make something unimportant soundimportant enough for the gate to accept.",
     objective:
       "Enter the Hollow Market without sacrificing an essential part of yourself or your journey.",
     solutionDirections: [
@@ -389,7 +390,7 @@ export const STAGES: Stage[] = [
     type: "social",
     title: "The Auction of Forgotten Things",
     description:
-      "The Name-Flame Lantern is being sold in an auction where memories are currency. The hero can win by bidding, stealing, disrupting the sale, or challenging ownership itself.",
+      "The Name-Flame Lantern is being sold in an auction where bidders trade memories instead of gold.Stronger memories bid higher. The player can win by bidding, stealing, invalidating the auction, or forcingthe object to recognize a truer owner.",
     objective: "Win or steal the Name-Flame Lantern.",
     solutionDirections: [
       "Make rival bids collapse",
@@ -422,7 +423,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Debt Collector's Hunt",
     description:
-      "After taking the lantern, the hero is hunted through the market until they discover the Constitution Book, whose written amendments instantly become binding law.",
+      "After acquiring the lantern, the player is marked for violating market law and gets chased through alleys,rooftops, and hidden passages by a supernatural collector. While escaping, the player finds an ancientConstitution Book of the Hollow Market. The book has a strange rule: if someone writes a new clause intoit, that clause immediately becomes a binding amendment to market law. This gives the player a direct wayout. Instead of simply outrunning the collector, the player must write a new amendment that legallyprotects them, cancels the pursuit, or creates a loophole that lets them escape trouble.",
     objective:
       "Write a new amendment in the Constitution Book that gets you out of trouble and lets you escape the market with the lantern.",
     solutionDirections: [
@@ -453,7 +454,7 @@ export const STAGES: Stage[] = [
     type: "boss",
     title: "Marquis Grin, Broker of Names",
     description:
-      "A smiling aristocrat-demon who mirrors every direct action the hero takes, turning ordinary combat into a trap unless imitation itself is weaponized.",
+      "A smiling aristocrat-demon whose body, voice, and movements perfectly replicate whatever the player does. Marquis Grin mirrors the player exactly. If the player attacks, he attacks in the same way. If the player blocks, he blocks. If the player charges forward, he does the same. Ordinary combat becomes dangerous because any direct action is copied back at equal force. The arena itself contains several elements that can turn imitation into a liability: narrow ledges with steep drops, concealed floor traps, hanging chains, unstable platforms, and binding mechanisms built into the room. Marquis Grin’s replication is exact, but he does not judge whether the copied action is safe in that moment. Because of this, the environment matters as much as the fight itself.",
     objective: "Defeat Marquis Grin by making his exact imitation backfire.",
     solutionDirections: [
       "Use deception and feints",
@@ -484,7 +485,7 @@ export const STAGES: Stage[] = [
     type: "obstacle",
     title: "The Sealed Descent",
     description:
-      "The entrance to the Sunken Forge is blocked by a fused blast door, broken chain lifts, jammed gears, pressure pipes, and molten runoff.",
+      "The entrance to the Sunken Forge is blocked by a massive blast door of iron and stone. The locking system is ancient and partially fused shut from heat and neglect. Around the entrance are broken chain lifts, jammed gears, cracked pressure pipes, and narrow channels of molten runoff. The path downward exists, but the forge will not simply open for anyone.",
     objective: "Open the way into the Sunken Forge.",
     solutionDirections: [
       "Break the blast door",
@@ -516,7 +517,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Forge-Heart",
     description:
-      "The giant furnace core that once powered the forge has gone dark, but the chamber still contains fuel, fire, steam, vents, oil, and broken machinery.",
+      "At the center of the forge lies the Forge-Heart, the giant furnace core that once powered the entire complex. It has gone dark. Without it, none of the machinery can produce the anti-dragon force. The furnace is still intact, but the bellows are broken, fuel lines are clogged with ash, and the old fire channels have been choked by hardened slag. The chamber also contains several usable materials and mechanisms: piles of coal and coke left in iron bins, leaking oil drums, scattered charred timber, cracked pressure pipes still holding bursts of steam, massive broken bellows, side vent shafts, half-molten slag, and small streams of residual forge-fire still burning in side trenches. The room gives the player multiple things to work with: something to burn, something to ignite with, something to push air, and something to redirect.",
     objective: "Relight the Forge-Heart.",
     solutionDirections: [
       "Feed the core with coal, coke, oil, or timber",
@@ -548,7 +549,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Dragon-Piercing Temper",
     description:
-      "With the Forge-Heart alive, the hero must temper their sword in Dragon-Piercing Fire without warping, cracking, or misenchanting the blade.",
+      "Once the Forge-Heart burns again, the forge can produce the power the player came for. The force that weakens the End-Bringer is not a separate relic, but a special tempering flame known as Dragon-Piercing Fire. If the player can channel it properly, their existing sword can be reforged into a weapon capable of wounding the dragon. The tempering chamber contains molten troughs, iron clamps, shaping runes, quenching basins, and unstable streams of bright forge-fire.",
     objective: "Temper the hero's sword in Dragon-Piercing Fire.",
     solutionDirections: [
       "Stabilize the forge-fire",
@@ -579,7 +580,7 @@ export const STAGES: Stage[] = [
     type: "boss",
     title: "The Forge Guardian",
     description:
-      "A colossal royal smithing guardian awakens as the tempering completes, drawing its power directly from the still-active forge around it.",
+      "A colossal guardian of iron, molten seams, and royal smithing marks awakens when the tempering is nearly complete. It was built to prevent unworthy hands from taking the forge’s greatest power. The Forge Guardian draws its energy directly from the Sunken Forge itself. As long as the forge remains active, the guardian stays heavily empowered, its body blazing with heat and its movements backed by the machinery around it. Now that the player’s sword has been tempered in Dragon-Piercing Fire, the blade is stronger than ever, but the guardian is still too strong to face at full power. The arena contains suspended chains, swinging hammers, molten channels, pressure vents, unstable platforms, shutoff valves, fuel lines, and heavy forging mechanisms connected to the forge system. The fight revolves around the fact that the guardian roams the chamber while still being powered by the forge.",
     objective:
       "Shut down the forge systems empowering the guardian, then strike it down with the tempered sword.",
     solutionDirections: [
@@ -609,7 +610,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Gate of Unmaking",
     description:
-      "The outer gate of Blackwake Keep opens only to the Ember Sigil, but crossing it without protection erases the hero's purpose and memory of Carolyn.",
+      "The outer gate of Blackwake Keep does not open to force alone. It was built to recognize the Ember Sigil, which serves as the true key to the keep. But even after the Sigil opens the way, the passage through the gate still carries the Gate of Unmaking’s curse: anyone who crosses without protection begins to lose their reason for entering, their emotional purpose, and their memory of Carolyn. This is where the Name-Flame Lantern becomes equally important. The Sigil opens the gate; the Lantern preserves the memory of why the player came.",
     objective:
       "Open Blackwake Keep with the Ember Sigil and cross the gate without losing purpose.",
     solutionDirections: [
@@ -640,7 +641,7 @@ export const STAGES: Stage[] = [
     type: "social",
     title: "Carolyn's Cell",
     description:
-      "Princess Carolyn is alive and physically reachable, but the End-Bringer's magic has stolen her memories, leaving her unable to recognize the hero or herself.",
+      "Deep within the dungeon, the player finds Princess Carolyn imprisoned at last. She is alive and physically freeable, but the End-Bringer’s magic has already done terrible damage: Carolyn has lost all of her memories. She does not recognize the player, does not remember her kingdom, and does not understand why she is being rescued. The cell itself is no longer the main obstacle. The real challenge is restoring her memory before the battle with the End-Bringer begins.",
     objective: "Free Princess Carolyn and restore her memories.",
     solutionDirections: [
       "Unlock or break the cell",
@@ -670,7 +671,7 @@ export const STAGES: Stage[] = [
     type: "obstacle",
     title: "The End-Bringer's Emberstorm",
     description:
-      "Before the dragon gives any opening to attack, he drowns the chamber in ember, dragonfire, and impossible heat, making survival the only priority.",
+      "Once Carolyn is restored, the End-Bringer descends in fury. At this stage, he does not give the player a real opening to strike. Instead, he floods the chamber with a relentless storm of burning ember, dragonfire, and heat so intense that moving in for an attack is a terrible idea. Trying to attack him while he is actively unleashing the flame is likely to get the player absolutely scorched. This phase is about survival, protection, and keeping both the player and Carolyn alive under overwhelming fire.",
     objective: "Defend yourself and Carolyn against the End-Bringer's emberstorm.",
     solutionDirections: [
       "Create barriers",
@@ -703,7 +704,7 @@ export const STAGES: Stage[] = [
     type: "boss",
     title: "The End-Bringer's Opening",
     description:
-      "After exhausting a wave of destruction, the End-Bringer finally leaves a narrow opening where the dragon-piercing sword can matter.",
+      "After exhausting a massive wave of ember and flame, the End-Bringer finally creates the first real opening of the fight. His fire subsides for a moment, his guard shifts, and the player at last has a chance to strike back with the sword tempered in Dragon-Piercing Fire. This is the phase where offense becomes possible.",
     objective: "Attack the End-Bringer during the opening and bring him down.",
     solutionDirections: [
       "Charge with the dragon-piercing sword",

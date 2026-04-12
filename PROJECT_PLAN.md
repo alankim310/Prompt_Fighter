@@ -258,13 +258,9 @@ Player clicks Single Mode
   → Player types prompt (no time limit)
   → POST /api/battle { prompt, stageId }
   → Claude API judges with structured output
-  → Returns { outcome, score, narrative, feedback }
-  → If win:
-      → Victory narrative shown
-      → Stage added to cleared_stages if not already present
-      → If this was the furthest uncleared stage, advance substory/stage counters
-      → If all substories done, mark completed
-  → If lose: defeat narrative + feedback hint → retry same stage
+  → Returns { result, narrative }
+  → If result = 1: victory narrative shown
+  → If result = 0: defeat narrative shown → retry same stage
   → Previous stages are always replayable without affecting progress
 ```
 
@@ -481,10 +477,23 @@ Core concept: each character has traits, positive keywords, and negative keyword
 - All judge calls go through Next.js API routes (server-side only)
 - Model: claude-sonnet-4-6
 - Structured outputs via output_config.format with json_schema
-- System prompt built dynamically per mode (TBD specifics)
+- System prompt built dynamically per mode
+- Single mode and multi mode use separate routes and separate prompt builders
 
 ### Single Mode Judge
-Evaluates how creatively/effectively the player's prompt addresses the stage challenge. No character config (hero is generic). Stage context, challenge type, and difficulty determine what's a good prompt. Exact system prompt and scoring TBD.
+Implemented in `/app/api/battle/route.ts`, `/lib/claude/judge.ts`, and `/lib/claude/prompts-single.ts`.
+
+Single mode evaluates whether the player's prompt succeeds for the stage. The hero has no fixed character config, so the judge allows creative actions as long as they are coherent and feasible in the scene.
+
+The judging works like this:
+- `systemPromptContext` is the strongest guidance signal.
+- The judge then checks whether the prompt actually accomplishes the `objective`.
+- It also considers whether the action fits the stage `description` and `enemyOrChallenge`.
+- It holistically evaluates feasibility, clarity, and internal coherence.
+- `solutionDirections` are examples of good patterns, not a strict whitelist.
+- Prompts that are vague, contradictory, ignore the objective, or resemble the `failureState` should fail.
+- The response is binary only: `result: 1` for success, `result: 0` for failure.
+- `narrative` is a short story outcome that must match the result.
 
 ### Multi Mode Judge
 Evaluates both prompts against the round's assigned character config. Characters have traits, positive keywords, negative keywords. Prompts aligning with the character score higher. Claude always picks a winner (no draws). Exact system prompt, weights, thresholds TBD.
@@ -495,8 +504,14 @@ Evaluates both prompts against the round's assigned character config. Characters
 ```
 Body: { prompt: string, stageId: string }
 Auth: Requires authenticated Supabase session
-Returns: { outcome, score, narrative, feedback }
+Returns: { result: 0 | 1, narrative: string }
 ```
+
+Current implementation:
+- Trims and validates `prompt`
+- Verifies that `stageId` exists in single-mode stage definitions
+- Rejects multiplayer-shaped payloads so `/api/battle` stays single-player only
+- Builds a stage-aware system prompt from the authored stage data before calling Claude
 
 **POST /api/multi-battle (Multi Mode)**
 ```
@@ -513,12 +528,10 @@ Side effect: Appends round result to matches.rounds in Supabase
 {
   "type": "object",
   "properties": {
-    "outcome": { "type": "string", "enum": ["win", "lose"] },
-    "score": { "type": "integer" },
-    "narrative": { "type": "string" },
-    "feedback": { "type": "string" }
+    "result": { "type": "integer", "enum": [0, 1] },
+    "narrative": { "type": "string" }
   },
-  "required": ["outcome", "score", "narrative", "feedback"],
+  "required": ["result", "narrative"],
   "additionalProperties": false
 }
 ```
@@ -540,11 +553,11 @@ Side effect: Appends round result to matches.rounds in Supabase
 ```
 
 ### TBD Items
-- System prompt templates (single + multi)
+- Single-mode UI wiring for prompt submission and result rendering
+- Single-mode progress updates after a successful result
 - Multi mode character configs (traits, keywords, personality)
 - Scoring rubric details and weights
 - Difficulty scaling across stages/substories
-- How different challenge types are judged in single mode
 
 ---
 
@@ -651,7 +664,7 @@ All images generated with Gemini during the hackathon. Document prompts used in 
   /claude
     /judge.ts                                  # Claude API call helper
     /characters.ts                             # Multi mode character configs (TBD)
-    /prompts-single.ts                         # Single mode system prompt builder (TBD)
+    /prompts-single.ts                         # Single mode system prompt builder
     /prompts-multi.ts                          # Multi mode system prompt builder (TBD)
   /game
     /assets.ts                                 # Supabase Storage URL helpers for single mode assets
