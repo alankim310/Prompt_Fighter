@@ -12,6 +12,7 @@ export function AuthForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   async function handleEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -33,6 +34,10 @@ export function AuthForm() {
       setError(error.message);
       return;
     }
+    if (mode === "signup") {
+      setEmailSent(true);
+      return;
+    }
     router.refresh();
   }
 
@@ -45,6 +50,30 @@ export function AuthForm() {
       },
     });
     if (error) setError(error.message);
+  }
+
+  if (emailSent) {
+    return (
+      <div className="w-full max-w-sm flex flex-col items-center gap-4 text-center">
+        <div className="text-4xl">✉️</div>
+        <h2 className="text-xl font-bold text-white">Check your email</h2>
+        <p className="text-sm text-zinc-400">
+          We sent a confirmation link to{" "}
+          <span className="text-amber-400">{email}</span>.
+          <br />
+          Click the link to activate your account.
+        </p>
+        <button
+          onClick={() => {
+            setEmailSent(false);
+            setMode("signin");
+          }}
+          className="text-sm text-zinc-400 hover:text-zinc-200 transition-all duration-200 cursor-pointer"
+        >
+          Back to sign in
+        </button>
+      </div>
+    );
   }
 
   return (
