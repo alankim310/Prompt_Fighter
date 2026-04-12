@@ -47,7 +47,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center text-white p-8 gap-10">
+    <main className="relative flex min-h-screen flex-col items-center justify-center text-white p-8 gap-4">
       <div className="fixed inset-0 -z-10">
         <Image
           src="/backgrounds/global.png"
@@ -62,9 +62,9 @@ export default async function Home() {
       <Image
         src="/logo.png"
         alt="PromptFighter"
-        width={800}
-        height={214}
-        className="max-w-2xl w-full h-auto"
+        width={1200}
+        height={321}
+        className="max-w-5xl w-full h-auto"
         priority
       />
       <p className="text-xl font-semibold tracking-wide text-zinc-200">Choose your mode</p>
