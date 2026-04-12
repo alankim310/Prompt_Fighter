@@ -578,7 +578,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s4-stage1.png",
     enemyOrChallenge: "Break into the Sunken Forge through its failed industrial entrance",
     encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
-    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4.5],
     difficulty: 5,
     systemPromptContext:
       "Reward industrial improvisation, repair, force, and environmental problem-solving under heat pressure.",
@@ -612,7 +612,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s4-stage2.png",
     enemyOrChallenge: "Restore the dead furnace core that powers the forge",
     encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
-    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4.5],
     difficulty: 6,
     systemPromptContext:
       "Reward believable restoration using available industrial materials: fuel, heat, airflow, pressure, and redirection.",
