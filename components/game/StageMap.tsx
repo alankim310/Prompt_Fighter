@@ -19,7 +19,7 @@ const STORY_NODE_POSITIONS: Record<number, { left: string; top: string }> = {
   2: { left: "35.5%", top: "53.1%" },
   3: { left: "54.9%", top: "53.1%" },
   4: { left: "72.1%", top: "53.1%" },
-  5: { left: "88.8%", top: "53.1%" },
+  5: { left: "88.1%", top: "53.1%" },
 };
 
 export function StageMap({

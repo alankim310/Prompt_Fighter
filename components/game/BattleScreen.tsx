@@ -1,15 +1,22 @@
 "use client";
 
+import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getWillieTheWildcatImageUrl } from "@/lib/game/assets";
 import {
+  getAllStages,
   CHAPTER_FIVE_ARTIFACT_REMINDERS,
   getNextStageInSubstory,
   isLastStageInSubstory,
   TOTAL_SUBSTORIES,
 } from "@/lib/game/stages";
-import type { SingleBattleResult, Stage, Substory } from "@/lib/game/types";
+import type {
+  GameProgress,
+  SingleBattleResult,
+  Stage,
+  Substory,
+} from "@/lib/game/types";
 import { StageResult } from "@/components/game/StageResult";
 import { createClient } from "@/lib/supabase/client";
 
@@ -37,13 +44,16 @@ function parseSingleBattleResult(payload: unknown): SingleBattleResult | null {
 export function BattleScreen({
   stage,
   substory,
+  progress,
 }: {
   stage: Stage;
   substory: Substory;
+  progress: GameProgress;
 }) {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
-  const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [descriptionOpen, setDescriptionOpen] = useState(true);
+  const [stageMenuOpen, setStageMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [battleResult, setBattleResult] = useState<SingleBattleResult | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -54,6 +64,32 @@ export function BattleScreen({
   const encounterImages = stage.encounterImages ?? [];
   const chapterFiveArtifactReminders =
     substory.id === 5 ? CHAPTER_FIVE_ARTIFACT_REMINDERS : [];
+  const clearedStageIds = new Set(progress.cleared_stages);
+  const completedStages = getAllStages().filter((gameStage) =>
+    clearedStageIds.has(gameStage.id),
+  );
+  const completedStagesByChapter = completedStages.reduce<
+    Array<{ substoryId: number; stages: Stage[] }>
+  >((chapters, completedStage) => {
+    const chapter = chapters.find(
+      (entry) => entry.substoryId === completedStage.substoryId,
+    );
+
+    if (chapter) {
+      chapter.stages.push(completedStage);
+      chapter.stages.sort((a, b) => a.stageNumber - b.stageNumber);
+      return chapters;
+    }
+
+    return [
+      ...chapters,
+      {
+        substoryId: completedStage.substoryId,
+        stages: [completedStage],
+      },
+    ].sort((a, b) => a.substoryId - b.substoryId);
+  }, []);
+  const hasCompletedStages = completedStages.length > 0;
 
   async function updateProgressAfterClear() {
     const supabase = createClient();
@@ -181,6 +217,11 @@ export function BattleScreen({
     }
   }
 
+  function handleCompletedStageSelect(substoryId: number, stageNumber: number) {
+    setStageMenuOpen(false);
+    router.push(`/single/play/${substoryId}/${stageNumber}`);
+  }
+
   return (
     <>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
@@ -246,29 +287,69 @@ export function BattleScreen({
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setDescriptionOpen(true)}
-                className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
-              >
-                View description
-              </button>
-            </div>
+              <div className="flex w-full max-w-sm flex-col items-stretch gap-3 sm:w-auto sm:items-end">
+                <div className="flex flex-wrap justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setDescriptionOpen(true)}
+                    className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
+                  >
+                    View description
+                  </button>
 
-            <div className="absolute bottom-0 left-0 z-20 max-w-2xl p-5 sm:p-6">
-              <div className="flex flex-wrap items-end gap-4">
-                <div className="rounded-2xl border border-white/10 bg-black/45 px-4 py-3 backdrop-blur">
-                  <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-                    Chapter
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!hasCompletedStages) return;
+                        setStageMenuOpen((open) => !open);
+                      }}
+                      disabled={!hasCompletedStages}
+                      aria-label="Open completed stages menu"
+                      className="inline-flex h-[52px] w-[52px] items-center justify-center rounded-full border border-white/10 bg-black/45 text-zinc-100 backdrop-blur transition hover:bg-black/60 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+                    >
+                      <Menu className="h-5 w-5" />
+                    </button>
+
+                    {stageMenuOpen && hasCompletedStages ? (
+                      <div className="absolute right-0 top-full z-30 mt-3 max-h-[26rem] w-80 overflow-y-auto rounded-3xl border border-white/10 bg-[#120d16]/95 p-2 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur">
+                        {completedStagesByChapter.map((chapter) => (
+                          <div key={`chapter-${chapter.substoryId}`} className="mb-2 last:mb-0">
+                            <div className="px-4 py-2 text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+                              Chapter {chapter.substoryId}
+                            </div>
+
+                            {chapter.stages.map((completedStage) => (
+                              <button
+                                key={completedStage.id}
+                                type="button"
+                                onClick={() =>
+                                  handleCompletedStageSelect(
+                                    completedStage.substoryId,
+                                    completedStage.stageNumber,
+                                  )
+                                }
+                                className="flex w-full items-start justify-between rounded-2xl px-4 py-3 text-left transition hover:bg-white/8"
+                              >
+                                <span>
+                                  <span className="block text-xs uppercase tracking-[0.25em] text-zinc-500">
+                                    Stage {completedStage.stageNumber}
+                                  </span>
+                                  <span className="mt-1 block text-sm font-semibold text-white">
+                                    {completedStage.title}
+                                  </span>
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
-                  <div className="mt-1 text-lg font-bold text-white">
-                    {substory.title}
-                  </div>
-                  <div className="mt-1 text-sm text-zinc-300">{substory.theme}</div>
                 </div>
 
                 {stage.artifactImage && (
-                  <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 bg-black/45 px-4 py-3 backdrop-blur">
+                  <div className="flex items-center gap-3 self-end rounded-2xl border border-amber-300/20 bg-black/45 px-4 py-3 backdrop-blur">
                     <div className="h-14 w-14 shrink-0 rounded-xl border border-amber-300/20 bg-amber-300/10 p-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -332,8 +413,10 @@ export function BattleScreen({
           <textarea
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
+            maxLength={500}
             placeholder={`Write how Willie handles "${stage.enemyOrChallenge}"...`}
-            className="mt-3 h-44 w-full resize-none rounded-2xl border border-white/10 bg-zinc-950/85 p-4 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-600 focus:border-fuchsia-400/70"
+            rows={2}
+            className="mt-3 h-[5.5rem] w-full resize-none rounded-2xl border border-white/10 bg-zinc-950/85 p-4 text-sm leading-6 text-white outline-none transition placeholder:text-zinc-600 focus:border-fuchsia-400/70"
           />
 
           <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -347,7 +430,9 @@ export function BattleScreen({
             </div>
 
             <div className="flex items-center justify-end gap-3">
-              <div className="text-xs text-zinc-600">{prompt.length} characters</div>
+              <div className="text-sm font-medium text-zinc-300">
+                {prompt.length}/500 characters
+              </div>
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -366,19 +451,6 @@ export function BattleScreen({
           ) : null}
         </section>
 
-        {battleResult ? (
-          <StageResult
-            result={battleResult}
-            primaryLabel={
-              battleResult.result === 1
-                ? chapterEndsHere
-                  ? "Return to Map"
-                  : "Next Stage"
-                : "Try Again"
-            }
-            onPrimaryAction={handleResultPrimaryAction}
-          />
-        ) : null}
       </div>
 
       {descriptionOpen && (
@@ -408,6 +480,24 @@ export function BattleScreen({
           </div>
         </div>
       )}
+
+      {battleResult && !descriptionOpen ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-3xl">
+            <StageResult
+              result={battleResult}
+              primaryLabel={
+                battleResult.result === 1
+                  ? chapterEndsHere
+                    ? "Return to Map"
+                    : "Next Stage"
+                  : "Try Again"
+              }
+              onPrimaryAction={handleResultPrimaryAction}
+            />
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

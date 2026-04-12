@@ -576,7 +576,7 @@ export const STAGES: Stage[] = [
       "The entrance collapses further and molten runoff surges, forcing a restart of the chapter.",
     backgroundImage: getSingleModeSubstoryBackgroundUrl(6),
     enemyOrChallenge: "Break into the Sunken Forge through its failed industrial entrance",
-    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
+    encounterImages: null,
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 5,
     systemPromptContext:
@@ -610,7 +610,7 @@ export const STAGES: Stage[] = [
       "The Forge-Heart flares out of control, vents burst, and the chamber becomes unlivable.",
     backgroundImage: getSingleModeSubstoryBackgroundUrl(6),
     enemyOrChallenge: "Restore the dead furnace core that powers the forge",
-    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
+    encounterImages: null,
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 6,
     systemPromptContext:
@@ -643,7 +643,7 @@ export const STAGES: Stage[] = [
       "The sword warps, cracks, or absorbs unstable fire, forcing the chapter to restart.",
     backgroundImage: getSingleModeSubstoryBackgroundUrl(4),
     enemyOrChallenge: "Reforge the sword into an anti-dragon weapon without destroying it",
-    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
+    encounterImages: null,
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 7,
     systemPromptContext:
@@ -708,7 +708,7 @@ export const STAGES: Stage[] = [
       "The gate opens, but the hero forgets Carolyn and the mission before fully entering.",
     backgroundImage: getSingleModeSubstoryBackgroundUrl(5),
     enemyOrChallenge: "Open the keep and survive a curse that erases purpose",
-    encounterImages: [getSinglePlayCharacterImageUrl("end_bringer")],
+    encounterImages: null,
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 7,
     systemPromptContext:
@@ -777,7 +777,6 @@ export const STAGES: Stage[] = [
     enemyOrChallenge: "Survive the dragon's overwhelming fire without trying to force offense",
     encounterImages: [
       getSinglePlayCharacterImageUrl("end_bringer"),
-      getSinglePlayCharacterImageUrl("princess"),
     ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 9,
@@ -812,7 +811,6 @@ export const STAGES: Stage[] = [
     enemyOrChallenge: "A final opening against the dragon after surviving the storm",
     encounterImages: [
       getSinglePlayCharacterImageUrl("end_bringer"),
-      getSinglePlayCharacterImageUrl("princess"),
     ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 10,
