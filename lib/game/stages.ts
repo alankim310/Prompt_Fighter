@@ -54,7 +54,7 @@ export const SUBSTORIES: Substory[] = [
     narrativeGoal:
       "Recover the Ember Sigil and force a way into the inner kingdom.",
     setting:
-      "A burned border town lies before a massive sealed gate of black iron. Charred banners flap in the wind while ruined homes and guard posts show how fast Veyrune fell.",
+      "A burned border town lies before a massive sealed gate of black iron. Charred banners flap in the wind. The remains of homes and guard posts suggest the kingdom fell fast and violently.",
     rewardArtifact: "Ember Sigil",
     chapterEndingBeat:
       "Before fading, Sir Dreadhelm warns: “The dragon did not only steal your princess. He is trying to erase what she remembers of you.”",
@@ -71,7 +71,7 @@ export const SUBSTORIES: Substory[] = [
     narrativeGoal:
       "Survive the hostile forest and claim the Moonlit Compass.",
     setting:
-      "A vast forest of black vines, carnivorous flowers, and shifting trails where moonlight, scent, reflection, and sleep all become parts of the maze.",
+      "A vast forest of black vines, carnivorous flowers, and shifting trails. This is not a forest the player can reason with like a person. It is a hostile magical environment built to mislead intruders. The trees rearrange themselves whenever someone tries to follow a fixed route, and the deeper paths are controlled by enchantments tied to moonlight, scent, reflection, and sleep.",
     rewardArtifact: "Moonlit Compass",
     chapterEndingBeat:
       "The compass points not only north, but also toward 'what has been stolen.'",
@@ -88,7 +88,7 @@ export const SUBSTORIES: Substory[] = [
     narrativeGoal:
       "Beat the market at its own laws and escape with the Name-Flame Lantern.",
     setting:
-      "A hidden market lit by floating lanterns, where ghosts, thieves, monsters, and forgotten nobles trade secrets, names, and years of their lives.",
+      "A hidden market lit by floating lanterns, where ghosts, thieves, monsters, and forgotten nobles trade secrets, names, and years of their lives. The market follows rules, contracts, and exchanges very literally. This means the player cannot simply threaten everyone and leave; the market punishes people who break its laws openly. The safest solutions are clever bargains, technical loopholes, deception, or controlled chaos.",
     rewardArtifact: "Name-Flame Lantern",
     chapterEndingBeat:
       "The lantern reveals that Carolyn's name is being slowly erased from the kingdom's history.",
@@ -105,7 +105,7 @@ export const SUBSTORIES: Substory[] = [
     narrativeGoal:
       "Awaken the forge and temper the hero's sword in Dragon-Piercing Fire.",
     setting:
-      "Deep beneath the ruined kingdom lies a sprawling industrial temple of iron, chain lifts, molten channels, broken furnaces, and half-buried royal machinery.",
+      "Deep beneath the ruined kingdom lies the Sunken Forge, a vast industrial temple of iron, chain lifts, molten channels, broken furnaces, and half-buried royal machinery. Long ago, this was where Veyrune forged weapons and power sources meant to stand against monsters too great for ordinary steel. Now the forge is flooded with heat, ash, collapsed stone, and unstable mechanisms. The player's goal is not to recover an ordinary item, but to awaken the forge and use it to place a dragon-wounding force into their sword.",
     rewardArtifact: "Sword tempered in Dragon-Piercing Fire",
     chapterEndingBeat:
       "As the hero emerges, the reforged blade burns with a new edge, and far off in Blackwake Keep, the End-Bringer stirs.",
@@ -122,7 +122,7 @@ export const SUBSTORIES: Substory[] = [
     narrativeGoal:
       "Use every earned artifact to rescue Princess Carolyn and bring down the End-Bringer.",
     setting:
-      "A volcanic fortress built into the mountain itself, where corridors rewrite themselves and dragon magic distorts memory, time, and language.",
+      "A volcanic fortress built into the mountain itself. The walls breathe heat. Corridors rewrite themselves. The dragon's power distorts memory, time, and language. Unlike earlier chapters, this area actively tries to erase the purpose of the rescue. The player is now deep in enemy territory and must use the artifacts earned in previous chapters to resist magical dismantling.",
     rewardArtifact: "Princess Carolyn rescued",
     chapterEndingBeat:
       "Carolyn recognizes the hero not because memory is perfect, but because what they fought for still feels true.",
