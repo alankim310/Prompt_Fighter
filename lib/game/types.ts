@@ -46,6 +46,13 @@ export interface GameProgress {
   completed: boolean;
 }
 
+export interface SingleIntroSlide {
+  id: string;
+  title: string;
+  body: string;
+  imageUrl: string;
+}
+
 export interface CharacterConfig {
   id: string;
   name: string;

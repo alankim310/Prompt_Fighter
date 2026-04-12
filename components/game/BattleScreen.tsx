@@ -204,7 +204,7 @@ export function BattleScreen({
               />
             </div>
 
-            <div className="pointer-events-none absolute bottom-0 right-[3%] z-10 h-[76%] w-[38%]">
+            <div className="pointer-events-none absolute bottom-0 right-[2%] z-10 h-[80%] w-[46%]">
               {encounterImages.length === 1 ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -215,11 +215,11 @@ export function BattleScreen({
                   />
                 </>
               ) : encounterImages.length > 1 ? (
-                <div className="flex h-full w-full items-end justify-end gap-2">
+                <div className="flex h-full w-full items-end justify-end gap-1">
                   {encounterImages.map((image, index) => (
                     <div
                       key={`${stage.id}-encounter-${index}`}
-                      className="h-[78%] flex-1"
+                      className="h-[92%] flex-1"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img

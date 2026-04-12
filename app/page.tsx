@@ -70,7 +70,7 @@ export default async function Home() {
       <p className="text-zinc-400 text-lg">Choose your mode</p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link
-          href="/single"
+          href="/single/intro"
           className="group flex flex-col items-center gap-3 rounded-2xl border border-amber-500/30 bg-zinc-950/90 px-12 py-8 backdrop-blur-sm transition-all duration-200 hover:border-amber-500 hover:shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:scale-105 cursor-pointer"
         >
           <span className="text-4xl">⚔️</span>
