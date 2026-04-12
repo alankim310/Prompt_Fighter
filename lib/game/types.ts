@@ -44,8 +44,6 @@ export interface CharacterConfig {
   displayName: string;
   description: string;
   traits: string[];
-  positiveKeywords: string[];
-  negativeKeywords: string[];
   personality: string;
   imagePath: string;
 }

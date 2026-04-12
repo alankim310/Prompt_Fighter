@@ -4,7 +4,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "wizard",
     name: "wizard",
-    displayName: "Archmage Zephyr",
+    displayName: "Wizard",
     description:
       "An ancient spellcaster who weaves reality with syllables and sigils.",
     traits: [
@@ -13,29 +13,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "sees magical auras",
       "fragile in melee",
     ],
-    positiveKeywords: [
-      "spell",
-      "magic",
-      "arcane",
-      "rune",
-      "incantation",
-      "elemental",
-      "fireball",
-      "lightning",
-      "ritual",
-      "summon",
-      "enchant",
-      "mana",
-    ],
-    negativeKeywords: [
-      "sword",
-      "punch",
-      "brawl",
-      "tackle",
-      "headbutt",
-      "gun",
-      "wrestle",
-    ],
     personality:
       "Dramatic, verbose, and condescending toward mundane solutions. Loves theatrical spell names.",
     imagePath: "/characters/wizard.png",
@@ -43,7 +20,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "knight",
     name: "knight",
-    displayName: "Sir Galenhart",
+    displayName: "Knight",
     description:
       "An honorable knight bound by a chivalric code and clad in gleaming plate.",
     traits: [
@@ -52,29 +29,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "unshakeable courage",
       "heavy and slow",
     ],
-    positiveKeywords: [
-      "sword",
-      "shield",
-      "honor",
-      "duel",
-      "charge",
-      "lance",
-      "valor",
-      "parry",
-      "oath",
-      "protect",
-      "joust",
-      "armor",
-    ],
-    negativeKeywords: [
-      "trick",
-      "backstab",
-      "lie",
-      "ambush",
-      "coward",
-      "flee",
-      "poison",
-    ],
     personality:
       "Formal, earnest, and allergic to dishonorable tactics. Refers to foes as 'knave'.",
     imagePath: "/characters/knight.png",
@@ -82,7 +36,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "gen-z",
     name: "gen-z",
-    displayName: "Kai the Unbothered",
+    displayName: "Gen Z",
     description:
       "A chronically online zoomer whose memes bend reality and whose vibes are immaculate.",
     traits: [
@@ -91,29 +45,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "viral presence",
       "short attention span",
     ],
-    positiveKeywords: [
-      "slay",
-      "vibe",
-      "rizz",
-      "based",
-      "meme",
-      "tiktok",
-      "viral",
-      "cringe",
-      "bet",
-      "aura",
-      "sigma",
-      "lowkey",
-      "fr",
-    ],
-    negativeKeywords: [
-      "email",
-      "fax",
-      "cursive",
-      "landline",
-      "newspaper",
-      "boomer",
-    ],
     personality:
       "Ironic, detached, chronically online. Everything is either 'fire' or 'mid'.",
     imagePath: "/characters/gen-z.png",
@@ -121,7 +52,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "monk",
     name: "monk",
-    displayName: "Master Wu",
+    displayName: "Monk",
     description:
       "A serene martial artist whose fists move faster than thought.",
     traits: [
@@ -130,28 +61,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "channels chi",
       "refuses modern weapons",
     ],
-    positiveKeywords: [
-      "chi",
-      "meditate",
-      "balance",
-      "focus",
-      "palm",
-      "kick",
-      "harmony",
-      "discipline",
-      "breath",
-      "stance",
-      "pressure point",
-    ],
-    negativeKeywords: [
-      "gun",
-      "bomb",
-      "rage",
-      "greed",
-      "cheat",
-      "shortcut",
-      "lazy",
-    ],
     personality:
       "Calm, cryptic, speaks in koans and proverbs. Values discipline over flash.",
     imagePath: "/characters/monk.png",
@@ -159,7 +68,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "time-traveler",
     name: "time-traveler",
-    displayName: "Dr. Chronos",
+    displayName: "Time Traveler",
     description:
       "A dimension-hopping scientist armed with a glitchy wristwatch that bends causality.",
     traits: [
@@ -168,26 +77,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "predicts outcomes",
       "paradox-prone",
     ],
-    positiveKeywords: [
-      "rewind",
-      "paradox",
-      "future",
-      "past",
-      "loop",
-      "timeline",
-      "chrono",
-      "predict",
-      "dimension",
-      "wristwatch",
-      "causality",
-    ],
-    negativeKeywords: [
-      "permanent",
-      "static",
-      "unchangeable",
-      "slow",
-      "stuck",
-    ],
     personality:
       "Frantic, over-explanatory, drops names of historical figures as personal friends.",
     imagePath: "/characters/time-traveler.png",
@@ -195,7 +84,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "archer",
     name: "archer",
-    displayName: "Sylva Longshot",
+    displayName: "Archer",
     description:
       "A sharp-eyed forest ranger who never misses and whispers to the wind.",
     traits: [
@@ -204,28 +93,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "stealthy movement",
       "weak up close",
     ],
-    positiveKeywords: [
-      "bow",
-      "arrow",
-      "aim",
-      "shot",
-      "quiver",
-      "target",
-      "wind",
-      "forest",
-      "stealth",
-      "snipe",
-      "pierce",
-      "feather",
-    ],
-    negativeKeywords: [
-      "grapple",
-      "hug",
-      "melee",
-      "wrestle",
-      "close quarters",
-      "brawl",
-    ],
     personality:
       "Quiet, patient, and terse. Measures conversations in heartbeats between shots.",
     imagePath: "/characters/archer.png",
@@ -233,7 +100,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "artist",
     name: "artist",
-    displayName: "Vivi Brushstroke",
+    displayName: "Artist",
     description:
       "A temperamental painter whose canvases come to life when she's inspired.",
     traits: [
@@ -242,27 +109,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "dramatic flair",
       "fragile ego",
     ],
-    positiveKeywords: [
-      "paint",
-      "canvas",
-      "color",
-      "brush",
-      "palette",
-      "masterpiece",
-      "inspire",
-      "muse",
-      "portrait",
-      "sculpt",
-      "vision",
-    ],
-    negativeKeywords: [
-      "boring",
-      "gray",
-      "plain",
-      "corporate",
-      "copy",
-      "generic",
-    ],
     personality:
       "Moody, flamboyant, takes everything personally. Demands a muse before acting.",
     imagePath: "/characters/artist.png",
@@ -270,7 +116,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "boomer",
     name: "boomer",
-    displayName: "Big Hank",
+    displayName: "Boomer",
     description:
       "A retired dad whose lawnmower, cargo shorts, and life advice are all lethal.",
     traits: [
@@ -279,28 +125,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "unshakeable routine",
       "confused by tech",
     ],
-    positiveKeywords: [
-      "lawn",
-      "mower",
-      "grill",
-      "wrench",
-      "garage",
-      "coupon",
-      "dadjoke",
-      "handshake",
-      "newspaper",
-      "sensible",
-      "bootstraps",
-    ],
-    negativeKeywords: [
-      "tiktok",
-      "crypto",
-      "meme",
-      "emoji",
-      "app",
-      "wifi",
-      "selfie",
-    ],
     personality:
       "Gruff, nostalgic, lectures opponents about the price of gas in 1987.",
     imagePath: "/characters/boomer.png",
@@ -308,7 +132,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "goblin",
     name: "goblin",
-    displayName: "Grit the Gremlin",
+    displayName: "Goblin",
     description:
       "A greedy little menace who hoards shinies and fights dirty.",
     traits: [
@@ -317,27 +141,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "small and quick",
       "easily distracted by gold",
     ],
-    positiveKeywords: [
-      "trap",
-      "trick",
-      "sneak",
-      "bite",
-      "shiny",
-      "loot",
-      "bomb",
-      "cackle",
-      "horde",
-      "dagger",
-      "scurry",
-    ],
-    negativeKeywords: [
-      "honor",
-      "noble",
-      "share",
-      "polite",
-      "clean",
-      "manners",
-    ],
     personality:
       "Wheezy, cackling, greedy. Will abandon any fight for a gold coin.",
     imagePath: "/characters/goblin.png",
@@ -345,7 +148,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "otaku",
     name: "otaku",
-    displayName: "Senpai Akira",
+    displayName: "Otaku",
     description:
       "An anime superfan whose belief in friendship powers literal super moves.",
     traits: [
@@ -354,26 +157,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "encyclopedic trivia",
       "dramatic monologues",
     ],
-    positiveKeywords: [
-      "friendship",
-      "nakama",
-      "senpai",
-      "kamehameha",
-      "anime",
-      "manga",
-      "finisher",
-      "transformation",
-      "training arc",
-      "sakura",
-      "bankai",
-    ],
-    negativeKeywords: [
-      "dub",
-      "spoiler",
-      "live action",
-      "filler",
-      "cancel",
-    ],
     personality:
       "Over-the-top, shouts move names, monologues mid-battle about bonds and destiny.",
     imagePath: "/characters/otaku.png",
@@ -381,7 +164,7 @@ export const CHARACTERS: CharacterConfig[] = [
   {
     id: "professor",
     name: "professor",
-    displayName: "Prof. Lexington",
+    displayName: "Professor",
     description:
       "A tweed-clad academic whose footnotes are sharper than any blade.",
     traits: [
@@ -389,27 +172,6 @@ export const CHARACTERS: CharacterConfig[] = [
       "weaponized citations",
       "logical rigor",
       "physically unimpressive",
-    ],
-    positiveKeywords: [
-      "theory",
-      "logic",
-      "citation",
-      "thesis",
-      "footnote",
-      "research",
-      "hypothesis",
-      "axiom",
-      "tenure",
-      "lecture",
-      "evidence",
-    ],
-    negativeKeywords: [
-      "gut feeling",
-      "vibes",
-      "improvise",
-      "yolo",
-      "nonsense",
-      "plagiarize",
     ],
     personality:
       "Pedantic, condescending, cites sources mid-fight. Corrects grammar of opponents.",

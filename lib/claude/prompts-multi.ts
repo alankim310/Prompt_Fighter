@@ -4,9 +4,7 @@ function describeCharacter(label: string, c: CharacterConfig): string {
   return `${label}: ${c.displayName} (${c.id})
 - Description: ${c.description}
 - Personality: ${c.personality}
-- Traits: ${c.traits.join(", ")}
-- Positive keywords (reward prompts that evoke these): ${c.positiveKeywords.join(", ")}
-- Negative keywords (penalize prompts that use these): ${c.negativeKeywords.join(", ")}`;
+- Traits: ${c.traits.join(", ")}`;
 }
 
 export function buildMultiSystemPrompt(
@@ -24,10 +22,11 @@ ${describeCharacter("Player 2 character", char2)}
 Each player submits a prompt describing an attack, tactic, or action their character performs in the battle against the opponent.
 
 Judge each prompt on:
-1. How well it fits THAT PLAYER'S character (traits, personality, positive keywords).
-2. Creativity, specificity, and vividness (generic prompts score lower).
-3. Tactical effectiveness within the character's strengths — and how well it counters or exploits the opponent's character.
-4. Penalize prompts that contradict their own character (use negative keywords, break personality, out-of-character tools).
+1. How well it fits THAT PLAYER'S character traits and personality. Players have full creative freedom — any approach is valid as long as it feels true to the character.
+2. Creativity, specificity, and vividness. Reward imaginative, detailed prompts. Penalize generic, lazy, or low-effort prompts.
+3. Tactical effectiveness — how well the action plays to the character's strengths and counters or exploits the opponent's character.
+
+Do NOT penalize unusual word choices or unexpected approaches. Judge intent and fit, not vocabulary.
 
 Score each player from 0-100. Then output:
 - winner: "player1" or "player2" (NEVER a draw — if tied, pick the more creative prompt)
