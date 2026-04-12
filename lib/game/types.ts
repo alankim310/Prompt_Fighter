@@ -13,7 +13,7 @@ export interface Stage {
   failureState: string;
   backgroundImage: string;
   enemyOrChallenge: string;
-  encounterImage: string;
+  encounterImages: string[] | null;
   artifactImage: string | null;
   difficulty: number;
   systemPromptContext: string;
@@ -31,6 +31,12 @@ export interface Substory {
   chapterEndingBeat: string;
   unlockLabel: string;
   accentClassName: string;
+}
+
+export interface ArtifactReminder {
+  name: string;
+  description: string;
+  image: string;
 }
 
 export interface GameProgress {
