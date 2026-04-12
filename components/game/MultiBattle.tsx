@@ -470,11 +470,20 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   return (
     <MultiRound
       roundNumber={roundNumber}
-      character={{
+      myCharacter={{
         id: myCharacter.id,
         displayName: myCharacter.displayName,
         traits: myCharacter.traits,
       }}
+      opponentCharacter={
+        opponentCharacter
+          ? {
+              id: opponentCharacter.id,
+              displayName: opponentCharacter.displayName,
+              traits: opponentCharacter.traits,
+            }
+          : null
+      }
       myWins={myWins}
       oppWins={oppWins}
       submitted={phase === "waiting" || phase === "judging"}
