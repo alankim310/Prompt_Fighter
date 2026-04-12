@@ -100,13 +100,6 @@ export function getWillieTheWildcatImageUrl(): string {
   return getSinglePlayCharacterImageUrl(WILLIE_THE_WILDCAT_KEY);
 }
 
-export function getSingleModeStageBackgroundUrl(chapterId: number): string {
-  return getSupabaseStoragePublicUrl(
-    SINGLE_BACKGROUND_BUCKET,
-    `${normalizeObjectPath(chapterId)}.png`,
-  );
-}
-
 export function getSingleModeSubstoryBackgroundUrl(substoryId: number): string {
   const objectPath = SUBSTORY_BACKGROUND_OBJECT_PATHS[substoryId];
 
