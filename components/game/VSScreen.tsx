@@ -32,7 +32,7 @@ export function VSScreen({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black">
-      <div className="absolute inset-0 bg-gradient-to-r from-fuchsia-950/60 via-black to-cyan-950/60" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.08)_0%,transparent_50%,rgba(6,182,212,0.08)_100%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(0,0,0,0.9)_80%)]" />
 
       <div className="relative flex w-full max-w-6xl items-center justify-between px-8">
@@ -43,21 +43,21 @@ export function VSScreen({
               alt={player1CharacterName}
               fill
               sizes="320px"
-              className="object-contain drop-shadow-[0_0_40px_rgba(217,70,239,0.6)]"
+              className="object-contain drop-shadow-[0_0_40px_rgba(245,158,11,0.6)]"
               priority
             />
           </div>
-          <div className="text-xs uppercase tracking-[0.3em] text-fuchsia-400">
+          <div className="text-xs uppercase tracking-[0.3em] text-amber-400">
             Player 1 — {player1CharacterName}
           </div>
-          <div className="text-2xl font-black text-white md:text-3xl">
+          <div className="text-2xl font-black text-zinc-300 md:text-3xl">
             {player1Name}
           </div>
         </div>
 
         <div className="flex flex-col items-center">
-          <div className="text-7xl font-black md:text-9xl animate-pulse">
-            <span className="bg-gradient-to-b from-yellow-300 to-red-600 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(250,204,21,0.8)]">
+          <div className="text-8xl font-black md:text-9xl animate-pulse">
+            <span className="bg-gradient-to-r from-amber-400 to-cyan-400 bg-clip-text text-transparent">
               VS
             </span>
           </div>
@@ -70,7 +70,7 @@ export function VSScreen({
               alt={player2CharacterName}
               fill
               sizes="320px"
-              className="object-contain drop-shadow-[0_0_40px_rgba(34,211,238,0.6)]"
+              className="object-contain drop-shadow-[0_0_40px_rgba(6,182,212,0.6)]"
               style={{ transform: "scaleX(-1)" }}
               priority
             />
@@ -78,7 +78,7 @@ export function VSScreen({
           <div className="text-xs uppercase tracking-[0.3em] text-cyan-400">
             Player 2 — {player2CharacterName}
           </div>
-          <div className="text-2xl font-black text-white md:text-3xl">
+          <div className="text-2xl font-black text-zinc-300 md:text-3xl">
             {player2Name}
           </div>
         </div>

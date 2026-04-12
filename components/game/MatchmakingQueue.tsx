@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -152,11 +153,21 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
 
   if (timedOut) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
+      <div className="relative flex min-h-screen flex-col items-center justify-center gap-6 p-8 text-white">
+        <div className="fixed inset-0 -z-10">
+          <Image
+            src="/backgrounds/global.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
         <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">
           No Opponent Found
         </div>
-        <div className="bg-gradient-to-b from-yellow-300 to-fuchsia-500 bg-clip-text text-5xl font-black text-transparent md:text-6xl">
+        <div className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-5xl font-black text-transparent md:text-6xl">
           TRY AGAIN LATER
         </div>
         <p className="max-w-md text-center text-sm text-zinc-400">
@@ -171,13 +182,13 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
               setStatus("Finding opponent...");
               setSessionKey((k) => k + 1);
             }}
-            className="rounded-lg bg-fuchsia-600 px-6 py-2 font-bold uppercase tracking-wider text-white hover:bg-fuchsia-500"
+            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-2 font-bold uppercase tracking-wider text-white hover:shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           >
             Retry
           </button>
           <button
             onClick={() => router.push("/")}
-            className="rounded-lg border border-zinc-700 px-6 py-2 font-bold uppercase tracking-wider text-zinc-300 hover:bg-zinc-900"
+            className="rounded-xl border border-zinc-700 px-6 py-2 font-bold uppercase tracking-wider text-zinc-300 hover:border-zinc-500 hover:bg-zinc-900 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           >
             Home
           </button>
@@ -187,15 +198,29 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-black p-8 text-white">
+    <div className="relative flex min-h-screen flex-col items-center justify-center gap-8 p-8 text-white">
+      <div className="fixed inset-0 -z-10">
+        <Image
+          src="/backgrounds/global.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
       <div className="relative">
-        <div className="h-32 w-32 animate-spin rounded-full border-4 border-zinc-800 border-t-fuchsia-500" />
+        <div className="h-32 w-32 animate-spin rounded-full border-4 border-zinc-800 border-t-amber-500" />
+        <div
+          className="absolute inset-2 animate-spin rounded-full border-2 border-zinc-900 border-b-cyan-500"
+          style={{ animationDirection: "reverse", animationDuration: "1.2s" }}
+        />
         <div className="absolute inset-0 flex items-center justify-center text-4xl">
           ⚔️
         </div>
       </div>
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">
+        <h1 className="text-zinc-300 text-lg uppercase tracking-[0.3em] font-bold">
           {status}
           <span className="inline-block w-8 text-left">
             {".".repeat(dots)}
@@ -211,7 +236,7 @@ export function MatchmakingQueue({ userId }: MatchmakingQueueProps) {
       </div>
       <button
         onClick={() => router.push("/")}
-        className="rounded-md border border-zinc-700 px-6 py-2 text-zinc-300 transition hover:bg-zinc-900"
+        className="rounded-xl border border-zinc-700 px-6 py-2 text-zinc-300 hover:border-zinc-500 hover:bg-zinc-900 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
       >
         Cancel
       </button>

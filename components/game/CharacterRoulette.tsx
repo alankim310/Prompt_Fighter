@@ -41,17 +41,17 @@ export function CharacterRoulette({
   if (!selected) return null;
 
   return (
-    <div className="flex min-h-[360px] flex-col items-center justify-center gap-8">
+    <div className="flex min-h-[360px] flex-col items-center justify-center gap-8 bg-black">
       {!revealed ? (
         <div className="flex flex-col items-center gap-6">
           <div className="relative h-32 w-32">
-            <div className="absolute inset-0 rounded-full border-4 border-zinc-800 border-t-yellow-400 animate-spin" />
+            <div className="absolute inset-0 rounded-full border-4 border-zinc-800 border-t-amber-400 animate-spin" />
             <div
-              className="absolute inset-2 rounded-full border-2 border-zinc-900 border-b-fuchsia-500 animate-spin"
+              className="absolute inset-2 rounded-full border-2 border-zinc-900 border-b-cyan-500 animate-spin"
               style={{ animationDirection: "reverse", animationDuration: "1.2s" }}
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="h-16 w-16 rounded-full bg-yellow-400/10 blur-xl" />
+              <div className="h-16 w-16 rounded-full bg-amber-400/10 blur-xl" />
             </div>
             <div className="absolute inset-0 flex items-center justify-center text-3xl">
               ⚔️
@@ -63,12 +63,12 @@ export function CharacterRoulette({
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4 reveal-pop">
-          <div className="text-xs uppercase tracking-[0.4em] text-yellow-400/80">
+          <div className="text-xs uppercase tracking-[0.4em] text-amber-400/80">
             Your Fighter
           </div>
           <div
-            className="relative h-56 w-56 overflow-hidden rounded-2xl border-2 border-yellow-400 bg-gradient-to-b from-yellow-400/15 to-fuchsia-500/10"
-            style={{ filter: "drop-shadow(0 0 40px rgba(250,204,21,0.7))" }}
+            className="relative h-56 w-56 overflow-hidden rounded-2xl border-2 border-amber-400 bg-gradient-to-b from-amber-400/15 to-cyan-500/10"
+            style={{ filter: "drop-shadow(0 0 40px rgba(245,158,11,0.5))" }}
           >
             <Image
               src={`/characters/${selected.id}.png`}
@@ -79,7 +79,7 @@ export function CharacterRoulette({
               priority
             />
           </div>
-          <div className="text-3xl font-black uppercase tracking-wider text-yellow-300">
+          <div className="text-3xl font-black uppercase tracking-wider text-amber-300">
             {selected.name}
           </div>
         </div>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -11,10 +12,29 @@ export default async function Home() {
 
   if (!user) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-8">
-        <h1 className="text-5xl font-bold mb-2 tracking-tight">PromptFighter</h1>
-        <p className="text-zinc-400 mb-8">Write prompts. Win battles.</p>
-        <AuthForm />
+      <main className="relative flex min-h-screen flex-col items-center justify-center text-white p-8">
+        <div className="fixed inset-0 -z-10">
+          <Image
+            src="/backgrounds/global.png"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/60" />
+        </div>
+        <Image
+          src="/logo.png"
+          alt="PromptFighter"
+          width={448}
+          height={120}
+          className="mb-8 max-w-md w-full h-auto"
+          priority
+        />
+        <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950/80 p-8 backdrop-blur-xl">
+          <AuthForm />
+        </div>
       </main>
     );
   }
@@ -27,25 +47,47 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-black text-white p-8 gap-8">
-      <h1 className="text-5xl font-bold tracking-tight">Welcome to PromptFighter</h1>
-      <p className="text-zinc-400">Choose your mode</p>
+    <main className="relative flex min-h-screen flex-col items-center justify-center text-white p-8 gap-10">
+      <div className="fixed inset-0 -z-10">
+        <Image
+          src="/backgrounds/global.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+      <Image
+        src="/logo.png"
+        alt="PromptFighter"
+        width={448}
+        height={120}
+        className="max-w-md w-full h-auto"
+        priority
+      />
+      <p className="text-zinc-400 text-lg">Choose your mode</p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link
           href="/single"
-          className="px-10 py-6 rounded-lg bg-violet-600 hover:bg-violet-500 text-xl font-semibold"
+          className="group flex flex-col items-center gap-3 rounded-2xl border border-amber-500/30 bg-zinc-950/90 px-12 py-8 backdrop-blur-sm transition-all duration-200 hover:border-amber-500 hover:shadow-[0_0_30px_rgba(245,158,11,0.2)] hover:scale-105 cursor-pointer"
         >
-          Single Mode
+          <span className="text-4xl">⚔️</span>
+          <span className="text-xl font-bold text-zinc-50">Single Mode</span>
+          <span className="text-sm text-zinc-400">Story Campaign</span>
         </Link>
         <Link
           href="/multi"
-          className="px-10 py-6 rounded-lg bg-pink-600 hover:bg-pink-500 text-xl font-semibold"
+          className="group flex flex-col items-center gap-3 rounded-2xl border border-cyan-500/30 bg-zinc-950/90 px-12 py-8 backdrop-blur-sm transition-all duration-200 hover:border-cyan-500 hover:shadow-[0_0_30px_rgba(6,182,212,0.2)] hover:scale-105 cursor-pointer"
         >
-          Multi Mode
+          <span className="text-4xl">⚡</span>
+          <span className="text-xl font-bold text-zinc-50">Multi Mode</span>
+          <span className="text-sm text-zinc-400">1v1 PvP</span>
         </Link>
       </div>
       <form action={signOut}>
-        <button className="text-sm text-zinc-500 hover:text-zinc-300 underline">
+        <button className="text-sm text-zinc-500 hover:text-zinc-300 transition-all duration-200 cursor-pointer">
           Sign out
         </button>
       </form>

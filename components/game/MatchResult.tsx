@@ -42,9 +42,14 @@ export function MatchResult({
         <div
           className={`text-7xl font-black md:text-8xl ${
             iWon
-              ? "bg-gradient-to-b from-yellow-300 via-amber-400 to-yellow-600 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(250,204,21,0.5)]"
-              : "text-zinc-600"
+              ? "bg-gradient-to-r from-amber-400 via-orange-400 to-amber-300 bg-clip-text text-transparent"
+              : "text-zinc-500"
           }`}
+          style={
+            iWon
+              ? { textShadow: "0 0 40px rgba(245,158,11,0.3)" }
+              : undefined
+          }
         >
           {iWon ? "CHAMPION" : "DEFEATED"}
         </div>
@@ -64,19 +69,19 @@ export function MatchResult({
             const badgeClass = isVoid
               ? "bg-amber-500/20 text-amber-300"
               : iWonRound
-                ? "bg-green-500/20 text-green-300"
+                ? "bg-emerald-500/20 text-emerald-300"
                 : "bg-red-500/20 text-red-300";
             const isExpanded = expandedRound === round.roundNumber;
 
             return (
               <div
                 key={round.roundNumber}
-                className="rounded-lg border border-zinc-800 bg-zinc-900 transition-colors hover:border-zinc-700"
+                className="rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-200 hover:border-zinc-700"
               >
                 <button
                   type="button"
                   onClick={() => toggle(round.roundNumber)}
-                  className="flex w-full items-center gap-4 p-4 text-left"
+                  className="flex w-full items-center gap-4 p-4 text-left cursor-pointer"
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-700 font-mono text-sm font-bold">
                     {round.roundNumber}
@@ -95,7 +100,7 @@ export function MatchResult({
                     {badgeLabel}
                   </div>
                   <svg
-                    className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                    className={`h-4 w-4 shrink-0 text-zinc-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -109,7 +114,7 @@ export function MatchResult({
                   <div className="border-t border-zinc-800 px-4 pb-4 pt-3">
                     {!isVoid && (
                       <div className="mb-3 grid grid-cols-1 gap-2 md:grid-cols-2">
-                        <div className="rounded border border-zinc-700 bg-zinc-950 p-3">
+                        <div className="rounded-xl border border-zinc-700 bg-zinc-950 p-3">
                           <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
                             Your Prompt
                           </div>
@@ -119,7 +124,7 @@ export function MatchResult({
                             )}
                           </div>
                         </div>
-                        <div className="rounded border border-zinc-700 bg-zinc-950 p-3">
+                        <div className="rounded-xl border border-zinc-700 bg-zinc-950 p-3">
                           <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-400">
                             Opponent Prompt
                           </div>
@@ -131,7 +136,7 @@ export function MatchResult({
                         </div>
                       </div>
                     )}
-                    <div className="rounded border border-zinc-800 bg-zinc-950 p-3">
+                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3">
                       <div className="text-[9px] uppercase tracking-[0.25em] text-zinc-500">
                         Narrative
                       </div>
@@ -149,13 +154,13 @@ export function MatchResult({
         <div className="flex w-full gap-3">
           <button
             onClick={handlePlayAgain}
-            className="flex-1 rounded-lg bg-fuchsia-600 px-6 py-3 font-bold uppercase tracking-wider text-white transition hover:bg-fuchsia-500"
+            className="flex-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 font-bold uppercase tracking-wider text-white hover:shadow-[0_0_20px_rgba(245,158,11,0.4)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           >
             Play Again
           </button>
           <button
             onClick={() => router.push("/")}
-            className="flex-1 rounded-lg border border-zinc-700 bg-black px-6 py-3 font-bold uppercase tracking-wider text-zinc-300 transition hover:bg-zinc-900"
+            className="flex-1 rounded-xl border border-zinc-700 bg-black px-6 py-3 font-bold uppercase tracking-wider text-zinc-300 hover:border-zinc-500 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/30"
           >
             Home
           </button>

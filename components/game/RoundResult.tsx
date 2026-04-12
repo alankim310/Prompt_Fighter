@@ -26,8 +26,8 @@ export function RoundResult({
     <main
       className={`min-h-screen ${
         iWon
-          ? "bg-gradient-to-b from-green-950 via-zinc-950 to-black"
-          : "bg-gradient-to-b from-red-950 via-zinc-950 to-black"
+          ? "bg-gradient-to-b from-emerald-950/40 via-black to-black"
+          : "bg-gradient-to-b from-red-950/40 via-black to-black"
       }`}
     >
       <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-6 p-6 text-white">
@@ -38,9 +38,14 @@ export function RoundResult({
         <div
           className={`text-6xl font-black md:text-7xl ${
             iWon
-              ? "text-green-400 drop-shadow-[0_0_40px_rgba(74,222,128,0.6)]"
-              : "text-red-500 drop-shadow-[0_0_40px_rgba(239,68,68,0.6)]"
+              ? "text-emerald-400"
+              : "text-red-400"
           }`}
+          style={{
+            textShadow: iWon
+              ? "0 0 30px rgba(34,197,94,0.3)"
+              : "0 0 30px rgba(239,68,68,0.3)",
+          }}
         >
           {iWon ? "VICTORY" : "DEFEAT"}
         </div>
@@ -48,7 +53,7 @@ export function RoundResult({
         <div className="grid w-full grid-cols-1 gap-3 md:grid-cols-2">
           <div
             className={`rounded-xl border bg-zinc-900 p-4 ${
-              iWon ? "border-green-500/50" : "border-red-500/50"
+              iWon ? "border-emerald-500/50" : "border-red-500/50"
             }`}
           >
             <div className="mb-2 text-[10px] uppercase tracking-[0.25em] text-zinc-400">
@@ -62,7 +67,7 @@ export function RoundResult({
           </div>
           <div
             className={`rounded-xl border bg-zinc-900 p-4 ${
-              !iWon ? "border-green-500/50" : "border-red-500/50"
+              !iWon ? "border-emerald-500/50" : "border-red-500/50"
             }`}
           >
             <div className="mb-2 text-[10px] uppercase tracking-[0.25em] text-zinc-400">
@@ -76,7 +81,7 @@ export function RoundResult({
           </div>
         </div>
 
-        <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900/80 p-5">
           <div className="mb-2 text-[10px] uppercase tracking-[0.25em] text-zinc-500">
             Narrative
           </div>
