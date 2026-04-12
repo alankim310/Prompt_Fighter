@@ -14,6 +14,7 @@ import { MatchResult } from "./MatchResult";
 
 type Phase =
   | "loading"
+  | "waiting-opponent"
   | "roulette"
   | "vs"
   | "prompt"
@@ -81,6 +82,9 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const player2IdRef = useRef<string>("");
   const roundTimerStartRef = useRef<number>(0);
   const p2FallbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const opponentPresentRef = useRef(false);
+  const pendingRoundStartRef = useRef<number | null>(null);
+  const waitingOpponentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const rosterForRoulette = useMemo(
     () => CHARACTERS.map((c) => ({ id: c.id, name: c.displayName })),
@@ -548,9 +552,23 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       channel.on("presence", { event: "join" }, ({ newPresences }) => {
         for (const p of newPresences as Array<{ userId?: string }>) {
           if (p.userId && p.userId !== userId) {
+            // Clear disconnect timer
             if (disconnectTimerRef.current) {
               clearTimeout(disconnectTimerRef.current);
               disconnectTimerRef.current = null;
+            }
+            // Opponent arrived — start pending round if we were waiting
+            if (!opponentPresentRef.current) {
+              opponentPresentRef.current = true;
+              if (waitingOpponentTimerRef.current) {
+                clearTimeout(waitingOpponentTimerRef.current);
+                waitingOpponentTimerRef.current = null;
+              }
+              const pending = pendingRoundStartRef.current;
+              if (pending !== null) {
+                pendingRoundStartRef.current = null;
+                startLocalRound(pending);
+              }
             }
           }
         }
@@ -559,6 +577,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
         for (const p of leftPresences as Array<{ userId?: string }>) {
           if (p.userId && p.userId !== userId) {
+            opponentPresentRef.current = false;
             if (matchOverRef.current) return;
             if (disconnectTimerRef.current) {
               clearTimeout(disconnectTimerRef.current);
@@ -577,7 +596,25 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         subscribedRef.current = true;
         await channel.track({ userId });
         const nextRoundNumber = existingRounds.length + 1;
-        startLocalRound(nextRoundNumber);
+        // Check if opponent is already in the channel
+        const presenceState = channel.presenceState();
+        const presentIds = Object.keys(presenceState);
+        const opponentHere = presentIds.some((k) => k !== userId && k.length > 0);
+        if (opponentHere) {
+          opponentPresentRef.current = true;
+          startLocalRound(nextRoundNumber);
+        } else {
+          // Wait for opponent to join before starting
+          pendingRoundStartRef.current = nextRoundNumber;
+          setPhase("waiting-opponent");
+          // Timeout: if opponent doesn't join in 30s, abandon
+          waitingOpponentTimerRef.current = setTimeout(() => {
+            if (!opponentPresentRef.current && !matchOverRef.current) {
+              void finalizeMatch(userId, "opponent-no-show");
+              setPhase("disconnected");
+            }
+          }, 30_000);
+        }
       });
     })();
 
@@ -590,6 +627,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       if (p2FallbackTimerRef.current) {
         clearTimeout(p2FallbackTimerRef.current);
         p2FallbackTimerRef.current = null;
+      }
+      if (waitingOpponentTimerRef.current) {
+        clearTimeout(waitingOpponentTimerRef.current);
+        waitingOpponentTimerRef.current = null;
       }
       const channel = channelRef.current;
       if (channel) {
@@ -698,6 +739,31 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         iAmPlayer1={isPlayer1}
         rounds={rounds}
       />
+    );
+  }
+
+  if (phase === "waiting-opponent") {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black p-8 text-white">
+        <div className="relative">
+          <div className="h-24 w-24 animate-spin rounded-full border-4 border-zinc-800 border-t-amber-500" />
+          <div
+            className="absolute inset-2 animate-spin rounded-full border-2 border-zinc-900 border-b-cyan-500"
+            style={{ animationDirection: "reverse", animationDuration: "1.2s" }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center text-3xl">
+            ⚔️
+          </div>
+        </div>
+        <div className="text-center">
+          <h1 className="text-lg font-bold uppercase tracking-[0.3em] text-zinc-300">
+            Waiting for opponent to connect…
+          </h1>
+          <p className="mt-2 text-sm text-zinc-500">
+            Your opponent is joining the arena
+          </p>
+        </div>
+      </main>
     );
   }
 
