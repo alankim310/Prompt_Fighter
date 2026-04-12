@@ -33,6 +33,12 @@ export interface Substory {
   accentClassName: string;
 }
 
+export interface ArtifactReminder {
+  name: string;
+  description: string;
+  image: string;
+}
+
 export interface GameProgress {
   substory: number;
   stage: number;

@@ -4,7 +4,12 @@ import {
   getSingleModeStageBackgroundUrl,
   getSingleModeSubstoryBackgroundUrl,
 } from "@/lib/game/assets";
-import type { GameProgress, Stage, Substory } from "@/lib/game/types";
+import type {
+  ArtifactReminder,
+  GameProgress,
+  Stage,
+  Substory,
+} from "@/lib/game/types";
 
 const CHAPTER_ARTIFACT_IMAGES: Record<number, string | null> = {
   1: getSinglePlayArtifactImageUrl("ember_sigil"),
@@ -13,6 +18,30 @@ const CHAPTER_ARTIFACT_IMAGES: Record<number, string | null> = {
   4: getSinglePlayArtifactImageUrl("sword_tempered_in_dragon_piercing_fire"),
   5: null,
 };
+
+export const CHAPTER_FIVE_ARTIFACT_REMINDERS: ArtifactReminder[] = [
+  {
+    name: "Ember Sigil",
+    description: "The key that opens the gate of Blackwake Keep.",
+    image: getSinglePlayArtifactImageUrl("ember_sigil"),
+  },
+  {
+    name: "Moonlit Compass",
+    description: "Reveals hidden truth and direction.",
+    image: getSinglePlayArtifactImageUrl("moonlit_compass"),
+  },
+  {
+    name: "Name-Flame Lantern",
+    description: "Preserves identity and restores memory.",
+    image: getSinglePlayArtifactImageUrl("name_flame_lantern"),
+  },
+  {
+    name: "Sword tempered in Dragon-Piercing Fire",
+    description:
+      "A reforged blade capable of weakening and wounding the End-Bringer.",
+    image: getSinglePlayArtifactImageUrl("sword_tempered_in_dragon_piercing_fire"),
+  },
+];
 
 export const SUBSTORIES: Substory[] = [
   {
@@ -130,7 +159,7 @@ export const STAGES: Stage[] = [
     failureState: "The bridge collapses beneath the hero, restarting the chapter.",
     backgroundImage: "s1-stage1.png",
     enemyOrChallenge: "Cross the haunted Weeping Bridge",
-    encounterImages: [getSinglePlayCharacterImageUrl("ghost_npcs")],
+    encounterImages: [getSinglePlayCharacterImageUrl("fleeing_npcs")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 2,
     systemPromptContext:

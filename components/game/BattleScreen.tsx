@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getWillieTheWildcatImageUrl } from "@/lib/game/assets";
 import {
+  CHAPTER_FIVE_ARTIFACT_REMINDERS,
   getNextStageInSubstory,
   isLastStageInSubstory,
   TOTAL_SUBSTORIES,
@@ -51,6 +52,8 @@ export function BattleScreen({
   const nextStage = getNextStageInSubstory(stage);
   const chapterEndsHere = isLastStageInSubstory(stage);
   const encounterImages = stage.encounterImages ?? [];
+  const chapterFiveArtifactReminders =
+    substory.id === 5 ? CHAPTER_FIVE_ARTIFACT_REMINDERS : [];
 
   async function updateProgressAfterClear() {
     const supabase = createClient();
@@ -246,7 +249,7 @@ export function BattleScreen({
               <button
                 type="button"
                 onClick={() => setDescriptionOpen(true)}
-                className="rounded-full border border-white/10 bg-black/45 px-4 py-2 text-sm font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
+                className="rounded-full border border-white/10 bg-black/45 px-6 py-3 text-base font-semibold text-zinc-100 backdrop-blur transition hover:bg-black/60"
               >
                 View description
               </button>
@@ -290,6 +293,39 @@ export function BattleScreen({
         </section>
 
         <section className="rounded-[2rem] border border-white/10 bg-black/35 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.3)] backdrop-blur sm:p-6">
+          {chapterFiveArtifactReminders.length > 0 && (
+            <div className="mb-6 rounded-[1.5rem] border border-amber-300/20 bg-amber-300/8 p-4">
+              <div className="text-[10px] uppercase tracking-[0.35em] text-amber-100/75">
+                Collected Artifacts
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {chapterFiveArtifactReminders.map((artifact) => (
+                  <div
+                    key={artifact.name}
+                    className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/25 p-3"
+                  >
+                    <div className="h-14 w-14 shrink-0 rounded-xl border border-amber-300/20 bg-amber-300/10 p-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={artifact.image}
+                        alt={artifact.name}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-amber-50">
+                        {artifact.name}
+                      </div>
+                      <p className="mt-1 text-sm leading-6 text-zinc-300">
+                        {artifact.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="text-[10px] uppercase tracking-[0.35em] text-zinc-500">
             Your Prompt
           </div>
