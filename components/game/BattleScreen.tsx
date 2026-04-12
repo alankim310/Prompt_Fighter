@@ -2,7 +2,29 @@
 
 import { useState } from "react";
 import { getWillieTheWildcatImageUrl } from "@/lib/game/assets";
-import type { Stage, Substory } from "@/lib/game/types";
+import type { SingleBattleResult, Stage, Substory } from "@/lib/game/types";
+import { StageResult } from "@/components/game/StageResult";
+
+function parseSingleBattleResult(payload: unknown): SingleBattleResult | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  if (keys.length !== 2 || keys[0] !== "narrative" || keys[1] !== "result") {
+    return null;
+  }
+
+  if ((record.result !== 0 && record.result !== 1) || typeof record.narrative !== "string") {
+    return null;
+  }
+
+  return {
+    result: record.result,
+    narrative: record.narrative,
+  };
+}
 
 export function BattleScreen({
   stage,
@@ -13,7 +35,65 @@ export function BattleScreen({
 }) {
   const [prompt, setPrompt] = useState("");
   const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [battleResult, setBattleResult] = useState<SingleBattleResult | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const willieImageUrl = getWillieTheWildcatImageUrl();
+  const trimmedPrompt = prompt.trim();
+
+  async function handleSubmit() {
+    if (!trimmedPrompt || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setRequestError(null);
+    setBattleResult(null);
+
+    try {
+      const response = await fetch("/api/battle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: trimmedPrompt,
+          stageId: stage.id,
+        }),
+      });
+
+      let payload: unknown;
+      try {
+        payload = await response.json();
+      } catch {
+        throw new Error("The judge returned an unreadable response.");
+      }
+
+      if (!response.ok) {
+        const message =
+          payload &&
+          typeof payload === "object" &&
+          "error" in payload &&
+          typeof payload.error === "string"
+            ? payload.error
+            : "The judge could not process this prompt.";
+        throw new Error(message);
+      }
+
+      const parsedResult = parseSingleBattleResult(payload);
+      if (!parsedResult) {
+        throw new Error("The judge returned an invalid result shape.");
+      }
+
+      setBattleResult(parsedResult);
+    } catch (error) {
+      setRequestError(
+        error instanceof Error ? error.message : "The judge is unavailable right now.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <>
@@ -106,9 +186,25 @@ export function BattleScreen({
 
             <div className="flex items-center justify-end gap-3">
               <div className="text-xs text-zinc-600">{prompt.length} characters</div>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!trimmedPrompt || isSubmitting}
+                className="rounded-full border border-fuchsia-300/25 bg-fuchsia-400/20 px-5 py-2.5 text-sm font-bold text-fuchsia-50 transition hover:bg-fuchsia-400/30 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+              >
+                {isSubmitting ? "Judging..." : "Submit Prompt"}
+              </button>
             </div>
           </div>
+
+          {requestError ? (
+            <div className="mt-4 rounded-2xl border border-rose-300/20 bg-rose-300/10 px-4 py-3 text-sm leading-6 text-rose-100/90">
+              {requestError}
+            </div>
+          ) : null}
         </section>
+
+        {battleResult ? <StageResult result={battleResult} /> : null}
       </div>
 
       {descriptionOpen && (
