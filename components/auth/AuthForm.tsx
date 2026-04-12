@@ -56,7 +56,7 @@ export function AuthForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 focus:outline-none transition-all duration-200"
+          className="px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 focus:outline-none transition-all duration-200"
         />
         <input
           type="password"
@@ -64,7 +64,7 @@ export function AuthForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 focus:outline-none transition-all duration-200"
+          className="px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/30 focus:outline-none transition-all duration-200"
         />
         <button
           type="submit"
