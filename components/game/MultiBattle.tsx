@@ -144,20 +144,20 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
       matchOverRef.current = true;
       setFinalWinnerId(winnerId);
       setPhase("complete");
-      if (isPlayer1Ref.current) {
-        const supabase = createClient();
-        await supabase
-          .from("matches")
-          .update({ status: "completed", winner_id: winnerId })
-          .eq("id", matchId);
-        const channel = channelRef.current;
-        if (channel) {
-          await channel.send({
-            type: "broadcast",
-            event: "match_complete",
-            payload: { winnerId, reason: reason ?? null },
-          });
-        }
+      // Both players update DB to ensure it's marked completed
+      // even if the other player disconnected
+      const supabase = createClient();
+      await supabase
+        .from("matches")
+        .update({ status: "completed", winner_id: winnerId })
+        .eq("id", matchId);
+      const channel = channelRef.current;
+      if (channel) {
+        await channel.send({
+          type: "broadcast",
+          event: "match_complete",
+          payload: { winnerId, reason: reason ?? null },
+        });
       }
     },
     [matchId],
@@ -278,10 +278,12 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
 
     resolvingRef.current = true;
     const rn = roundNumberRef.current;
-    const character1Id = myCharacterRef.current;
-    const character2Id = opponentCharacterRef.current;
-    const prompt1 = myPromptRef.current ?? "";
-    const prompt2 = oppPromptRef.current ?? "";
+    // Always send in player1/player2 order regardless of who calls
+    const amPlayer1 = isPlayer1Ref.current;
+    const character1Id = amPlayer1 ? myCharacterRef.current! : opponentCharacterRef.current!;
+    const character2Id = amPlayer1 ? opponentCharacterRef.current! : myCharacterRef.current!;
+    const prompt1 = amPlayer1 ? (myPromptRef.current ?? "") : (oppPromptRef.current ?? "");
+    const prompt2 = amPlayer1 ? (oppPromptRef.current ?? "") : (myPromptRef.current ?? "");
 
     // Case A: both timed out → void
     if (iTimedOut && oppTimedOut) {
@@ -303,8 +305,9 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
 
     // Case B: one timed out → synthetic auto-loss
     if (iTimedOut || oppTimedOut) {
-      const p1Lost = iTimedOut;
-      const winner = p1Lost ? "player2" : "player1";
+      // Determine which actual player (p1/p2) timed out
+      const p1TimedOut = amPlayer1 ? iTimedOut : oppTimedOut;
+      const winner = p1TimedOut ? "player2" : "player1";
       const record: MultiRoundRecord = {
         roundNumber: rn,
         character1Id,
@@ -312,7 +315,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         prompt1,
         prompt2,
         winner,
-        narrative: p1Lost
+        narrative: p1TimedOut
           ? "Player 1 froze in place as time ran out. Player 2 lands a free strike."
           : "Player 2 froze in place as time ran out. Player 1 lands a free strike.",
         reasoning: "Auto-loss: one player ran out of time.",
