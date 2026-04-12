@@ -22,6 +22,13 @@ const STORY_NODE_POSITIONS: Record<number, { left: string; top: string }> = {
   5: { left: "88.1%", top: "53.1%" },
 };
 
+const STORY_NODE_CONNECTIONS = [
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+] as const;
+
 export function StageMap({
   substories,
   progress,
@@ -119,6 +126,35 @@ export function StageMap({
               Back to Home
             </Link>
           </div>
+
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            {STORY_NODE_CONNECTIONS.map(([fromId, toId]) => {
+              const from = STORY_NODE_POSITIONS[fromId];
+              const to = STORY_NODE_POSITIONS[toId];
+              const connectedUnlocked =
+                isSubstoryUnlocked(progress, fromId) &&
+                isSubstoryUnlocked(progress, toId);
+
+              return (
+                <line
+                  key={`${fromId}-${toId}`}
+                  x1={parseFloat(from.left)}
+                  y1={parseFloat(from.top)}
+                  x2={parseFloat(to.left)}
+                  y2={parseFloat(to.top)}
+                  stroke={connectedUnlocked ? "rgba(253, 224, 71, 0.95)" : "rgba(113, 113, 122, 0.85)"}
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeDasharray="1.1 2.8"
+                />
+              );
+            })}
+          </svg>
 
           {stagesBySubstory.map(({ substory, unlocked, cleared }) => {
             const selected = substory.id === selectedSubstoryId;
