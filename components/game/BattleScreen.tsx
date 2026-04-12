@@ -1,8 +1,37 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getWillieTheWildcatImageUrl } from "@/lib/game/assets";
-import type { Stage, Substory } from "@/lib/game/types";
+import {
+  getNextStageInSubstory,
+  isLastStageInSubstory,
+  TOTAL_SUBSTORIES,
+} from "@/lib/game/stages";
+import type { SingleBattleResult, Stage, Substory } from "@/lib/game/types";
+import { StageResult } from "@/components/game/StageResult";
+import { createClient } from "@/lib/supabase/client";
+
+function parseSingleBattleResult(payload: unknown): SingleBattleResult | null {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  const record = payload as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  if (keys.length !== 2 || keys[0] !== "narrative" || keys[1] !== "result") {
+    return null;
+  }
+
+  if ((record.result !== 0 && record.result !== 1) || typeof record.narrative !== "string") {
+    return null;
+  }
+
+  return {
+    result: record.result,
+    narrative: record.narrative,
+  };
+}
 
 export function BattleScreen({
   stage,
@@ -11,9 +40,142 @@ export function BattleScreen({
   stage: Stage;
   substory: Substory;
 }) {
+  const router = useRouter();
   const [prompt, setPrompt] = useState("");
   const [descriptionOpen, setDescriptionOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [battleResult, setBattleResult] = useState<SingleBattleResult | null>(null);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const willieImageUrl = getWillieTheWildcatImageUrl();
+  const trimmedPrompt = prompt.trim();
+  const nextStage = getNextStageInSubstory(stage);
+  const chapterEndsHere = isLastStageInSubstory(stage);
+
+  async function updateProgressAfterClear() {
+    const supabase = createClient();
+    const { data: progress, error: progressError } = await supabase
+      .from("game_progress")
+      .select("id, substory, stage, cleared_stages, completed")
+      .maybeSingle();
+
+    if (progressError || !progress) {
+      throw new Error(progressError?.message ?? "Unable to load progress.");
+    }
+
+    const clearedStages = Array.isArray(progress.cleared_stages)
+      ? [...new Set([...(progress.cleared_stages as string[]), stage.id])]
+      : [stage.id];
+
+    let nextSubstory = progress.substory;
+    let nextStageNumber = progress.stage;
+    let completed = progress.completed;
+
+    const isCurrentFrontier =
+      !progress.completed &&
+      progress.substory === stage.substoryId &&
+      progress.stage === stage.stageNumber;
+
+    if (isCurrentFrontier) {
+      if (nextStage) {
+        nextStageNumber = nextStage.stageNumber;
+      } else if (stage.substoryId < TOTAL_SUBSTORIES) {
+        nextSubstory = stage.substoryId + 1;
+        nextStageNumber = 1;
+      } else {
+        completed = true;
+      }
+    }
+
+    const { error: updateError } = await supabase
+      .from("game_progress")
+      .update({
+        substory: nextSubstory,
+        stage: nextStageNumber,
+        cleared_stages: clearedStages,
+        completed,
+      })
+      .eq("id", progress.id);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
+  }
+
+  async function handleSubmit() {
+    if (!trimmedPrompt || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setRequestError(null);
+    setBattleResult(null);
+
+    try {
+      const response = await fetch("/api/battle", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: trimmedPrompt,
+          stageId: stage.id,
+        }),
+      });
+
+      let payload: unknown;
+      try {
+        payload = await response.json();
+      } catch {
+        throw new Error("The judge returned an unreadable response.");
+      }
+
+      if (!response.ok) {
+        const message =
+          payload &&
+          typeof payload === "object" &&
+          "error" in payload &&
+          typeof payload.error === "string"
+            ? payload.error
+            : "The judge could not process this prompt.";
+        throw new Error(message);
+      }
+
+      const parsedResult = parseSingleBattleResult(payload);
+      if (!parsedResult) {
+        throw new Error("The judge returned an invalid result shape.");
+      }
+
+      if (parsedResult.result === 1) {
+        await updateProgressAfterClear();
+      }
+
+      setBattleResult(parsedResult);
+    } catch (error) {
+      setRequestError(
+        error instanceof Error ? error.message : "The judge is unavailable right now.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleResultPrimaryAction() {
+    if (!battleResult) return;
+
+    if (battleResult.result === 0) {
+      setBattleResult(null);
+      return;
+    }
+
+    if (chapterEndsHere) {
+      router.push("/single");
+      return;
+    }
+
+    if (nextStage) {
+      router.push(`/single/play/${nextStage.substoryId}/${nextStage.stageNumber}`);
+    }
+  }
 
   return (
     <>
@@ -70,14 +232,37 @@ export function BattleScreen({
             </div>
 
             <div className="absolute bottom-0 left-0 z-20 max-w-2xl p-5 sm:p-6">
-              <div className="rounded-2xl border border-white/10 bg-black/45 px-4 py-3 backdrop-blur">
-                <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
-                  Chapter
+              <div className="flex flex-wrap items-end gap-4">
+                <div className="rounded-2xl border border-white/10 bg-black/45 px-4 py-3 backdrop-blur">
+                  <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-500">
+                    Chapter
+                  </div>
+                  <div className="mt-1 text-lg font-bold text-white">
+                    {substory.title}
+                  </div>
+                  <div className="mt-1 text-sm text-zinc-300">{substory.theme}</div>
                 </div>
-                <div className="mt-1 text-lg font-bold text-white">
-                  {substory.title}
-                </div>
-                <div className="mt-1 text-sm text-zinc-300">{substory.theme}</div>
+
+                {stage.artifactImage && (
+                  <div className="flex items-center gap-3 rounded-2xl border border-amber-300/20 bg-black/45 px-4 py-3 backdrop-blur">
+                    <div className="h-14 w-14 shrink-0 rounded-xl border border-amber-300/20 bg-amber-300/10 p-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={stage.artifactImage}
+                        alt={substory.rewardArtifact}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.3em] text-amber-100/70">
+                        Chapter Reward
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-amber-50">
+                        {substory.rewardArtifact}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -106,9 +291,37 @@ export function BattleScreen({
 
             <div className="flex items-center justify-end gap-3">
               <div className="text-xs text-zinc-600">{prompt.length} characters</div>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!trimmedPrompt || isSubmitting}
+                className="rounded-full border border-fuchsia-300/25 bg-fuchsia-400/20 px-5 py-2.5 text-sm font-bold text-fuchsia-50 transition hover:bg-fuchsia-400/30 disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-zinc-500"
+              >
+                {isSubmitting ? "Judging..." : "Submit Prompt"}
+              </button>
             </div>
           </div>
+
+          {requestError ? (
+            <div className="mt-4 rounded-2xl border border-rose-300/20 bg-rose-300/10 px-4 py-3 text-sm leading-6 text-rose-100/90">
+              {requestError}
+            </div>
+          ) : null}
         </section>
+
+        {battleResult ? (
+          <StageResult
+            result={battleResult}
+            primaryLabel={
+              battleResult.result === 1
+                ? chapterEndsHere
+                  ? "Return to Map"
+                  : "Next Stage"
+                : "Try Again"
+            }
+            onPrimaryAction={handleResultPrimaryAction}
+          />
+        ) : null}
       </div>
 
       {descriptionOpen && (

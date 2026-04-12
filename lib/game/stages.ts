@@ -1,9 +1,18 @@
 import {
+  getSinglePlayArtifactImageUrl,
   getSinglePlayCharacterImageUrl,
   getSingleModeStageBackgroundUrl,
   getSingleModeSubstoryBackgroundUrl,
 } from "@/lib/game/assets";
 import type { GameProgress, Stage, Substory } from "@/lib/game/types";
+
+const CHAPTER_ARTIFACT_IMAGES: Record<number, string | null> = {
+  1: getSinglePlayArtifactImageUrl("ember_sigil"),
+  2: getSinglePlayArtifactImageUrl("moonlit_compass"),
+  3: getSinglePlayArtifactImageUrl("name_flame_lantern"),
+  4: getSinglePlayArtifactImageUrl("sword_tempered_in_dragon_piercing_fire"),
+  5: null,
+};
 
 export const SUBSTORIES: Substory[] = [
   {
@@ -122,6 +131,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s1-stage1.png",
     enemyOrChallenge: "Cross the haunted Weeping Bridge",
     encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 2,
     systemPromptContext:
       "Reward decisive, creative traversal that handles fear, instability, and haunting without hesitation.",
@@ -154,6 +164,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s1-stage2.png",
     enemyOrChallenge: "Unlock the reliquary without triggering its living chains",
     encounterImage: getSinglePlayCharacterImageUrl("living_chain"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 3,
     systemPromptContext:
       "Reward careful problem-solving and punish brute force that ignores the reliquary's defensive logic.",
@@ -189,6 +200,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s1-stage3.png",
     enemyOrChallenge: "Restore the watchtower while surviving ash-cursed skeletal guards",
     encounterImage: getSinglePlayCharacterImageUrl("skeleton_guard"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 4,
     systemPromptContext:
       "Reward smart use of light, command, deception, or restoration against ash-cursed defenders and a failing mechanism.",
@@ -219,6 +231,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s1-stage4.png",
     enemyOrChallenge: "An oath-bound knight who punishes hesitation",
     encounterImage: getSinglePlayCharacterImageUrl("sir_dreadhelm"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 5,
     systemPromptContext:
       "Reward bold, direct, committed action. Punish vagueness, contradiction, fear, and indecision.",
@@ -253,6 +266,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s2-stage1.png",
     enemyOrChallenge: "Earn Blueberry's trust to escape the looping forest",
     encounterImage: getSinglePlayCharacterImageUrl("blueberry_the_cat"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 3,
     systemPromptContext:
       "Reward hospitality, gentleness, clever tracking, and trust-building over brute navigation.",
@@ -288,6 +302,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s2-stage2.png",
     enemyOrChallenge: "Slip past a giant sleeping beast without triggering a fight",
     encounterImage: getSinglePlayCharacterImageUrl("sleeping_grove_beast"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 4,
     systemPromptContext:
       "Reward stealth, silence, environmental adaptation, and solutions that avoid direct combat.",
@@ -322,6 +337,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s2-stage3.png",
     enemyOrChallenge: "Expose an emotionally manipulative illusion hiding the Moonlit Compass",
     encounterImage: getSinglePlayCharacterImageUrl("false_carolyn"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 5,
     systemPromptContext:
       "Reward truth-testing, contradiction exposure, logic, and emotional discipline over blind trust.",
@@ -354,6 +370,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s2-stage4.png",
     enemyOrChallenge: "A blind assassin who hunts by sound and kills on touch",
     encounterImage: getSinglePlayCharacterImageUrl("soul_stealer"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 6,
     systemPromptContext:
       "Reward silence, stealth, misdirection, and precise lethal timing. Punish noisy or flashy actions.",
@@ -388,6 +405,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s3-stage1.png",
     enemyOrChallenge: "Satisfy a meaning-based toll without losing anything essential",
     encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 4,
     systemPromptContext:
       "Reward loopholes, symbolic trade, persuasion, and emotional framing over literal sacrifice.",
@@ -422,6 +440,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s3-stage2.png",
     enemyOrChallenge: "Secure the Name-Flame Lantern inside a memory-fueled auction",
     encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 5,
     systemPromptContext:
       "Reward legal disruption, deception, spectacle, ownership challenges, and chaos used with intent.",
@@ -454,6 +473,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s3-stage3.png",
     enemyOrChallenge: "Rewrite market law before the debt collector catches you",
     encounterImage: getSinglePlayCharacterImageUrl("debt_collector"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 6,
     systemPromptContext:
       "Reward precise legal language, loopholes, and fast rule-bending that changes pursuit into protection.",
@@ -486,6 +506,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s3-stage4.png",
     enemyOrChallenge: "A perfect imitator in an arena full of exploitable hazards",
     encounterImage: getSinglePlayCharacterImageUrl("marquis_grin"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 7,
     systemPromptContext:
       "Reward feints, traps, misdirection, and any action where exact imitation becomes self-destructive for the boss.",
@@ -519,6 +540,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s4-stage1.png",
     enemyOrChallenge: "Break into the Sunken Forge through its failed industrial entrance",
     encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 5,
     systemPromptContext:
       "Reward industrial improvisation, repair, force, and environmental problem-solving under heat pressure.",
@@ -552,6 +574,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s4-stage2.png",
     enemyOrChallenge: "Restore the dead furnace core that powers the forge",
     encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 6,
     systemPromptContext:
       "Reward believable restoration using available industrial materials: fuel, heat, airflow, pressure, and redirection.",
@@ -584,6 +607,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s4-stage3.png",
     enemyOrChallenge: "Reforge the sword into an anti-dragon weapon without destroying it",
     encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 7,
     systemPromptContext:
       "Reward sequencing, stabilization, heat control, and ritual forging logic that respects the blade's survival.",
@@ -615,6 +639,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s4-stage4.png",
     enemyOrChallenge: "A forge-powered iron colossus sustained by the room itself",
     encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 8,
     systemPromptContext:
       "Reward systems disruption, environmental weaponization, and timing the final strike after the guardian is weakened.",
@@ -647,6 +672,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s5-stage1.png",
     enemyOrChallenge: "Open the keep and survive a curse that erases purpose",
     encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 7,
     systemPromptContext:
       "Reward artifact synergy, memory preservation, and clear intentionality against magical unmaking.",
@@ -678,6 +704,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s5-stage2.png",
     enemyOrChallenge: "Restore Carolyn's identity, not just her freedom",
     encounterImage: getSinglePlayCharacterImageUrl("princess"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 8,
     systemPromptContext:
       "Reward emotionally grounded restoration, identity, naming, and artifact use over ordinary reassurance alone.",
@@ -712,6 +739,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s5-stage3.png",
     enemyOrChallenge: "Survive the dragon's overwhelming fire without trying to force offense",
     encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 9,
     systemPromptContext:
       "Reward defense, protection, redirection, and survival instincts. Punish premature aggression.",
@@ -743,6 +771,7 @@ export const STAGES: Stage[] = [
     backgroundImage: "s5-stage4.png",
     enemyOrChallenge: "A final opening against the dragon after surviving the storm",
     encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
+    artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 10,
     systemPromptContext:
       "Reward decisive final offense with the tempered sword, positional awareness, and use of all the journey's earned momentum.",
@@ -750,6 +779,7 @@ export const STAGES: Stage[] = [
 ];
 
 export const STAGES_PER_SUBSTORY = 4;
+export const TOTAL_SUBSTORIES = SUBSTORIES.length;
 
 export function getAllStages(): Stage[] {
   return STAGES;
@@ -777,6 +807,18 @@ export function getStageBySubstoryAndStageNumber(
 
 export function getStageById(stageId: string): Stage | undefined {
   return STAGES.find((stage) => stage.id === stageId);
+}
+
+export function isLastStageInSubstory(stage: Stage): boolean {
+  return stage.stageNumber >= getStagesForSubstory(stage.substoryId).length;
+}
+
+export function getNextStageInSubstory(stage: Stage): Stage | undefined {
+  if (isLastStageInSubstory(stage)) {
+    return undefined;
+  }
+
+  return getStageBySubstoryAndStageNumber(stage.substoryId, stage.stageNumber + 1);
 }
 
 export function getSubstoryById(substoryId: number): Substory | undefined {
