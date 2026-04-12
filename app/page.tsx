@@ -32,7 +32,7 @@ export default async function Home() {
       <p className="text-zinc-400">Choose your mode</p>
       <div className="flex flex-col sm:flex-row gap-6">
         <Link
-          href="/single"
+          href="/single/intro"
           className="px-10 py-6 rounded-lg bg-violet-600 hover:bg-violet-500 text-xl font-semibold"
         >
           Single Mode

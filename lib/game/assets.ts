@@ -16,6 +16,12 @@ const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
   5: "chapter_5_Blackwake_Keep.png",
 };
 const SINGLE_MODE_WORLD_MAP_OBJECT_PATH = "map.png";
+export const SINGLE_MODE_INTRO_OBJECT_PATHS = {
+  kingdom_of_veyrune: "preslide1.png",
+  night_everything_burned: "preslide2.png",
+  carolyn_was_taken: "preslide3.png",
+  your_journey_begins: "preslide4.png",
+} as const;
 
 export const SINGLEPLAY_CHARACTER_OBJECT_PATHS = {
   blueberry_the_cat: "Blueberry_the_cat.png",
@@ -114,6 +120,15 @@ export function getSingleModeWorldMapUrl(): string {
   return getSupabaseStoragePublicUrl(
     SINGLE_BACKGROUND_BUCKET,
     SINGLE_MODE_WORLD_MAP_OBJECT_PATH,
+  );
+}
+
+export function getSingleModeIntroImageUrl(
+  introKey: keyof typeof SINGLE_MODE_INTRO_OBJECT_PATHS,
+): string {
+  return getSupabaseStoragePublicUrl(
+    SINGLE_BACKGROUND_BUCKET,
+    SINGLE_MODE_INTRO_OBJECT_PATHS[introKey],
   );
 }
 
