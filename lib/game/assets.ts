@@ -16,7 +16,8 @@ export const SUBSTORY_BACKGROUND_OBJECT_PATHS: Record<number, string> = {
   6: "chapter_4_The_Sunken_Forge_(Dark).png",
   5: "chapter_5_Blackwake_Keep.png",
 };
-const SINGLE_MODE_WORLD_MAP_OBJECT_PATH = "map.png";
+const SINGLE_MODE_WORLD_MAP_URL =
+  "https://tamjskfeocohiboeuuwu.supabase.co/storage/v1/object/public/single-backgrounds/map_v3.png";
 export const SINGLE_MODE_INTRO_OBJECT_PATHS = {
   kingdom_of_veyrune: "preslide1.png",
   night_everything_burned: "preslide2.png",
@@ -111,10 +112,7 @@ export function getSingleModeSubstoryBackgroundUrl(substoryId: number): string {
 }
 
 export function getSingleModeWorldMapUrl(): string {
-  return getSupabaseStoragePublicUrl(
-    SINGLE_BACKGROUND_BUCKET,
-    SINGLE_MODE_WORLD_MAP_OBJECT_PATH,
-  );
+  return SINGLE_MODE_WORLD_MAP_URL;
 }
 
 export function getSingleModeIntroImageUrl(
