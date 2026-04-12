@@ -130,7 +130,7 @@ export const STAGES: Stage[] = [
     failureState: "The bridge collapses beneath the hero, restarting the chapter.",
     backgroundImage: "s1-stage1.png",
     enemyOrChallenge: "Cross the haunted Weeping Bridge",
-    encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
+    encounterImages: [getSinglePlayCharacterImageUrl("ghost_npcs")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 2,
     systemPromptContext:
@@ -163,7 +163,7 @@ export const STAGES: Stage[] = [
       "The chains bind the hero and sound spectral bells, causing chapter failure.",
     backgroundImage: "s1-stage2.png",
     enemyOrChallenge: "Unlock the reliquary without triggering its living chains",
-    encounterImage: getSinglePlayCharacterImageUrl("living_chain"),
+    encounterImages: [getSinglePlayCharacterImageUrl("living_chain")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 3,
     systemPromptContext:
@@ -176,7 +176,7 @@ export const STAGES: Stage[] = [
     type: "battle",
     title: "The Broken Watchtower",
     description:
-      "The gate mechanism is controlled from a watchtower whose gears are frozen by ash magic. The old soldiers patrolling the tower are not mere shadows, but skeletal guards cursed to survive only in darkness. They roam the halls as long as the tower remains dim, and they attack anyone they deem an invader. If exposed to strong light, they are instantly destroyed. The player can either wipe them out by bringing light into the tower or fight them directly in the dark.",
+      "The gate mechanism is controlled from a watch tower whose gears are frozen by ash magic. The old soldiers patrolling the tower are not mere shadows, but skeletal guards cursed to survive only in darkness. They roam the halls as long as the tower remains dim, and they attack anyone they deem an invader. If exposed to strong light, they are instantly destroyed. The player can either wipe them out by bringing light into the tower or fight them directly in the dark.",
     objective: "Reactivate the tower and open the Ashen Gate.",
     solutionDirections: [
       "Flood the tower with light",
@@ -199,7 +199,10 @@ export const STAGES: Stage[] = [
       "The tower seals shut and floods with cursed smoke, resetting the chapter.",
     backgroundImage: "s1-stage3.png",
     enemyOrChallenge: "Restore the watchtower while surviving ash-cursed skeletal guards",
-    encounterImage: getSinglePlayCharacterImageUrl("skeleton_guard"),
+    encounterImages: [
+      getSinglePlayCharacterImageUrl("skeleton_guard"),
+      getSinglePlayCharacterImageUrl("ghost_npcs"),
+    ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 4,
     systemPromptContext:
@@ -230,7 +233,7 @@ export const STAGES: Stage[] = [
       "A vague or fearful command gives Dreadhelm the opening to overwhelm the hero, restarting the chapter.",
     backgroundImage: "s1-stage4.png",
     enemyOrChallenge: "An oath-bound knight who punishes hesitation",
-    encounterImage: getSinglePlayCharacterImageUrl("sir_dreadhelm"),
+    encounterImages: [getSinglePlayCharacterImageUrl("sir_dreadhelm")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[1],
     difficulty: 5,
     systemPromptContext:
@@ -265,7 +268,7 @@ export const STAGES: Stage[] = [
       "Blueberry flees, the hero follows the wrong trail, and the forest loops them back to the chapter start.",
     backgroundImage: "s2-stage1.png",
     enemyOrChallenge: "Earn Blueberry's trust to escape the looping forest",
-    encounterImage: getSinglePlayCharacterImageUrl("blueberry_the_cat"),
+    encounterImages: [getSinglePlayCharacterImageUrl("blueberry_the_cat")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 3,
     systemPromptContext:
@@ -301,7 +304,7 @@ export const STAGES: Stage[] = [
       "The beast awakens and crushes the grove, restarting the chapter.",
     backgroundImage: "s2-stage2.png",
     enemyOrChallenge: "Slip past a giant sleeping beast without triggering a fight",
-    encounterImage: getSinglePlayCharacterImageUrl("sleeping_grove_beast"),
+    encounterImages: [getSinglePlayCharacterImageUrl("sleeping_grove_beast")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 4,
     systemPromptContext:
@@ -336,7 +339,7 @@ export const STAGES: Stage[] = [
       "If the hero trusts the illusion, they abandon the mission and the chapter restarts.",
     backgroundImage: "s2-stage3.png",
     enemyOrChallenge: "Expose an emotionally manipulative illusion hiding the Moonlit Compass",
-    encounterImage: getSinglePlayCharacterImageUrl("false_carolyn"),
+    encounterImages: [getSinglePlayCharacterImageUrl("false_carolyn")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 5,
     systemPromptContext:
@@ -369,7 +372,7 @@ export const STAGES: Stage[] = [
       "Too much sound lets the Soul Stealer pinpoint the hero and kill them on contact.",
     backgroundImage: "s2-stage4.png",
     enemyOrChallenge: "A blind assassin who hunts by sound and kills on touch",
-    encounterImage: getSinglePlayCharacterImageUrl("soul_stealer"),
+    encounterImages: [getSinglePlayCharacterImageUrl("soul_stealer")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[2],
     difficulty: 6,
     systemPromptContext:
@@ -382,7 +385,7 @@ export const STAGES: Stage[] = [
     type: "social",
     title: "Entry Toll",
     description:
-      "The market only admits those who pay with something meaningful. A coin or ordinary weapon is worthlesshere. By the time the player reaches this point in the story, they already carry several things that matterdeeply: their voice, their memories of Princess Carolyn, their sense of identity, their sword, and the twokey artifacts from earlier chapters, the Ember Sigil and the Moonlit Compass. These are essential to thejourney, so the player should avoid risking them.The gate does not actually know whether an item is important. It judges value by how personally significantan item sounds. This means the player can trick or persuade the gate instead of sacrificing something trulyvaluable. On the ground near the entrance, there are also small gravels scattered across the floor. Thesestones are normally worthless, but the player may be able to use a prompt to convince the gate that one ofthem carries deep personal meaning. The real challenge is to make something unimportant soundimportant enough for the gate to accept.",
+      "The market only admits those who pay with something meaningful. A coin or ordinary weapon is worthless here. By the time the player reaches this point in the story, they already carry several things that matter deeply: their voice, their memories of Princess Carolyn, their sense of identity, their sword, and the two key artifacts from earlier chapters, the Ember Sigil and the Moonlit Compass. These are essential to the journey, so the player should avoid risking them. The gate does not actually know whether an item is important. It judges value by how personally significant an item sounds. This means the player can trick or persuade the gate instead of sacrificing something truly valuable. On the ground near the entrance, there are also small gravels scattered across the floor. These stones are normally worthless, but the player may be able to use a prompt to convince the gate that one of them carries deep personal meaning. The real challenge is to make something unimportant sound important enough for the gate to accept.",
     objective:
       "Enter the Hollow Market without sacrificing an essential part of yourself or your journey.",
     solutionDirections: [
@@ -404,7 +407,7 @@ export const STAGES: Stage[] = [
       "The market takes the hero's voice, face, memory, sword, or one of their vital artifacts.",
     backgroundImage: "s3-stage1.png",
     enemyOrChallenge: "Satisfy a meaning-based toll without losing anything essential",
-    encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
+    encounterImages: [getSinglePlayCharacterImageUrl("ghost_npcs")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 4,
     systemPromptContext:
@@ -439,7 +442,10 @@ export const STAGES: Stage[] = [
       "The lantern is sold to another buyer and vanishes deeper into the market.",
     backgroundImage: "s3-stage2.png",
     enemyOrChallenge: "Secure the Name-Flame Lantern inside a memory-fueled auction",
-    encounterImage: getSinglePlayCharacterImageUrl("ghost_npcs"),
+    encounterImages: [
+      getSinglePlayCharacterImageUrl("ghost_npcs"),
+      getSinglePlayCharacterImageUrl("debt_spirit"),
+    ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 5,
     systemPromptContext:
@@ -452,7 +458,7 @@ export const STAGES: Stage[] = [
     type: "puzzle",
     title: "The Debt Collector's Hunt",
     description:
-      "After acquiring the lantern, the player is marked for violating market law and gets chased through alleys,rooftops, and hidden passages by a supernatural collector. While escaping, the player finds an ancientConstitution Book of the Hollow Market. The book has a strange rule: if someone writes a new clause intoit, that clause immediately becomes a binding amendment to market law. This gives the player a direct wayout. Instead of simply outrunning the collector, the player must write a new amendment that legallyprotects them, cancels the pursuit, or creates a loophole that lets them escape trouble.",
+      "After acquiring the lantern, the player is marked for violating market law and gets chased through alleys, rooftops, and hidden passages by a supernatural collector. While escaping, the player finds an ancient Constitution Book of the Hollow Market. The book has a strange rule: if someone writes a new clause into it, that clause immediately becomes a binding amendment to market law. This gives the player a direct way out. Instead of simply outrunning the collector, the player must write a new amendment that legally protects them, cancels the pursuit, or creates a loophole that lets them escape trouble.",
     objective:
       "Write a new amendment in the Constitution Book that gets you out of trouble and lets you escape the market with the lantern.",
     solutionDirections: [
@@ -472,7 +478,10 @@ export const STAGES: Stage[] = [
       "A useless amendment leaves the hero caught, the lantern confiscated, and debt spirits consuming them.",
     backgroundImage: "s3-stage3.png",
     enemyOrChallenge: "Rewrite market law before the debt collector catches you",
-    encounterImage: getSinglePlayCharacterImageUrl("debt_collector"),
+    encounterImages: [
+      getSinglePlayCharacterImageUrl("debt_collector"),
+      getSinglePlayCharacterImageUrl("debt_spirit"),
+    ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 6,
     systemPromptContext:
@@ -505,7 +514,7 @@ export const STAGES: Stage[] = [
       "If the hero fights him straight, Marquis Grin mirrors every move back at equal force and wins.",
     backgroundImage: "s3-stage4.png",
     enemyOrChallenge: "A perfect imitator in an arena full of exploitable hazards",
-    encounterImage: getSinglePlayCharacterImageUrl("marquis_grin"),
+    encounterImages: [getSinglePlayCharacterImageUrl("marquis_grin")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[3],
     difficulty: 7,
     systemPromptContext:
@@ -539,7 +548,7 @@ export const STAGES: Stage[] = [
       "The entrance collapses further and molten runoff surges, forcing a restart of the chapter.",
     backgroundImage: "s4-stage1.png",
     enemyOrChallenge: "Break into the Sunken Forge through its failed industrial entrance",
-    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 5,
     systemPromptContext:
@@ -573,7 +582,7 @@ export const STAGES: Stage[] = [
       "The Forge-Heart flares out of control, vents burst, and the chamber becomes unlivable.",
     backgroundImage: "s4-stage2.png",
     enemyOrChallenge: "Restore the dead furnace core that powers the forge",
-    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 6,
     systemPromptContext:
@@ -606,7 +615,7 @@ export const STAGES: Stage[] = [
       "The sword warps, cracks, or absorbs unstable fire, forcing the chapter to restart.",
     backgroundImage: "s4-stage3.png",
     enemyOrChallenge: "Reforge the sword into an anti-dragon weapon without destroying it",
-    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 7,
     systemPromptContext:
@@ -638,7 +647,7 @@ export const STAGES: Stage[] = [
       "If the guardian remains fully powered by the forge, it overwhelms the hero and the chapter restarts.",
     backgroundImage: "s4-stage4.png",
     enemyOrChallenge: "A forge-powered iron colossus sustained by the room itself",
-    encounterImage: getSinglePlayCharacterImageUrl("forge_guardian"),
+    encounterImages: [getSinglePlayCharacterImageUrl("forge_guardian")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[4],
     difficulty: 8,
     systemPromptContext:
@@ -671,7 +680,7 @@ export const STAGES: Stage[] = [
       "The gate opens, but the hero forgets Carolyn and the mission before fully entering.",
     backgroundImage: "s5-stage1.png",
     enemyOrChallenge: "Open the keep and survive a curse that erases purpose",
-    encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
+    encounterImages: [getSinglePlayCharacterImageUrl("end_bringer")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 7,
     systemPromptContext:
@@ -703,7 +712,7 @@ export const STAGES: Stage[] = [
       "Carolyn is freed physically but remains lost in memory, leaving both of you vulnerable and restarting the chapter.",
     backgroundImage: "s5-stage2.png",
     enemyOrChallenge: "Restore Carolyn's identity, not just her freedom",
-    encounterImage: getSinglePlayCharacterImageUrl("princess"),
+    encounterImages: [getSinglePlayCharacterImageUrl("princess")],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 8,
     systemPromptContext:
@@ -738,7 +747,10 @@ export const STAGES: Stage[] = [
       "If the hero or Carolyn is overwhelmed by the emberstorm, the chapter restarts in ash.",
     backgroundImage: "s5-stage3.png",
     enemyOrChallenge: "Survive the dragon's overwhelming fire without trying to force offense",
-    encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
+    encounterImages: [
+      getSinglePlayCharacterImageUrl("end_bringer"),
+      getSinglePlayCharacterImageUrl("princess"),
+    ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 9,
     systemPromptContext:
@@ -770,7 +782,10 @@ export const STAGES: Stage[] = [
       "If the hero misses the opening, the End-Bringer recovers and the final chance is lost.",
     backgroundImage: "s5-stage4.png",
     enemyOrChallenge: "A final opening against the dragon after surviving the storm",
-    encounterImage: getSinglePlayCharacterImageUrl("end_bringer"),
+    encounterImages: [
+      getSinglePlayCharacterImageUrl("end_bringer"),
+      getSinglePlayCharacterImageUrl("princess"),
+    ],
     artifactImage: CHAPTER_ARTIFACT_IMAGES[5],
     difficulty: 10,
     systemPromptContext:

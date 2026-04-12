@@ -13,7 +13,7 @@ export interface Stage {
   failureState: string;
   backgroundImage: string;
   enemyOrChallenge: string;
-  encounterImage: string;
+  encounterImages: string[] | null;
   artifactImage: string | null;
   difficulty: number;
   systemPromptContext: string;

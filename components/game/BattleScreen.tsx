@@ -50,6 +50,7 @@ export function BattleScreen({
   const trimmedPrompt = prompt.trim();
   const nextStage = getNextStageInSubstory(stage);
   const chapterEndsHere = isLastStageInSubstory(stage);
+  const encounterImages = stage.encounterImages ?? [];
 
   async function updateProgressAfterClear() {
     const supabase = createClient();
@@ -191,7 +192,7 @@ export function BattleScreen({
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-black/65" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
 
-            <div className="pointer-events-none absolute bottom-0 left-[4%] z-10 h-[72%] w-[28%]">
+            <div className="pointer-events-none absolute bottom-0 left-[7%] z-10 h-[56%] w-[20%]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={willieImageUrl}
@@ -200,13 +201,33 @@ export function BattleScreen({
               />
             </div>
 
-            <div className="pointer-events-none absolute bottom-0 right-[4%] z-10 h-[68%] w-[28%]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={stage.encounterImage}
-                alt={stage.enemyOrChallenge}
-                className="h-full w-full object-contain object-bottom drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)]"
-              />
+            <div className="pointer-events-none absolute bottom-0 right-[3%] z-10 h-[76%] w-[38%]">
+              {encounterImages.length === 1 ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={encounterImages[0]}
+                    alt={stage.enemyOrChallenge}
+                    className="h-full w-full object-contain object-bottom drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)]"
+                  />
+                </>
+              ) : encounterImages.length > 1 ? (
+                <div className="flex h-full w-full items-end justify-end gap-2">
+                  {encounterImages.map((image, index) => (
+                    <div
+                      key={`${stage.id}-encounter-${index}`}
+                      className="h-[78%] flex-1"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={image}
+                        alt={stage.enemyOrChallenge}
+                        className="h-full w-full object-contain object-bottom drop-shadow-[0_14px_36px_rgba(0,0,0,0.85)]"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
 
             <div className="absolute left-0 top-0 z-20 flex w-full flex-wrap items-start justify-between gap-3 p-5 sm:p-6">
