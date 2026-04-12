@@ -39,7 +39,7 @@ export const SINGLEPLAY_CHARACTER_OBJECT_PATHS = {
   sleeping_grove_beast: "Sleeping_Grove_Beast.png",
   soul_stealer: "soul_stealer.png",
   willie_the_wildcat: "willie_the_wildcat.png",
-  fleeing_npcs: "fleeing_npcs.png",
+  fleeing_npcs: "fleeing_villagers.png",
 } as const;
 
 export const SINGLEPLAY_ARTIFACT_OBJECT_PATHS = {
