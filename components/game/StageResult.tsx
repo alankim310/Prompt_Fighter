@@ -2,7 +2,15 @@
 
 import type { SingleBattleResult } from "@/lib/game/types";
 
-export function StageResult({ result }: { result: SingleBattleResult }) {
+export function StageResult({
+  result,
+  primaryLabel,
+  onPrimaryAction,
+}: {
+  result: SingleBattleResult;
+  primaryLabel: string;
+  onPrimaryAction: () => void;
+}) {
   const cleared = result.result === 1;
 
   return (
@@ -35,6 +43,20 @@ export function StageResult({ result }: { result: SingleBattleResult }) {
       >
         {result.narrative}
       </p>
+
+      <div className="mt-5 flex justify-end">
+        <button
+          type="button"
+          onClick={onPrimaryAction}
+          className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+            cleared
+              ? "bg-emerald-300 text-emerald-950 hover:bg-emerald-200"
+              : "bg-rose-300 text-rose-950 hover:bg-rose-200"
+          }`}
+        >
+          {primaryLabel}
+        </button>
+      </div>
     </section>
   );
 }

@@ -4,6 +4,7 @@ export const SUPABASE_S3_ENDPOINT =
   "https://tamjskfeocohiboeuuwu.storage.supabase.co/storage/v1/s3";
 export const SINGLE_CHARACTER_BUCKET = "single-characters";
 export const SINGLE_BACKGROUND_BUCKET = "single-backgrounds";
+export const SINGLE_ARTIFACT_BUCKET = "single-artifacts";
 export const SINGLE_MODE_HERO_OBJECT_PATH = "hero.png";
 export const WILLIE_THE_WILDCAT_KEY = "willie_the_wildcat";
 
@@ -32,6 +33,14 @@ export const SINGLEPLAY_CHARACTER_OBJECT_PATHS = {
   sleeping_grove_beast: "Sleeping_Grove_Beast.png",
   soul_stealer: "soul_stealer.png",
   willie_the_wildcat: "willie_the_wildcat.png",
+} as const;
+
+export const SINGLEPLAY_ARTIFACT_OBJECT_PATHS = {
+  ember_sigil: "ember_sigil.png",
+  moonlit_compass: "moonlit_compass.png",
+  name_flame_lantern: "name_flame_lantern.png",
+  sword_tempered_in_dragon_piercing_fire:
+    "sword_tempered_in_dragon-piercing_fire.png",
 } as const;
 
 function normalizeObjectPath(objectPath: string): string {
@@ -63,6 +72,15 @@ export function getSinglePlayCharacterImageUrl(
 ): string {
   return getSingleCharacterImageUrl(
     SINGLEPLAY_CHARACTER_OBJECT_PATHS[characterKey],
+  );
+}
+
+export function getSinglePlayArtifactImageUrl(
+  artifactKey: keyof typeof SINGLEPLAY_ARTIFACT_OBJECT_PATHS,
+): string {
+  return getSupabaseStoragePublicUrl(
+    SINGLE_ARTIFACT_BUCKET,
+    SINGLEPLAY_ARTIFACT_OBJECT_PATHS[artifactKey],
   );
 }
 

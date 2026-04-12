@@ -14,6 +14,7 @@ export interface Stage {
   backgroundImage: string;
   enemyOrChallenge: string;
   encounterImage: string;
+  artifactImage: string | null;
   difficulty: number;
   systemPromptContext: string;
 }
