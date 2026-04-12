@@ -72,6 +72,8 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
   const disconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const matchOverRef = useRef(false);
   const totalRoundsPlayedRef = useRef(0);
+  const player1IdRef = useRef<string>("");
+  const player2IdRef = useRef<string>("");
 
   const rosterForRoulette = useMemo(
     () => CHARACTERS.map((c) => ({ id: c.id, name: c.displayName })),
@@ -158,12 +160,10 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         window.setTimeout(() => {
           if (matchOverRef.current) return;
           if (totalRoundsPlayedRef.current >= MAX_ROUNDS) {
+            const p1 = player1IdRef.current;
+            const p2 = player2IdRef.current;
             const winnerId =
-              p1Wins > p2Wins
-                ? player1Id
-                : p2Wins > p1Wins
-                  ? player2Id
-                  : null;
+              p1Wins > p2Wins ? p1 : p2Wins > p1Wins ? p2 : null;
             void finalizeMatch(winnerId, "max-rounds");
             return;
           }
@@ -180,8 +180,9 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
           const reachedWinThreshold = next >= 2 || next2 >= 2;
           const reachedCap = totalRoundsPlayedRef.current >= MAX_ROUNDS;
           if (reachedWinThreshold || reachedCap) {
-            const winnerId =
-              next > next2 ? player1Id : next2 > next ? player2Id : null;
+            const p1 = player1IdRef.current;
+            const p2 = player2IdRef.current;
+            const winnerId = next > next2 ? p1 : next2 > next ? p2 : null;
             window.setTimeout(() => {
               void finalizeMatch(winnerId);
             }, PHASE_RESULT_HOLD_MS);
@@ -196,7 +197,7 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
         return next;
       });
     },
-    [player1Id, player2Id, startLocalRound, finalizeMatch, p1Wins, p2Wins],
+    [startLocalRound, finalizeMatch, p1Wins, p2Wins],
   );
 
   const persistSyntheticRound = useCallback(
@@ -376,6 +377,8 @@ export function MultiBattle({ matchId, userId }: MultiBattleProps) {
 
       setPlayer1Id(p1);
       setPlayer2Id(p2);
+      player1IdRef.current = p1;
+      player2IdRef.current = p2;
       const amP1 = userId === p1;
       setIsPlayer1(amP1);
       isPlayer1Ref.current = amP1;

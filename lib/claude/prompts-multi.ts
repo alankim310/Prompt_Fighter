@@ -31,7 +31,7 @@ Do NOT penalize unusual word choices or unexpected approaches. Judge intent and 
 Output:
 - winner: "player1" or "player2" (NEVER a draw — if tied, pick the more creative prompt)
 - narrative: a vivid 2-3 sentence play-by-play of the clash between the two characters, in-character
-- reasoning: one sentence explaining why the winner won
+- reasoning: 1-2 sentences explaining why the winner won
 
 You MUST always pick a winner. Draws are forbidden.`;
 }

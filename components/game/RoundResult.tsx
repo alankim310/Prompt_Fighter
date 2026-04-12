@@ -23,7 +23,13 @@ export function RoundResult({
   const oppPrompt = iAmPlayer1 ? record.prompt2 : record.prompt1;
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-6 bg-black p-6 text-white">
+    <div
+      className={`mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-6 p-6 text-white ${
+        iWon
+          ? "bg-gradient-to-b from-green-950/40 via-black to-black"
+          : "bg-gradient-to-b from-red-950/40 via-black to-black"
+      }`}
+    >
       <div className="text-xs uppercase tracking-[0.3em] text-zinc-500">
         Round {roundNumber} Result
       </div>
