@@ -6,7 +6,7 @@ An AI-powered prompt battle game where players craft creative natural language p
 
 Built for **WildHacks 2026** (Track 1: Childhood Games).
 
-**Live at [promptfighter.space](https://promptfighter.space)**
+**Live at [https://prompt-fighter-sage.vercel.app/]**
 
 ---
 
